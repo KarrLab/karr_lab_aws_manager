@@ -2,5 +2,5 @@ capturer # to capture standard output in tests
 mock # to mock python classes and methods
 cement
 boto3
-datanator_rest_api
+datanator_query_python
 requests_aws4auth

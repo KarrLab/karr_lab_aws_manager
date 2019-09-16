@@ -5,6 +5,7 @@ import os
 
 
 class credentialsFile:
+    
     def __init__(self, credential_path='.wc/third_party/aws_credentials.ini'):
         self.credential_path = credential_path
         home_path = PurePath(Path.home(), self.credential_path)
