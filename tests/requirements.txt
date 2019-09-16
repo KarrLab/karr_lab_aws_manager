@@ -1,2 +1,4 @@
 capturer # to capture standard output in tests
 mock # to mock python classes and methods
+cement
+boto3
