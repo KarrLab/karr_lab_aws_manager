@@ -7,7 +7,7 @@ except ImportError:
     import pkg_utils
 import os
 
-name = 'karr_lab_aws_manager_test_0'
+name = 'karr_lab_aws_manager'
 dirname = os.path.dirname(__file__)
 package_data = {
     name: [

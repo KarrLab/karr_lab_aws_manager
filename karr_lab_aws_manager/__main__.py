@@ -1,4 +1,4 @@
-""" karr_lab_aws_manager_test_0 command line interface
+""" karr_lab_aws_manager command line interface
 
 :Author: Name <email>
 :Date: 2019-9-16
@@ -7,8 +7,8 @@
 """
 
 import cement
-import karr_lab_aws_manager_test_0
-import karr_lab_aws_manager_test_0.core
+import karr_lab_aws_manager
+import karr_lab_aws_manager.core
 
 
 class BaseController(cement.Controller):
@@ -16,9 +16,9 @@ class BaseController(cement.Controller):
 
     class Meta:
         label = 'base'
-        description = "karr_lab_aws_manager_test_0"
+        description = "karr_lab_aws_manager"
         arguments = [
-            (['-v', '--version'], dict(action='version', version=karr_lab_aws_manager_test_0.__version__)),
+            (['-v', '--version'], dict(action='version', version=karr_lab_aws_manager.__version__)),
         ]
 
     @cement.ex(help='command_1 description')
@@ -67,7 +67,7 @@ class Command3WithArgumentsController(cement.Controller):
 class App(cement.App):
     """ Command line application """
     class Meta:
-        label = 'karr_lab_aws_manager_test_0'
+        label = 'karr_lab_aws_manager'
         base_controller = 'base'
         handlers = [
             BaseController,

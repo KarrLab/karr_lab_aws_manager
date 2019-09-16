@@ -1,4 +1,4 @@
-""" Tests of karr_lab_aws_manager_test_0 command line interface (karr_lab_aws_manager_test_0.__main__)
+""" Tests of karr_lab_aws_manager command line interface (karr_lab_aws_manager.__main__)
 
 :Author: Name <email>
 :Date: 2019-9-16
@@ -6,8 +6,8 @@
 :License: MIT
 """
 
-from karr_lab_aws_manager_test_0 import __main__
-import karr_lab_aws_manager_test_0
+from karr_lab_aws_manager import __main__
+import karr_lab_aws_manager
 import capturer
 import mock
 import unittest
@@ -16,10 +16,10 @@ import unittest
 class CliTestCase(unittest.TestCase):
 
     def test_cli(self):
-        with mock.patch('sys.argv', ['karr_lab_aws_manager_test_0', '--help']):
+        with mock.patch('sys.argv', ['karr_lab_aws_manager', '--help']):
             with self.assertRaises(SystemExit) as context:
                 __main__.main()
-                self.assertRegex(context.Exception, 'usage: karr_lab_aws_manager_test_0')
+                self.assertRegex(context.Exception, 'usage: karr_lab_aws_manager')
 
     def test_help(self):
         with self.assertRaises(SystemExit):
@@ -31,14 +31,14 @@ class CliTestCase(unittest.TestCase):
             with capturer.CaptureOutput(merged=False, relay=False) as captured:
                 with self.assertRaises(SystemExit):
                     app.run()
-                self.assertEqual(captured.stdout.get_text(), karr_lab_aws_manager_test_0.__version__)
+                self.assertEqual(captured.stdout.get_text(), karr_lab_aws_manager.__version__)
                 self.assertEqual(captured.stderr.get_text(), '')
 
         with __main__.App(argv=['--version']) as app:
             with capturer.CaptureOutput(merged=False, relay=False) as captured:
                 with self.assertRaises(SystemExit):
                     app.run()
-                self.assertEqual(captured.stdout.get_text(), karr_lab_aws_manager_test_0.__version__)
+                self.assertEqual(captured.stdout.get_text(), karr_lab_aws_manager.__version__)
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_command_1(self):

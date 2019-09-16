@@ -1,4 +1,4 @@
-""" karr_lab_aws_manager_test_0
+""" karr_lab_aws_manager
 
 :Author: Name <email>
 :Date: 2019-9-16

@@ -1,4 +1,4 @@
-karr_lab_aws_manager_test_0 documentation
+karr_lab_aws_manager documentation
 =========================================
 
 Contents
