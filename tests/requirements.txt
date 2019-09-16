@@ -4,5 +4,3 @@ cement
 boto3
 datanator_rest_api
 requests_aws4auth
-elasticsearch
-requests_aws4auth
