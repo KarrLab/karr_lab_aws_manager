@@ -4,13 +4,14 @@ from karr_lab_aws_manager.config import config
 import os
 import json
 import requests
+from requests_aws4auth import AWS4Auth
 
 
 class MongoToES:
 
     def __init__(self, profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
                 config_path='.wc/third_party/aws_config', elastic_path='.wc/third_party/elasticsearch.ini',
-                cache_dir=None):
+                cache_dir=None, service_name='es'):
         ''' 
             Args:
                 profile_name (:obj: `str`): AWS profile to use for authentication
@@ -18,13 +19,17 @@ class MongoToES:
                 config_path (:obj: `str`): directory for aws config file
                 elastic_path (:obj: `str`): directory for file containing aws elasticsearch service variables
                 cache_dir (:obj: `str`): temp directory to store json for bulk upload
+                service_name (:obj: `str`): aws service to be used
         '''
         session = config.establishES(config_path=config_path, profile_name=profile_name,
-                                    elastic_path=elastic_path)
+                                    elastic_path=elastic_path, service_name=service_name)
         self.cache_dir = cache_dir
         self.client = session.client
         self.es_endpoint = session.es_endpoint
-        
+        self.awsauth = AWS4Auth(session.access_key, session.secret_key,
+                           session.region, service_name)
+
+
     def data_from_mongo_protein(self, server, db, username, password, verbose=False,
                                 readPreference='nearest', authSource='admin', projection={'_id': 0},
                                 query={}):
@@ -84,4 +89,4 @@ class MongoToES:
         url_root = self.es_endpoint + '/' + index + '/_doc/'
         for i, doc in enumerate(cursor):
             url = url_root + str(i)
-            r = requests.post(url, json=doc, headers=headers)
+            r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)

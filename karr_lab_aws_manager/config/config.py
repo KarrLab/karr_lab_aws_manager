@@ -47,3 +47,4 @@ class establishES(establishSession):
         config = ConfigParser()
         config.read(os.path.expanduser(self.es_config))
         self.es_endpoint = config['elasticsearch-endpoint']['address']
+        self.region = self.session.region_name

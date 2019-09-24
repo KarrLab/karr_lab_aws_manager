@@ -28,6 +28,6 @@ class TestMongoToES(unittest.TestCase):
         spec = { "index" : { "_index": "test", "_type" : "_doc", "_id" : "2" } }
 
     def test_data_to_es_single(self):
-        cursor = [{'_id': 0, 'mock_key': 'mock_value_0'},
-                  {'_id': 1, 'mock_key': 'mock_value_1'}]
+        cursor = [{'mock_key': 'mock_value_0', 'another_mock_key': 'another_value_0'},
+                  {'mock_key': 'mock_value_1', 'another_mock_key': 'another_value_0'}]
         result = self.src.data_to_es_single(cursor, index='test_protein')
