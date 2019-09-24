@@ -4,3 +4,4 @@ datanator_query_python >= 0.2.5
 pkg_utils
 mock
 boto3
+configparser

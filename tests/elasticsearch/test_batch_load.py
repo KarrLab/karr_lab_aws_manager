@@ -10,3 +10,10 @@ class TestMongoToES(unittest.TestCase):
     def test_connection(self):
         result = self.src.client.list_domain_names()
         self.assertEqual(result['ResponseMetadata']['HTTPStatusCode'], 200)
+        self.assertTrue('datanator-elasticsearch' in self.src.es_endpoint)
+
+    def test_data_from_mongo(self):
+        pass
+
+    def test_data_to_es(self):
+        pass
