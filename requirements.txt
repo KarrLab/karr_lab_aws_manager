@@ -5,3 +5,4 @@ pkg_utils
 mock
 boto3
 configparser
+requests
