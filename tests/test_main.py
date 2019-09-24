@@ -78,5 +78,5 @@ class CliTestCase(unittest.TestCase):
                 self.assertTrue(app.pargs.opt_arg_4)
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '...')
-                self.assertEqual(captured.stderr.get_text(), '...')
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
