@@ -2,3 +2,5 @@ cement >= 3.0.0 # for command line programs
 setuptools # for pkg_resources module
 datanator_query_python >= 0.2.5
 pkg_utils
+mock
+boto3
