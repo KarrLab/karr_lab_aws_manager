@@ -40,6 +40,7 @@ tests/fixtures/secret/
 .idea/
 .spyderproject
 .ropeproject
+.vscode/
 
 # temporary files
 .DS_Store
