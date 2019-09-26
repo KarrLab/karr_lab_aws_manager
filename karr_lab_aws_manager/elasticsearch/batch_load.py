@@ -11,7 +11,7 @@ class MongoToES:
 
     def __init__(self, profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
                 config_path='.wc/third_party/aws_config', elastic_path='.wc/third_party/elasticsearch.ini',
-                cache_dir=None, service_name='es'):
+                cache_dir=None, service_name='es', index='protein'):
         ''' 
             Args:
                 profile_name (:obj: `str`): AWS profile to use for authentication
@@ -28,6 +28,7 @@ class MongoToES:
         self.es_endpoint = session.es_endpoint
         self.awsauth = AWS4Auth(session.access_key, session.secret_key,
                            session.region, service_name)
+        self.index = index
 
 
     def data_from_mongo_protein(self, server, db, username, password, verbose=False,
@@ -54,39 +55,59 @@ class MongoToES:
         docs = protein_manager.collection.find(filter=query, projection=projection)
         return docs
 
+    def make_action_and_metadata(self, _id):
+        ''' Make action_and_metadata obj for bulk loading
+            e.g. { "index": { "_index" : "index", "_id" : "id" } }
+            Args:
+                index (:obj: `str`): name of index on ES
+                _id (:obj: `int`):  unique id for document
+            Returns:
+                action_and_metadata (:obj: `dict`): metadata that conforms to ES bulk load requirement
+        '''
+        action_and_metadata = {'index': { "_index" : self.index, "_id" : _id }}
+        return action_and_metadata
     
-    def data_to_es_bulk(self, cursor, action_and_metadata, bulk_size=100,
-                   file_name='es_temp.json', headers={ "Content-Type": "application/json" }):
+    def data_to_es_bulk(self, cursor, bulk_size=100,
+                        headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
             Args:
                 cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
                 action_and_metadata (:obj: `dict`): elasticsearch action_and_metadata information for bulk operations
                                     e.g. {"index": { "_index": "test", "_type" : "_doc"}}
                 bulk_size (:obj: `int`): number of documents in one PUT
+            Return:
+                status_code (:obj: `set`): set of status codes
         '''
-        file_dir = os.path.join(self.cache_dir, file_name)
         url = self.es_endpoint + '/_bulk'
         bulk_file = ''
+        status_code = {201}
         for i, doc in enumerate(cursor):
-            action_and_metadata['index']['_id'] = i
+            action_and_metadata = self.make_action_and_metadata(i)
             if i % bulk_size != 0 or i == 0:
                 bulk_file += json.dumps(action_and_metadata) + '\n'
                 bulk_file += json.dumps(doc) + '\n'
             else:
                 bulk_file += json.dumps(action_and_metadata) + '\n'
                 bulk_file += json.dumps(doc) + '\n'
-                r = requests.post(url, json=bulk_file, headers=headers)
+                r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
+                status_code.add(r.status_code)
+        r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
+        status_code.add(r.status_code)
+        return status_code
                 
-    def data_to_es_single(self, cursor, index='proteins',
-                          headers={ "Content-Type": "application/json" }):
+    def data_to_es_single(self, cursor, headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
             Args:
                 cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
                 es_endpoint (:obj: `str`): elasticsearch endpoint
-                index (:obj: `str`): index collection
                 headers (:obj: `dict`): http header information
+            Return:
+                status_code (:obj: `set`): set of status codes
         '''
-        url_root = self.es_endpoint + '/' + index + '/_doc/'
+        url_root = self.es_endpoint + '/' + self.index + '/_doc/'
+        status_code = {201}
         for i, doc in enumerate(cursor):
             url = url_root + str(i)
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
+            status_code.add(r.status_code)
+        return status_code
