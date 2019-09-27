@@ -133,8 +133,11 @@ def main():
     authDB = conf.AUTHDB
     db = 'datanator'
     manager = MongoToES()
+    
+    # data from "protein" collection
     count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
     status_code = manager.data_to_es_bulk(count, docs) 
+    
     print(status_code)   
 
 if __name__ == "__main__":
