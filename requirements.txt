@@ -7,3 +7,4 @@ boto3
 configparser
 requests
 requests_aws4auth
+elasticsearch

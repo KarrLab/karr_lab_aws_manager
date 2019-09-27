@@ -33,22 +33,3 @@ class TestMongoToES(unittest.TestCase):
         db = 'datanator'
         count, _ = self.src.data_from_mongo_protein(server, db, username, password, authSource=authDB)
         self.assertTrue(count >= 1000)
-
-    def test_make_action_and_metadata(self):
-        _index = 1
-        result = self.src.make_action_and_metadata(_index)
-        self.assertEqual(result, {'index': { "_index" : self.src.index, "_id" : _index }})
-    
-    def test_data_to_es_bulk(self):
-        cursor = [{'number': 0, 'mock_key_bulk': 'mock_value_0', 'uniprot_id': 'P0'},
-                  {'number': 1, 'mock_key_bulk': 'mock_value_1', 'uniprot_id': 'P1'},
-                  {'number': 2, 'mock_key_bulk': 'mock_value_2', 'uniprot_id': 'P2'},
-                  {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
-        result = self.src.data_to_es_bulk(len(cursor), cursor, bulk_size=1)
-        self.assertTrue(result <= {201, 200})
-
-    def test_data_to_es_single(self):
-        cursor = [{'mock_key': 'mock_value_0', 'another_mock_key': 'another_value_0', 'uniprot_id': 'P0'},
-                  {'mock_key': 'mock_value_1', 'another_mock_key': 'another_value_0', 'uniprot_id': 'P1'}]
-        result = self.src.data_to_es_single(len(cursor), cursor)
-        self.assertTrue(result <= {201, 200})
