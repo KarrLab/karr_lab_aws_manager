@@ -30,5 +30,11 @@ class Query(util.EsUtil):
             connection_class = RequestsHttpConnection
         )
 
-    def simple_query_string(self, query):
+    def simple_query_string(self, string, **kwargs):
+        ''' perform "simple_query_string" 
+            (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html)
+            Args:
+                string (:obj: `str`): string or search pattern
+            
+        '''
         pass
