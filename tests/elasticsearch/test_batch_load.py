@@ -10,7 +10,7 @@ class TestMongoToES(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.cache_dir = tempfile.mkdtemp()
-        cls.src = batch_load.MongoToES(cache_dir=cls.cache_dir, index='test')
+        cls.src = batch_load.MongoToES(cache_dir=cls.cache_dir, index='test', verbose=True)
         cls.url = cls.src.es_endpoint + '/' + cls.src.index
         requests.delete(cls.url, auth=cls.src.awsauth)
 
@@ -41,8 +41,9 @@ class TestMongoToES(unittest.TestCase):
     
     def test_data_to_es_bulk(self):
         cursor = [{'number': 0, 'mock_key_bulk': 'mock_value_0'},
-                  {'number': 1, 'mock_key_bulk': 'mock_value_1'}]
-        result = self.src.data_to_es_bulk(len(cursor), cursor)
+                  {'number': 1, 'mock_key_bulk': 'mock_value_1'},
+                  {'number': 2, 'mock_key_bulk': 'mock_value_2'}]
+        result = self.src.data_to_es_bulk(len(cursor), cursor, bulk_size=1)
         self.assertTrue(result <= {201, 200})
 
     def test_data_to_es_single(self):

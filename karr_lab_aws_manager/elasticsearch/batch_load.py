@@ -3,6 +3,7 @@ from datanator_query_python.config import config as config_mongo
 from karr_lab_aws_manager.config import config
 import os
 import json
+import math
 import requests
 from requests_aws4auth import AWS4Auth
 
@@ -11,7 +12,7 @@ class MongoToES:
 
     def __init__(self, profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
                 config_path='.wc/third_party/aws_config', elastic_path='.wc/third_party/elasticsearch.ini',
-                cache_dir=None, service_name='es', index='protein', max_entries=float('inf')):
+                cache_dir=None, service_name='es', index='protein', max_entries=float('inf'), verbose=False):
         ''' 
             Args:
                 profile_name (:obj: `str`): AWS profile to use for authentication
@@ -23,6 +24,7 @@ class MongoToES:
         '''
         session = config.establishES(config_path=config_path, profile_name=profile_name,
                                     elastic_path=elastic_path, service_name=service_name)
+        self.verbose = verbose
         self.max_entries = max_entries
         self.cache_dir = cache_dir
         self.client = session.client
@@ -48,11 +50,11 @@ class MongoToES:
                 query (:obj: `str`): mongodb query filter
             Return:
                 docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                count (:obj: `int`): number of documents returned
         '''
         protein_manager = query_protein.QueryProtein(server=server, database=db,
                  verbose=verbose, username=username, authSource=authSource,
                  password=password, readPreference=readPreference)
-
         docs = protein_manager.collection.find(filter=query, projection=projection)
         count = protein_manager.collection.count_documents(query)
         return (count, docs)
@@ -82,25 +84,38 @@ class MongoToES:
                 status_code (:obj: `set`): set of status codes
         '''
         url = self.es_endpoint + '/_bulk'
-        bulk_file = ''
         status_code = {201}
+        bulk_file = ''
+        tot_rounds = math.ceil(count/bulk_size)
+        def gen_bulk_file(i, bulk_file):
+            action_and_metadata = self.make_action_and_metadata(i)
+            bulk_file += json.dumps(action_and_metadata) + '\n'
+            bulk_file += json.dumps(doc) + '\n'  
+            return bulk_file          
+
         for i, doc in enumerate(cursor):
             if i == self.max_entries:
                 break
-            if i % 20 == 0:
-                print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
-            action_and_metadata = self.make_action_and_metadata(i)
-            if i % bulk_size != 0 or i == 0:
-                bulk_file += json.dumps(action_and_metadata) + '\n'
-                bulk_file += json.dumps(doc) + '\n'
-            else:
-                bulk_file += json.dumps(action_and_metadata) + '\n'
-                bulk_file += json.dumps(doc) + '\n'
+            if self.verbose:
+                print("Processing bulk {} out of {} ...".format(math.floor(i/bulk_size)+1, tot_rounds))
+               
+            if i == count - 1:  # last entry
+                bulk_file = gen_bulk_file(i, bulk_file)
+                # print('commit last entry')
+                # print(bulk_file)
                 r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
                 status_code.add(r.status_code)
-        r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
-        status_code.add(r.status_code)
-        return status_code
+                return status_code
+            elif i % bulk_size != 0 or i == 0: #  bulk_size*(n-1) + 1 --> bulk_size*n - 1
+                bulk_file = gen_bulk_file(i, bulk_file)
+                # print('building in between')
+                # print(bulk_file)
+            else:               # bulk_size * n
+                # print('commit endpoint')
+                # print(bulk_file)
+                r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
+                status_code.add(r.status_code)
+                bulk_file = gen_bulk_file(i, '') # reset bulk_file
                 
     def data_to_es_single(self, count, cursor, headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
@@ -117,7 +132,7 @@ class MongoToES:
         for i, doc in enumerate(cursor):
             if i == self.max_entries:
                 break
-            if i % 20 == 0:
+            if i % 20 == 0 and self.verbose:
                 print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
             url = url_root + str(i)
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
