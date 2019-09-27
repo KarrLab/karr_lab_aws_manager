@@ -69,10 +69,11 @@ class MongoToES:
         action_and_metadata = {'index': { "_index" : self.index, "_id" : _id }}
         return action_and_metadata
     
-    def data_to_es_bulk(self, cursor, bulk_size=100,
+    def data_to_es_bulk(self, count, cursor, bulk_size=100,
                         headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
             Args:
+                count (:obj: `int`): cursor size
                 cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
                 action_and_metadata (:obj: `dict`): elasticsearch action_and_metadata information for bulk operations
                                     e.g. {"index": { "_index": "test", "_type" : "_doc"}}
@@ -86,6 +87,8 @@ class MongoToES:
         for i, doc in enumerate(cursor):
             if i == self.max_entries:
                 break
+            if i % 20 == 0:
+                print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
             action_and_metadata = self.make_action_and_metadata(i)
             if i % bulk_size != 0 or i == 0:
                 bulk_file += json.dumps(action_and_metadata) + '\n'
@@ -99,9 +102,10 @@ class MongoToES:
         status_code.add(r.status_code)
         return status_code
                 
-    def data_to_es_single(self, cursor, headers={ "Content-Type": "application/json" }):
+    def data_to_es_single(self, count, cursor, headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
             Args:
+                count (:obj: `int`): cursor size
                 cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
                 es_endpoint (:obj: `str`): elasticsearch endpoint
                 headers (:obj: `dict`): http header information
@@ -113,6 +117,8 @@ class MongoToES:
         for i, doc in enumerate(cursor):
             if i == self.max_entries:
                 break
+            if i % 20 == 0:
+                print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
             url = url_root + str(i)
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
             status_code.add(r.status_code)
@@ -127,8 +133,8 @@ def main():
     authDB = conf.AUTHDB
     db = 'datanator'
     manager = MongoToES()
-    _, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
-    status_code = manager.data_to_es_bulk(docs) 
+    count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+    status_code = manager.data_to_es_bulk(count, docs) 
     print(status_code)   
 
 if __name__ == "__main__":

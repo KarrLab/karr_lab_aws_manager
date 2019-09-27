@@ -42,11 +42,11 @@ class TestMongoToES(unittest.TestCase):
     def test_data_to_es_bulk(self):
         cursor = [{'number': 0, 'mock_key_bulk': 'mock_value_0'},
                   {'number': 1, 'mock_key_bulk': 'mock_value_1'}]
-        result = self.src.data_to_es_bulk(cursor)
+        result = self.src.data_to_es_bulk(len(cursor), cursor)
         self.assertTrue(result <= {201, 200})
 
     def test_data_to_es_single(self):
         cursor = [{'mock_key': 'mock_value_0', 'another_mock_key': 'another_value_0'},
                   {'mock_key': 'mock_value_1', 'another_mock_key': 'another_value_0'}]
-        result = self.src.data_to_es_single(cursor)
+        result = self.src.data_to_es_single(len(cursor), cursor)
         self.assertTrue(result <= {201, 200})
