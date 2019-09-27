@@ -71,15 +71,15 @@ class MongoToES:
         action_and_metadata = {'index': { "_index" : self.index, "_id" : _id }}
         return action_and_metadata
     
-    def data_to_es_bulk(self, count, cursor, bulk_size=100,
+    def data_to_es_bulk(self, count, cursor, bulk_size=100, _id='uniprot_id',
                         headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
             Args:
                 count (:obj: `int`): cursor size
                 cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
-                action_and_metadata (:obj: `dict`): elasticsearch action_and_metadata information for bulk operations
-                                    e.g. {"index": { "_index": "test", "_type" : "_doc"}}
                 bulk_size (:obj: `int`): number of documents in one PUT
+                headers (:obj: `dict`): http header
+                _id (:obj: `str`): unique id for identification
             Return:
                 status_code (:obj: `set`): set of status codes
         '''
@@ -87,8 +87,8 @@ class MongoToES:
         status_code = {201}
         bulk_file = ''
         tot_rounds = math.ceil(count/bulk_size)
-        def gen_bulk_file(i, bulk_file):
-            action_and_metadata = self.make_action_and_metadata(i)
+        def gen_bulk_file(_index, bulk_file):
+            action_and_metadata = self.make_action_and_metadata(_index)
             bulk_file += json.dumps(action_and_metadata) + '\n'
             bulk_file += json.dumps(doc) + '\n'  
             return bulk_file          
@@ -96,18 +96,18 @@ class MongoToES:
         for i, doc in enumerate(cursor):
             if i == self.max_entries:
                 break
-            if self.verbose:
+            if self.verbose and i % bulk_size == 0:
                 print("Processing bulk {} out of {} ...".format(math.floor(i/bulk_size)+1, tot_rounds))
                
             if i == count - 1:  # last entry
-                bulk_file = gen_bulk_file(i, bulk_file)
+                bulk_file = gen_bulk_file(doc[_id], bulk_file)
                 # print('commit last entry')
                 # print(bulk_file)
                 r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
                 status_code.add(r.status_code)
                 return status_code
             elif i % bulk_size != 0 or i == 0: #  bulk_size*(n-1) + 1 --> bulk_size*n - 1
-                bulk_file = gen_bulk_file(i, bulk_file)
+                bulk_file = gen_bulk_file(doc[_id], bulk_file)
                 # print('building in between')
                 # print(bulk_file)
             else:               # bulk_size * n
@@ -115,9 +115,9 @@ class MongoToES:
                 # print(bulk_file)
                 r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
                 status_code.add(r.status_code)
-                bulk_file = gen_bulk_file(i, '') # reset bulk_file
+                bulk_file = gen_bulk_file(doc[_id], '') # reset bulk_file
                 
-    def data_to_es_single(self, count, cursor, headers={ "Content-Type": "application/json" }):
+    def data_to_es_single(self, count, cursor, _id='uniprot_id', headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
             Args:
                 count (:obj: `int`): cursor size
@@ -134,7 +134,7 @@ class MongoToES:
                 break
             if i % 20 == 0 and self.verbose:
                 print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
-            url = url_root + str(i)
+            url = url_root + doc[_id]
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
             status_code.add(r.status_code)
         return status_code
@@ -147,7 +147,7 @@ def main():
     server = conf.SERVER
     authDB = conf.AUTHDB
     db = 'datanator'
-    manager = MongoToES()
+    manager = MongoToES(verbose=True)
     
     # data from "protein" collection
     count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
