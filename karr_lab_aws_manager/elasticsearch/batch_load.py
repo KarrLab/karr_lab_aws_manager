@@ -11,7 +11,7 @@ class MongoToES:
 
     def __init__(self, profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
                 config_path='.wc/third_party/aws_config', elastic_path='.wc/third_party/elasticsearch.ini',
-                cache_dir=None, service_name='es', index='protein'):
+                cache_dir=None, service_name='es', index='protein', max_entries=float('inf')):
         ''' 
             Args:
                 profile_name (:obj: `str`): AWS profile to use for authentication
@@ -23,6 +23,7 @@ class MongoToES:
         '''
         session = config.establishES(config_path=config_path, profile_name=profile_name,
                                     elastic_path=elastic_path, service_name=service_name)
+        self.max_entries = max_entries
         self.cache_dir = cache_dir
         self.client = session.client
         self.es_endpoint = session.es_endpoint
@@ -49,11 +50,12 @@ class MongoToES:
                 docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
         '''
         protein_manager = query_protein.QueryProtein(server=server, database=db,
-                 verbose=verbose, username = username, authSource=authSource,
-                 password = password, readPreference=readPreference)
+                 verbose=verbose, username=username, authSource=authSource,
+                 password=password, readPreference=readPreference)
 
         docs = protein_manager.collection.find(filter=query, projection=projection)
-        return docs
+        count = protein_manager.collection.count_documents(query)
+        return (count, docs)
 
     def make_action_and_metadata(self, _id):
         ''' Make action_and_metadata obj for bulk loading
@@ -82,6 +84,8 @@ class MongoToES:
         bulk_file = ''
         status_code = {201}
         for i, doc in enumerate(cursor):
+            if i == self.max_entries:
+                break
             action_and_metadata = self.make_action_and_metadata(i)
             if i % bulk_size != 0 or i == 0:
                 bulk_file += json.dumps(action_and_metadata) + '\n'
@@ -107,7 +111,25 @@ class MongoToES:
         url_root = self.es_endpoint + '/' + self.index + '/_doc/'
         status_code = {201}
         for i, doc in enumerate(cursor):
+            if i == self.max_entries:
+                break
             url = url_root + str(i)
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
             status_code.add(r.status_code)
         return status_code
+
+
+def main():
+    conf = config_mongo.Config()
+    username = conf.USERNAME
+    password = conf.PASSWORD
+    server = conf.SERVER
+    authDB = conf.AUTHDB
+    db = 'datanator'
+    manager = MongoToES()
+    _, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+    status_code = manager.data_to_es_bulk(docs) 
+    print(status_code)   
+
+if __name__ == "__main__":
+    main()

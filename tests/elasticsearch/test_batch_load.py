@@ -1,5 +1,6 @@
 import unittest
 from karr_lab_aws_manager.elasticsearch import batch_load
+from datanator_query_python.config import config
 import tempfile
 import shutil
 import requests
@@ -24,7 +25,14 @@ class TestMongoToES(unittest.TestCase):
         self.assertTrue('datanator-elasticsearch' in self.src.es_endpoint)
 
     def test_data_from_mongo(self):
-        pass
+        conf = config.Config()
+        username = conf.USERNAME
+        password = conf.PASSWORD
+        server = conf.SERVER
+        authDB = conf.AUTHDB
+        db = 'datanator'
+        count, _ = self.src.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+        self.assertTrue(count >= 1000)
 
     def test_make_action_and_metadata(self):
         _index = 1
