@@ -41,9 +41,9 @@ class EsUtil:
             url = self.es_endpoint + '/' + index + '/_doc/' + _id
         requests.delete(url, auth=self.awsauth)
 
-def main():
-    manager = EsUtil()
-    manager.delete_index('protein')
+# def main():
+#     manager = EsUtil()
+#     manager.delete_index('protein')
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
