@@ -8,3 +8,4 @@ configparser
 requests
 requests_aws4auth
 elasticsearch
+quilt3

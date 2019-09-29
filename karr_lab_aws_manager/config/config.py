@@ -48,3 +48,11 @@ class establishES(establishSession):
         config.read(os.path.expanduser(self.es_config))
         self.es_endpoint = config['elasticsearch-endpoint']['address']
         self.region = self.session.region_name
+
+
+class establishS3(establishSession):
+
+    def __init__(self, credential_path=None, config_path=None, profile_name=None, service_name='s3'):
+        super().__init__(credential_path=credential_path, config_path=config_path, profile_name=profile_name)
+        self.client = self.session.client(service_name)
+        self.region = self.session.region_name

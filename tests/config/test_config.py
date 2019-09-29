@@ -24,3 +24,8 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(establishES.client.list_domain_names()['ResponseMetadata']['HTTPStatusCode'], 200)
         self.assertTrue(os.path.exists(os.path.expanduser(establishES.es_config)))
         self.assertTrue('datanator-elasticsearch' in establishES.es_endpoint)
+
+    def test_s3_config(self):
+        establishS3 = config.establishS3(profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
+                                         config_path='.wc/third_party/aws_config')
+        self.assertEqual(establishS3.client.list_buckets()['Owner']['DisplayName'], 'zhouyang.lian')
