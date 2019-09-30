@@ -10,27 +10,29 @@ class QuiltUtil(s3_util.S3Util):
         super().__init__(credential_path=credential_path, config_path=config_path, profile_name=profile_name)
         self.package = quilt3.Package()
 
-    def add_to_package(self, source=None, destination=None, meta=None):
+    def add_to_package(self, destination=None, source=None, meta=None):
         ''' Specifically used for uploading datanator package to
             quilt3
             Args:
-                source (:obj: `list` of :obj: `str`): sources to be added to package
-                destination (:obj: `list` of :obj: `str` ): package(s) to be manipulated
+                source (:obj: `list` of :obj: `str`): sources to be added to package,
+                                                      directories must end with '/'
+                destination (:obj: `list` of :obj: `str` ): package(s) to be manipulated,
+                                                            directories must end with '/'
                 meta (:obj: `list` of :obj: `dict`): package meta
             Return:
 
         '''
-        length = len(source)
-        if not (all(len(lst)) == length for lst in [destination, meta]):
+        length = len(destination)
+        if not (all(len(lst)) == length for lst in [source, meta]):
             return 'All three entries must be lists of the same length.'
         suffix = '/'
-        for i, s in enumerate(source):
-            d = destination[i]
+        for i, d in enumerate(destination):
+            s = source[i]
             m = meta[i]
             if s.endswith(suffix) != d.endswith(suffix): # when s and d do not share the same suffix
-                return '{} and {} must have the same suffix. Operation stopped at {}th element.'.format(s, d, i)
+                return '{} and {} must have the same suffix. Operation stopped at {}th element.'.format(d, s, i)
 
             if s.endswith(suffix):
-                self.package.set_dir(s, d, meta=m)
+                self.package.set_dir(d, s, meta=m)
             else:
-                self.package.set(s, d, meta=m)
+                self.package.set(d, s, meta=m)

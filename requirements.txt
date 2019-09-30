@@ -1,4 +1,5 @@
 cement >= 3.0.0 # for command line programs
+urllib3 == 1.24.1 # for quilt3 compatibility
 setuptools # for pkg_resources module
 datanator_query_python >= 0.2.5
 pkg_utils
