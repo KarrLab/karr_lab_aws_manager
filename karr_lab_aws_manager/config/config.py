@@ -1,6 +1,7 @@
-from dotenv import load_dotenv
 from pathlib import Path, PurePath
 import boto3
+import quilt3
+import json
 import os
 from configparser import ConfigParser
 
@@ -56,3 +57,39 @@ class establishS3(establishSession):
         super().__init__(credential_path=credential_path, config_path=config_path, profile_name=profile_name)
         self.client = self.session.client(service_name)
         self.region = self.session.region_name
+
+
+class establishQuilt:
+
+    def __init__(self, base_path=None, profile_name=None, default_remote_registry=None,
+                aws_path=None):
+        ''' Handle Quilt authentication file creation without having to use quilt3.login()
+            Args:
+                aws_path (:obj: `str`): directory in which aws credentials file resides
+                base_path (:obj: `str`): directory to store quilt3 credentials
+                profile_name (:obj: `str`): AWS credentials profile name for quilt
+                default_remote_registry (:obj: `str`): default remote registry to store quilt package
+        '''
+        base_path_obj = Path(Path.home(), base_path)
+        aws_path_obj = Path(Path.home(), aws_path)
+        quilt3.session.AUTH_PATH = base_path_obj / 'auth.json'
+        quilt3.session.CREDENTIALS_PATH = base_path_obj / 'credentials.json'
+        quilt3.session.AUTH_PATH.touch()
+        self.auth_path = quilt3.session.AUTH_PATH
+        self.quilt_credentials_path = quilt3.session.CREDENTIALS_PATH
+
+        if aws_path_obj.exists():            
+            aws_credentials_path = aws_path_obj / 'aws_credentials'
+        else:
+            aws_credentials_path = Path('/', base_path, 'aws_credentials.json')
+
+        config = ConfigParser()
+        config.read(aws_credentials_path)
+        dic = {'access_key': config[profile_name]['aws_access_key_id'],
+               'secret_key': config[profile_name]['aws_secret_access_key'],
+               'token': None,
+               'expiry_time': config[profile_name]['expiry_time']}
+        with open(str(self.quilt_credentials_path), 'w') as f:
+            json.dump(dic, f)
+        quilt3.config(default_remote_registry=default_remote_registry)
+        self.package = quilt3.Package()

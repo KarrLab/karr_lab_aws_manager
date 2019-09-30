@@ -1,14 +1,15 @@
 import quilt3
-from karr_lab_aws_manager.s3 import util as s3_util
+from karr_lab_aws_manager.config import config
 
 
-class QuiltUtil(s3_util.S3Util):
+class QuiltUtil(config.establishQuilt):
 
-    def __init__(self, credential_path=None, config_path=None, profile_name=None):
+    def __init__(self, base_path=None, profile_name=None,
+                default_remote_registry=None, aws_path=None):
         ''' Interacting with karrlab quilt3 bucket and packages
         '''
-        super().__init__(credential_path=credential_path, config_path=config_path, profile_name=profile_name)
-        self.package = quilt3.Package()
+        super().__init__(base_path=base_path, profile_name=profile_name, 
+                        default_remote_registry=default_remote_registry, aws_path=aws_path)
 
     def add_to_package(self, destination=None, source=None, meta=None):
         ''' Specifically used for uploading datanator package to
@@ -36,3 +37,16 @@ class QuiltUtil(s3_util.S3Util):
                 self.package.set_dir(d, s, meta=m)
             else:
                 self.package.set(d, s, meta=m)
+
+    def push_to_remote(self, package, package_name, destination=None, message=None):
+        ''' Push local package to remote registry
+            Args:
+                package (:obj: `quilt3.Package()`): quilt pacakge
+                package_name (:obj: `str`): name of package in "username/packagename" format
+                destination (:obj: `str`): file landing destination in remote registry
+                message (:obj: `str`): commit message
+        '''
+        try:
+            package.push(package_name, dest=destination, message=message)
+        except quilt3.util.QuiltException as e:
+            return str(e)
