@@ -1,30 +1,24 @@
-from pathlib import Path, PurePath
+from pathlib import Path
 import boto3
-import quilt3
-import json
 import os
 from configparser import ConfigParser
 
+
 class credentialsFile:
     
-    def __init__(self, credential_path='.wc/third_party/aws_credentials', config_path='.wc/third_party/aws_config'):
+    def __init__(self, credential_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config'):
         ''' Establish environment variables' paths
         '''
         self.credential_path = credential_path
         self.config_path = config_path
-        self.home_path = PurePath(Path.home(), self.credential_path)
-        if os.path.exists(self.home_path):
-            self.AWS_SHARED_CREDENTIALS_FILE = '~/' + self.credential_path
-            self.AWS_CONFIG_FILE = '~/' + self.config_path
-        else:
-            self.AWS_SHARED_CREDENTIALS_FILE = '/' + self.credential_path
-            self.AWS_CONFIG_FILE = '/' + self.config_path
+        self.AWS_SHARED_CREDENTIALS_FILE = str(Path(self.credential_path).expanduser())
+        self.AWS_CONFIG_FILE = str(Path(self.config_path).expanduser())
 
 
 class establishSession(credentialsFile):
     
-    def __init__(self, credential_path='.wc/third_party/aws_credentials', 
-                config_path='.wc/third_party/aws_config', profile_name='test'):
+    def __init__(self, credential_path='~/.wc/third_party/aws_credentials', 
+                config_path='~/.wc/third_party/aws_config', profile_name='test'):
         super().__init__(credential_path=credential_path, config_path=config_path)
         os.environ['AWS_SHARED_CREDENTIALS_FILE'] = self.AWS_SHARED_CREDENTIALS_FILE
         os.environ['AWS_CONFIG_FILE'] = self.AWS_CONFIG_FILE
@@ -35,16 +29,13 @@ class establishSession(credentialsFile):
 
 class establishES(establishSession):
 
-    def __init__(self, credential_path='.wc/third_party/aws_credentials', 
-                config_path='.wc/third_party/aws_config', profile_name='test',
-                elastic_path='.wc/third_party/elasticsearch.ini', service_name='es'):
+    def __init__(self, credential_path='~/.wc/third_party/aws_credentials', 
+                config_path='~/.wc/third_party/aws_config', profile_name='test',
+                elastic_path='~/.wc/third_party/elasticsearch.ini', service_name='es'):
         super().__init__(credential_path=credential_path, config_path=config_path,
                         profile_name=profile_name)
         self.client = self.session.client(service_name)
-        if os.path.exists(self.home_path):
-            self.es_config = '~/' + elastic_path
-        else:
-            self.es_config = '/' + elastic_path
+        self.es_config = str(Path(elastic_path))
         config = ConfigParser()
         config.read(os.path.expanduser(self.es_config))
         self.es_endpoint = config['elasticsearch-endpoint']['address']
@@ -55,5 +46,6 @@ class establishS3(establishSession):
 
     def __init__(self, credential_path=None, config_path=None, profile_name=None, service_name='s3'):
         super().__init__(credential_path=credential_path, config_path=config_path, profile_name=profile_name)
-        self.client = self.session.client(service_name)
+        self.resource = self.session.resource(service_name)
+        self.client = self.resource.meta.client
         self.region = self.session.region_name

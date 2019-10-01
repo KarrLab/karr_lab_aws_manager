@@ -4,19 +4,22 @@ import json
 from configparser import ConfigParser
 from pathlib import Path, PurePath
 import tempfile
+from boto3.s3.transfer import TransferConfig
 
 
 class QuiltUtil:
 
     def __init__(self, base_path=None, profile_name=None, default_remote_registry=None,
-                aws_path=None):
+                aws_path=None, cache_dir=None):
         ''' Handle Quilt authentication file creation without having to use quilt3.login()
             Args:
                 aws_path (:obj: `str`): directory in which aws credentials file resides
                 base_path (:obj: `str`): directory to store quilt3 credentials generated from aws credentials
                 profile_name (:obj: `str`): AWS credentials profile name for quilt
                 default_remote_registry (:obj: `str`): default remote registry to store quilt package
+                cache_dir (:obj: `str`): default directory to store data
         '''
+        self.cache_dir = cache_dir
         self.profile_name = profile_name
         base_path_obj = Path(base_path)
         aws_path_obj = Path(aws_path)
@@ -87,23 +90,54 @@ class QuiltUtil:
         except quilt3.util.QuiltException as e:
             return str(e)
 
-    def build_from_external_bucket(self, package_dest, bucket_uri, bucket_credential=None,
-                                  profile_name=None, bucket_config=None):
+    def build_from_external_bucket(self, package_dest, bucket_name, key, file_dir,
+                                  bucket_credential=None, profile_name=None, meta=None,
+                                  bucket_config=None, max_concurrency=10):
         ''' Build package with source from external (non-quilt)
             s3 buckets
             Args:
                 package_dest (:obj: `str`): package(s) to be manipulated
-                bucket_uri (:obj: `str`): s3 bucket canonical uri
+                bucket_name (:obj: `str`): s3 bucket name
+                key (:obj: `str`): the name of the key to download from
+                file_dir (:obj: `str`): the path to the file to download to
                 bucket_credential (:obj: `str`): directory in which credential for s3 bucket is stored
                 profile_name (:obj: `str`): profile to be used for authentication
+                meta (:obj: `dict`): meta information for package file
                 bucket_credential (:obj: `str`): directory in which config for s3 bucket is stored
+                max_concurrency (:obj: `int`): threads used for downloading
         '''
+        settings = TransferConfig(max_concurrency=max_concurrency)
         if bucket_credential is None:
-            bucket_credential = self.aws_credentials_path.expanduser()
+            bucket_credential = str(self.aws_credentials_path.expanduser())
         else:
-            bucket_credential = Path(bucket_credential).expanduser()
+            bucket_credential = str(Path(bucket_credential).expanduser())
+
+        if bucket_config is None:
+            bucket_config = str(self.aws_credentials_path.with_name('aws_config').expanduser())
+        else:
+            bucket_config = str(Path(bucket_config).expanduser())
+
         if profile_name is None:
             profile_name = self.profile_name
+
+        s3_manager = config.establishS3(credential_path=bucket_credential, 
+                                        config_path=bucket_config, profile_name=profile_name).client
+        file_name_path = Path(file_dir, key).expanduser()
+        
+        if package_dest.endswith('/'):
+            file_name_path.mkdir(parents=True, exist_ok=True)
+        else:
+            Path(file_name_path.parent).mkdir(parents=True, exist_ok=True)
+            file_name_path.touch(exist_ok=True)
+        
+        file_name = str(file_name_path)
+        s3_manager.download_file(bucket_name, key, file_name, Config=settings)
+        
+        if package_dest.endswith('/'):
+            return self.package.set_dir(package_dest, file_name, meta=meta)
+        else:
+            return self.package.set(package_dest, file_name, meta=meta)
+
 
 
 # def main():

@@ -17,17 +17,20 @@ class TestQuiltUtil(unittest.TestCase):
         cls.destination = cls.cache_dir_source.split('/')[2]
         cls.src = util.QuiltUtil(aws_path='~/.wc/third_party',
                                  base_path=cls.credentials_cache, profile_name='quilt-s3',
-                                 default_remote_registry='s3://karrlab')
+                                 default_remote_registry='s3://karrlab', cache_dir=cls.credentials_cache)
         cls.file = 'test_util.txt'
         cls.test_file = cls.cache_dir_source + cls.file
         Path(cls.test_file).touch()
-
+        cls.key_0 = 'datanator/corum.metadata.json'
+        cls.key_1 = 'datanator/test/'
 
     @classmethod 
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dir_source)
         shutil.rmtree(cls.credentials_cache)
         cls.src.package.delete(cls.file)
+        cls.src.package.delete(cls.key_0)
+        cls.src.package.delete(cls.key_1)
 
     def test_bucket_obj(self):
         b = self.src.bucket_obj('s3://karrlab')
@@ -46,9 +49,10 @@ class TestQuiltUtil(unittest.TestCase):
         self.assertEqual(
             r_0, '{} and {} must have the same suffix. Operation stopped at {}th element.'.format(destination_0[2], source_0[2], 2))
 
+    @unittest.skip('reduce upload frequency')
     def test_push_to_remote(self):
         package = self.src.package
-        package_name = 'karrlab/test'
+        package_name = 'karrlab/quiltutil'
         remote_registry_0 = 's3://somenonsense'
         remote_registry_1 = 's3://karrlab/test'
         message = 'test package upload'
@@ -56,3 +60,20 @@ class TestQuiltUtil(unittest.TestCase):
         s_0 = "Invalid package destination path 's3://somenonsense'. 'dest', if set, must be a path in the 's3://karrlab' package registry specified by 'registry'."
         self.assertEqual(r_0, s_0)
         self.src.push_to_remote(package, package_name, destination=remote_registry_1, message=message)
+
+    def test_build_from_external_bucket(self):
+        package_dest_0 = 'test.json'
+        package_dest_1 = 'test/'
+        bucket_name_0 = 'mongo-dbdump'
+        file_name_0_path = Path(self.credentials_cache)
+        file_name_1_path = Path(self.credentials_cache)
+        file_name_0 = str(file_name_0_path)
+        file_name_1 = str(file_name_1_path)
+        p_0 = self.src.build_from_external_bucket(package_dest_0, bucket_name_0, self.key_0, file_name_0,
+                                                  profile_name='karrlab-zl')
+        self.assertTrue(file_name_0_path.exists())
+        self.assertTrue(p_0.__contains__(package_dest_0))
+        p_1 = self.src.build_from_external_bucket(package_dest_1, bucket_name_0, self.key_1, file_name_1,
+                                                  profile_name='karrlab-zl')
+        self.assertTrue(file_name_1_path.exists())
+        self.assertTrue(p_1.__contains__(package_dest_1))

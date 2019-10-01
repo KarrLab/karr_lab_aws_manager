@@ -1,8 +1,5 @@
-from botocore.exceptions import ClientError
-import boto3
-import logging
-from requests_aws4auth import AWS4Auth
 from karr_lab_aws_manager.config import config
+from pathlib import Path
 
 
 class S3Util(config.establishS3):
@@ -13,24 +10,23 @@ class S3Util(config.establishS3):
         super().__init__(profile_name=profile_name, credential_path=credential_path, config_path=config_path)
 
 
-    def upload_file(file_name, bucket, object_name=None):
-        """ Upload a file to an S3 bucket
+    def download_dir(self, dist, bucket, local='/tmp'):
+        ''' Download a directory in s3 bucket
             Args:
-                file_name (:obj: `str`): File to upload
-                bucket (:obj: `str`): Bucket to upload to
-                object_name (:obj: `str`): S3 object name. If not specified then file_name is used
-            Return:
-                True if file was uploaded, else False
-        """
-
-        # If S3 object_name was not specified, use file_name
-        if object_name is None:
-            object_name = file_name
-
-        # Upload the file
-        try:
-            response = self.client.upload_file(file_name, bucket, object_name)
-        except ClientError as e:
-            logging.error(e)
-            return False
-        return True
+                dist (:obj: `str`): s3 directory key representation
+                bucket (:obj: `str`): name of bucket
+                local (:obj: `str`): local directory to store downloaded content
+        '''
+        paginator = self.client.get_paginator('list_objects')
+        for result in paginator.paginate(Bucket=bucket, Delimiter='/', Prefix=dist):
+            if result.get('CommonPrefixes') is not None:
+                for subdir in result.get('CommonPrefixes'):
+                    self.download_dir(subdir.get('Prefix'), bucket, local=local)
+            for file in result.get('Contents', []):
+                dest_pathname = Path(local, file.get('Key'))
+                if file.get('Key').endswith('/'):
+                    dest_pathname.mkdir(parents=True, exist_ok=True)
+                else:
+                    Path(dest_pathname.parent).mkdir(parents=True, exist_ok=True)
+                    dest_pathname.touch()
+                self.resource.meta.client.download_file(bucket, file.get('Key'), str(dest_pathname))
