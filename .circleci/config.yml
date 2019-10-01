@@ -40,8 +40,11 @@ jobs:
               done < .circleci/requirements.txt
             fi
       - run:
+          name: Install requirements (quilt3 specific)
+          command: pip3 install -r requirements.txt
+      - run:
           name: Install package (Python 3)
-          command: pip3 install -U -e .[all]
+          command: pip3 install - U -e .[all]
 
       # Save packages to cache
       - save_cache:
