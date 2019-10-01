@@ -15,7 +15,7 @@ class TestQuiltUtil(unittest.TestCase):
         cls.cache_dir_source = tempfile.mkdtemp()
         cls.credentials_cache = tempfile.mkdtemp()
         cls.destination = cls.cache_dir_source.split('/')[2]
-        cls.src = util.QuiltUtil(aws_path='.wc/third_party',
+        cls.src = util.QuiltUtil(aws_path='~/.wc/third_party',
                                  base_path=cls.credentials_cache, profile_name='quilt-s3',
                                  default_remote_registry='s3://karrlab')
         cls.file = 'test_util.txt'
@@ -28,6 +28,10 @@ class TestQuiltUtil(unittest.TestCase):
         shutil.rmtree(cls.cache_dir_source)
         shutil.rmtree(cls.credentials_cache)
         cls.src.package.delete(cls.file)
+
+    def test_bucket_obj(self):
+        b = self.src.bucket_obj('s3://karrlab')
+        self.assertTrue('datanator-sql/ArrayExpress.sqlite' in b.keys())
 
     def test_init(self):
         self.assertTrue(self.src.quilt_credentials_path.exists())

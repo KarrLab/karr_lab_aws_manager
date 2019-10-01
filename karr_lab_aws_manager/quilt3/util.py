@@ -3,7 +3,7 @@ from karr_lab_aws_manager.config import config
 import json
 from configparser import ConfigParser
 from pathlib import Path, PurePath
-
+import tempfile
 
 
 class QuiltUtil:
@@ -13,25 +13,22 @@ class QuiltUtil:
         ''' Handle Quilt authentication file creation without having to use quilt3.login()
             Args:
                 aws_path (:obj: `str`): directory in which aws credentials file resides
-                base_path (:obj: `str`): directory to store quilt3 credentials
+                base_path (:obj: `str`): directory to store quilt3 credentials generated from aws credentials
                 profile_name (:obj: `str`): AWS credentials profile name for quilt
                 default_remote_registry (:obj: `str`): default remote registry to store quilt package
         '''
-        base_path_obj = Path(Path.home(), base_path)
-        aws_path_obj = Path(Path.home(), aws_path)
+        self.profile_name = profile_name
+        base_path_obj = Path(base_path)
+        aws_path_obj = Path(aws_path)
         quilt3.session.AUTH_PATH = base_path_obj / 'auth.json'
         quilt3.session.CREDENTIALS_PATH = base_path_obj / 'credentials.json'
         quilt3.session.AUTH_PATH.touch()
         self.auth_path = quilt3.session.AUTH_PATH
         self.quilt_credentials_path = quilt3.session.CREDENTIALS_PATH
 
-        if aws_path_obj.exists():            
-            aws_credentials_path = aws_path_obj / 'aws_credentials'
-        else:
-            aws_credentials_path = Path('/', base_path, 'aws_credentials.json')
-
+        self.aws_credentials_path = aws_path_obj / 'aws_credentials'
         config = ConfigParser()
-        config.read(aws_credentials_path)
+        config.read(self.aws_credentials_path.expanduser())
         dic = {'access_key': config[profile_name]['aws_access_key_id'],
                'secret_key': config[profile_name]['aws_secret_access_key'],
                'token': None,
@@ -40,6 +37,15 @@ class QuiltUtil:
             json.dump(dic, f)
         quilt3.config(default_remote_registry=default_remote_registry)
         self.package = quilt3.Package()
+
+    def bucket_obj(self, bucket_uri):
+        ''' Create quilt3 bucket object
+            Args:
+                bucket_uri (:obj: `str`): quilt s3 bucket address
+            Return:
+                (:obj: `quilt3.Bucket`): quilt3 bucket object
+        '''
+        return quilt3.Bucket(bucket_uri)
 
     def add_to_package(self, destination=None, source=None, meta=None):
         ''' Specifically used for uploading datanator package to
@@ -80,3 +86,34 @@ class QuiltUtil:
             package.push(package_name, dest=destination, message=message)
         except quilt3.util.QuiltException as e:
             return str(e)
+
+    def build_from_external_bucket(self, package_dest, bucket_uri, bucket_credential=None,
+                                  profile_name=None, bucket_config=None):
+        ''' Build package with source from external (non-quilt)
+            s3 buckets
+            Args:
+                package_dest (:obj: `str`): package(s) to be manipulated
+                bucket_uri (:obj: `str`): s3 bucket canonical uri
+                bucket_credential (:obj: `str`): directory in which credential for s3 bucket is stored
+                profile_name (:obj: `str`): profile to be used for authentication
+                bucket_credential (:obj: `str`): directory in which config for s3 bucket is stored
+        '''
+        if bucket_credential is None:
+            bucket_credential = self.aws_credentials_path.expanduser()
+        else:
+            bucket_credential = Path(bucket_credential).expanduser()
+        if profile_name is None:
+            profile_name = self.profile_name
+
+
+# def main():
+#     manager = QuiltUtil(aws_path='.wc/third_party',
+#                         base_path=tempfile.mkdtemp(), profile_name='quilt-s3',
+#                         default_remote_registry='s3://karrlab')
+#     p = manager.package
+#     p = p.set_dir('/', 's3://karrlab/datanator/')
+#     p.set_meta({"package-type": 'mongodb data dump'})
+#     p.push('karrlab/datanator')
+
+# if __name__ == '__main__':
+#     main()
