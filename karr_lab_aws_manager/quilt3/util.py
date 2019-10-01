@@ -1,5 +1,6 @@
 import quilt3
 from karr_lab_aws_manager.config import config
+from karr_lab_aws_manager.s3 import util as s3_util
 import json
 from configparser import ConfigParser
 from pathlib import Path, PurePath
@@ -120,18 +121,18 @@ class QuiltUtil:
         if profile_name is None:
             profile_name = self.profile_name
 
-        s3_manager = config.establishS3(credential_path=bucket_credential, 
-                                        config_path=bucket_config, profile_name=profile_name).client
+        s3 = s3_util.S3Util(profile_name=profile_name, credential_path=bucket_credential,
+                            config_path=bucket_config)
+                            
         file_name_path = Path(file_dir, key).expanduser()
-        
+        file_name = str(file_name_path)
         if package_dest.endswith('/'):
             file_name_path.mkdir(parents=True, exist_ok=True)
+            s3.download_dir(key, bucket_name, local=file_dir)
         else:
             Path(file_name_path.parent).mkdir(parents=True, exist_ok=True)
-            file_name_path.touch(exist_ok=True)
-        
-        file_name = str(file_name_path)
-        s3_manager.download_file(bucket_name, key, file_name, Config=settings)
+            file_name_path.touch(exist_ok=True)        
+            s3.client.download_file(bucket_name, key, file_name, Config=settings)
         
         if package_dest.endswith('/'):
             return self.package.set_dir(package_dest, file_name, meta=meta)

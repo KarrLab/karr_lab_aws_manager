@@ -21,16 +21,16 @@ class TestQuiltUtil(unittest.TestCase):
         cls.file = 'test_util.txt'
         cls.test_file = cls.cache_dir_source + cls.file
         Path(cls.test_file).touch()
-        cls.key_0 = 'datanator/corum.metadata.json'
-        cls.key_1 = 'datanator/test/'
+        cls.package_dest_0 = 'test.json'
+        cls.package_dest_1 = 'test/'
 
     @classmethod 
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dir_source)
         shutil.rmtree(cls.credentials_cache)
         cls.src.package.delete(cls.file)
-        cls.src.package.delete(cls.key_0)
-        cls.src.package.delete(cls.key_1)
+        cls.src.package.delete(cls.package_dest_0)
+        cls.src.package.delete(cls.package_dest_1[:-1])
 
     def test_bucket_obj(self):
         b = self.src.bucket_obj('s3://karrlab')
@@ -62,18 +62,18 @@ class TestQuiltUtil(unittest.TestCase):
         self.src.push_to_remote(package, package_name, destination=remote_registry_1, message=message)
 
     def test_build_from_external_bucket(self):
-        package_dest_0 = 'test.json'
-        package_dest_1 = 'test/'
-        bucket_name_0 = 'mongo-dbdump'
+        key_0 = 'LICENSE'
+        key_1 = 'quilt/docs/'
+        bucket_name_0 = 'karr-lab-aws-manager-test'
         file_name_0_path = Path(self.credentials_cache)
         file_name_1_path = Path(self.credentials_cache)
         file_name_0 = str(file_name_0_path)
         file_name_1 = str(file_name_1_path)
-        p_0 = self.src.build_from_external_bucket(package_dest_0, bucket_name_0, self.key_0, file_name_0,
+        p_0 = self.src.build_from_external_bucket(self.package_dest_0, bucket_name_0, key_0, file_name_0,
                                                   profile_name='karrlab-zl')
         self.assertTrue(file_name_0_path.exists())
-        self.assertTrue(p_0.__contains__(package_dest_0))
-        p_1 = self.src.build_from_external_bucket(package_dest_1, bucket_name_0, self.key_1, file_name_1,
+        self.assertTrue(p_0.__contains__(self.package_dest_0))
+        p_1 = self.src.build_from_external_bucket(self.package_dest_1, bucket_name_0, key_1, file_name_1,
                                                   profile_name='karrlab-zl')
         self.assertTrue(file_name_1_path.exists())
-        self.assertTrue(p_1.__contains__(package_dest_1))
+        self.assertTrue(p_1.__contains__(self.package_dest_1 + 'CONTRIBUTING.md'))
