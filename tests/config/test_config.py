@@ -38,8 +38,3 @@ class TestConfig(unittest.TestCase):
         establishS3 = config.establishS3(profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
                                          config_path='.wc/third_party/aws_config')
         self.assertEqual(establishS3.client.list_buckets()['Owner']['DisplayName'], 'zhouyang.lian')
-
-    def test_quilt_config(self):
-        establishQuilt = config.establishQuilt(base_path=self.cache_dir, profile_name='quilt-s3',
-                                               default_remote_registry='s3://quilt-karrlab', aws_path='.wc/third_party')
-        self.assertTrue(establishQuilt.quilt_credentials_path.exists())        
