@@ -29,6 +29,9 @@ class TestQuiltUtil(unittest.TestCase):
         shutil.rmtree(cls.credentials_cache)
         cls.src.package.delete(cls.file)
 
+    def test_init(self):
+        self.assertTrue(self.src.quilt_credentials_path.exists())
+
     def test_add_to_package(self):
         source_0 = [self.test_file, self.cache_dir_source + '/', self.cache_dir_source + '/']
         destination_0 = [self.file,

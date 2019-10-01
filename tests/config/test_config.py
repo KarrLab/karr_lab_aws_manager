@@ -42,6 +42,4 @@ class TestConfig(unittest.TestCase):
     def test_quilt_config(self):
         establishQuilt = config.establishQuilt(base_path=self.cache_dir, profile_name='quilt-s3',
                                                default_remote_registry='s3://quilt-karrlab', aws_path='.wc/third_party')
-        self.assertTrue(establishQuilt.quilt_credentials_path.exists())
-
-        
+        self.assertTrue(establishQuilt.quilt_credentials_path.exists())        
