@@ -5,8 +5,8 @@ from karr_lab_aws_manager.elasticsearch import util
 
 class MongoToES(util.EsUtil):
 
-    def __init__(self, profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
-                config_path='.wc/third_party/aws_config', elastic_path='.wc/third_party/elasticsearch.ini',
+    def __init__(self, profile_name='karrlab-zl', credential_path='~/.wc/third_party/aws_credentials',
+                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 cache_dir=None, service_name='es', index='protein', max_entries=float('inf'), verbose=False):
         ''' 
             Args:

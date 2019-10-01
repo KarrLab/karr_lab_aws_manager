@@ -8,8 +8,8 @@ from requests_aws4auth import AWS4Auth
 
 class EsUtil:
 
-    def __init__(self, profile_name='karrlab-zl', credential_path='.wc/third_party/aws_credentials',
-                config_path='.wc/third_party/aws_config', elastic_path='.wc/third_party/elasticsearch.ini',
+    def __init__(self, profile_name='karrlab-zl', credential_path='~/.wc/third_party/aws_credentials',
+                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 cache_dir=None, service_name='es', max_entries=float('inf'), verbose=False):
         ''' 
             Args:

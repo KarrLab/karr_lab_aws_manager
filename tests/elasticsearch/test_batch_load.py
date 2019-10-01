@@ -10,7 +10,8 @@ class TestMongoToES(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.cache_dir = tempfile.mkdtemp()
-        cls.src = batch_load.MongoToES(cache_dir=cls.cache_dir, index='test', verbose=True)
+        cls.src = batch_load.MongoToES(cache_dir=cls.cache_dir, index='test', verbose=True,
+                                       profile_name='karrlab-zl')
         cls.url = cls.src.es_endpoint + '/' + cls.src.index
         requests.delete(cls.url, auth=cls.src.awsauth)
 
