@@ -10,7 +10,7 @@ class TestQuiltUtil(unittest.TestCase):
     @classmethod 
     def setUpClass(cls):
         cls.cache_dir_source = tempfile.mkdtemp()
-        cls.src = util.S3Util(profile_name='karrlab-zl', credential_path='~/.wc/third_party/aws_credentials',
+        cls.src = util.S3Util(profile_name='s3-admin', credential_path='~/.wc/third_party/aws_credentials',
                               config_path='~/.wc/third_party/aws_config')
 
     @classmethod 

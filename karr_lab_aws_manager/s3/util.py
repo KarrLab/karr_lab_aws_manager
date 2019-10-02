@@ -11,7 +11,7 @@ class S3Util(config.establishS3):
 
 
     def download_dir(self, dist, bucket, local='/tmp'):
-        ''' Download a directory in s3 bucket
+        ''' Download all contents in a directory in s3 bucket iteratively
             Args:
                 dist (:obj: `str`): s3 directory key representation
                 bucket (:obj: `str`): name of bucket
