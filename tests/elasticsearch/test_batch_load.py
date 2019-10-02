@@ -10,8 +10,9 @@ class TestMongoToES(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.cache_dir = tempfile.mkdtemp()
-        cls.src = batch_load.MongoToES(cache_dir=cls.cache_dir, index='test', verbose=True,
-                                       profile_name='karrlab-zl')
+        cls.src = batch_load.MongoToES(profile_name='karrlab-zl', credential_path='~/.wc/third_party/aws_credentials',
+                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
+                cache_dir=cls.cache_dir, service_name='es', index='test', max_entries=float('inf'), verbose=True)
         cls.url = cls.src.es_endpoint + '/' + cls.src.index
         requests.delete(cls.url, auth=cls.src.awsauth)
 

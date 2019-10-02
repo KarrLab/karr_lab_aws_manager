@@ -11,8 +11,9 @@ class TestConfig(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.credentialsFile = config.credentialsFile()
-        cls.establishSession = config.establishSession()
+        cls.credentialsFile = config.credentialsFile(credential_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config')
+        cls.establishSession = config.establishSession(credential_path='~/.wc/third_party/aws_credentials', 
+                config_path='~/.wc/third_party/aws_config', profile_name='test')
         cls.cache_dir = tempfile.mkdtemp()
 
     @classmethod
@@ -27,7 +28,9 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(self.establishSession.access_key, 'TESTKEYID')
 
     def test_es_config(self):
-        establishES = config.establishES(profile_name='karrlab-zl', service_name='es')
+        establishES = config.establishES(credential_path='~/.wc/third_party/aws_credentials', 
+                config_path='~/.wc/third_party/aws_config', profile_name='karrlab-zl',
+                elastic_path='~/.wc/third_party/elasticsearch.ini', service_name='es')
         self.assertEqual(establishES.client.list_domain_names()['ResponseMetadata']['HTTPStatusCode'], 200)
         self.assertTrue(os.path.exists(os.path.expanduser(establishES.es_config)))
         self.assertTrue('datanator-elasticsearch' in establishES.es_endpoint)

@@ -8,8 +8,8 @@ from requests_aws4auth import AWS4Auth
 
 class EsUtil:
 
-    def __init__(self, profile_name='karrlab-zl', credential_path='~/.wc/third_party/aws_credentials',
-                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
+    def __init__(self, profile_name=None, credential_path=None,
+                config_path=None, elastic_path=None,
                 cache_dir=None, service_name='es', max_entries=float('inf'), verbose=False):
         ''' 
             Args:
@@ -20,7 +20,7 @@ class EsUtil:
                 cache_dir (:obj: `str`): temp directory to store json for bulk upload
                 service_name (:obj: `str`): aws service to be used
         '''
-        session = config.establishES(config_path=config_path, profile_name=profile_name,
+        session = config.establishES(config_path=config_path, profile_name=profile_name, credential_path=credential_path,
                                     elastic_path=elastic_path, service_name=service_name)
         self.verbose = verbose
         self.max_entries = max_entries

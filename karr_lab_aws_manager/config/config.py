@@ -6,7 +6,7 @@ from configparser import ConfigParser
 
 class credentialsFile:
     
-    def __init__(self, credential_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config'):
+    def __init__(self, credential_path=None, config_path=None):
         ''' Establish environment variables' paths
         '''
         self.credential_path = credential_path
@@ -17,8 +17,7 @@ class credentialsFile:
 
 class establishSession(credentialsFile):
     
-    def __init__(self, credential_path='~/.wc/third_party/aws_credentials', 
-                config_path='~/.wc/third_party/aws_config', profile_name='test'):
+    def __init__(self, credential_path=None, config_path=None, profile_name=None):
         super().__init__(credential_path=credential_path, config_path=config_path)
         os.environ['AWS_SHARED_CREDENTIALS_FILE'] = self.AWS_SHARED_CREDENTIALS_FILE
         os.environ['AWS_CONFIG_FILE'] = self.AWS_CONFIG_FILE
@@ -29,9 +28,8 @@ class establishSession(credentialsFile):
 
 class establishES(establishSession):
 
-    def __init__(self, credential_path='~/.wc/third_party/aws_credentials', 
-                config_path='~/.wc/third_party/aws_config', profile_name='test',
-                elastic_path='~/.wc/third_party/elasticsearch.ini', service_name='es'):
+    def __init__(self, credential_path=None, config_path=None, profile_name=None,
+                elastic_path=None, service_name='es'):
         super().__init__(credential_path=credential_path, config_path=config_path,
                         profile_name=profile_name)
         self.client = self.session.client(service_name)
