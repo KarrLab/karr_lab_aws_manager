@@ -33,9 +33,9 @@ class establishES(establishSession):
         super().__init__(credential_path=credential_path, config_path=config_path,
                         profile_name=profile_name)
         self.client = self.session.client(service_name)
-        self.es_config = str(Path(elastic_path))
+        self.es_config = str(Path(elastic_path).expanduser())
         config = ConfigParser()
-        config.read(os.path.expanduser(self.es_config))
+        config.read(self.es_config)
         self.es_endpoint = config['elasticsearch-endpoint']['address']
         self.region = self.session.region_name
 
