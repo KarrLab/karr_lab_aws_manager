@@ -11,7 +11,6 @@ class TestConfig(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.credentialsFile = config.credentialsFile(credential_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config')
         cls.establishSession = config.establishSession(credential_path='~/.wc/third_party/aws_credentials', 
                 config_path='~/.wc/third_party/aws_config', profile_name='test')
         cls.cache_dir = tempfile.mkdtemp()
@@ -21,8 +20,19 @@ class TestConfig(unittest.TestCase):
         shutil.rmtree(cls.cache_dir)
 
     def test_file_config(self):
-        self.assertEqual(self.credentialsFile.AWS_SHARED_CREDENTIALS_FILE, str(Path('~/.wc/third_party/aws_credentials').expanduser()))
-        self.assertEqual(self.credentialsFile.AWS_CONFIG_FILE, str(Path('~/.wc/third_party/aws_config').expanduser()))
+        os.environ['AWS_ACCESS_KEY_ID'] = 'abc'
+        os.environ['AWS_PROFILE'] = 'profile'
+        os.environ['AWS_SECRET_ACCESS_KEY'] = 'def'
+        os.environ['AWS_DEFAULT_REGION'] = 'region'
+        credentialsFile = config.credentialsFile()
+        del os.environ['AWS_ACCESS_KEY_ID']
+        del os.environ['AWS_PROFILE']
+        del os.environ['AWS_SECRET_ACCESS_KEY']
+        del os.environ['AWS_DEFAULT_REGION']
+        credentialsFile = config.credentialsFile(credential_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config',
+                                                            profile_name='test')
+        self.assertEqual(credentialsFile.AWS_SHARED_CREDENTIALS_FILE, str(Path('~/.wc/third_party/aws_credentials').expanduser()))
+        self.assertEqual(credentialsFile.AWS_CONFIG_FILE, str(Path('~/.wc/third_party/aws_config').expanduser()))
 
     def test_session_config(self):
         self.assertEqual(self.establishSession.access_key, 'TESTKEYID')
