@@ -1,4 +1,4 @@
-from datanator_query_python.config import config as config_mongo
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 from karr_lab_aws_manager.config import config
 import requests
 import json
@@ -6,7 +6,7 @@ import math
 from requests_aws4auth import AWS4Auth
 
 
-class EsUtil:
+class EsUtil(config.establishES):
 
     def __init__(self, profile_name=None, credential_path=None,
                 config_path=None, elastic_path=None,
@@ -20,16 +20,33 @@ class EsUtil:
                 cache_dir (:obj: `str`): temp directory to store json for bulk upload
                 service_name (:obj: `str`): aws service to be used
         '''
-        session = config.establishES(config_path=config_path, profile_name=profile_name, credential_path=credential_path,
-                                    elastic_path=elastic_path, service_name=service_name)
+        super().__init__(config_path=config_path, profile_name=profile_name, credential_path=credential_path,
+                        elastic_path=elastic_path, service_name=service_name)
         self.verbose = verbose
         self.max_entries = max_entries
         self.cache_dir = cache_dir
-        self.client = session.client
-        self.es_endpoint = session.es_endpoint
-        self.awsauth = AWS4Auth(session.access_key, session.secret_key,
-                           session.region, service_name)
 
+    def _build_es(self, suffix=None):
+        ''' build es query object
+            Args:
+                suffix (:obj: `str`): string trailing es endpoint
+            Returns:
+                es (:obj: `Elasticsearch`): Elasticsearch object
+        '''
+        if suffix is None:
+            uri = self.es_endpoint.split('https://')[1]
+        else:
+            uri = self.es_endpoint.split('https://')[1] + suffix 
+        
+        es = Elasticsearch(
+            hosts = [{'host': uri, 'port': 443}],
+            http_auth = self.awsauth,
+            use_ssl = True,
+            verify_certs = True,
+            connection_class = RequestsHttpConnection
+        )
+        return es
+    
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading
             e.g. { "index": { "_index" : "index", "_id" : "id" } }

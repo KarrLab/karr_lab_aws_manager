@@ -1,6 +1,7 @@
 import unittest
 from karr_lab_aws_manager.elasticsearch import util
 from datanator_query_python.config import config
+import json
 import tempfile
 import shutil
 import requests
@@ -22,6 +23,10 @@ class TestMongoToES(unittest.TestCase):
         shutil.rmtree(cls.cache_dir)
         requests.delete(cls.url, auth=cls.src.awsauth)
 
+    def test_build_es(self):
+        result_0 = self.src._build_es()
+        self.assertTrue(hasattr(result_0, 'msearch_template'))
+    
     def test_connection(self):
         result = self.src.client.list_domain_names()
         self.assertEqual(result['ResponseMetadata']['HTTPStatusCode'], 200)

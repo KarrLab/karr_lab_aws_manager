@@ -78,7 +78,7 @@ class QuiltUtil:
             else:
                 self.package.set(d, s, meta=m)
 
-    def push_to_remote(self, package, package_name, destination=None, message=None):
+    def push_to_remote(self, package, package_name, destination=None, message=None) -> str:
         ''' Push local package to remote registry
             Args:
                 package (:obj: `quilt3.Package()`): quilt pacakge
