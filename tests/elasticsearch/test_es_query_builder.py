@@ -15,9 +15,6 @@ class TestQuery(unittest.TestCase):
         cls.src = query_builder.QueryBuilder(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 cache_dir=cls.cache_dir, service_name='es', max_entries=float('inf'), verbose=True)
-        cls.es_manager = es_util.EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
-                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
-                cache_dir=cls.cache_dir, service_name='es', max_entries=float('inf'), verbose=True)
 
     @classmethod
     def tearDownClass(cls):
