@@ -8,28 +8,31 @@ from requests_aws4auth import AWS4Auth
 class credentialsFile:
     
     def __init__(self, credential_path=None, config_path=None, profile_name=None):
-        ''' Establish environment variables' paths
+        ''' Establish environment variables for boto3 authentication
         '''
         if profile_name is None:
             profile_name = 'test'
-        if os.getenv('AWS_ACCESS_KEY_ID') is None:
+        if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
             self.AWS_SHARED_CREDENTIALS_FILE = str(Path(credential_path).expanduser())
             self.AWS_CONFIG_FILE = str(Path(config_path).expanduser())
             os.environ['AWS_SHARED_CREDENTIALS_FILE'] = self.AWS_SHARED_CREDENTIALS_FILE
             os.environ['AWS_CONFIG_FILE'] = self.AWS_CONFIG_FILE
-            credentials = ConfigParser()
-            credentials.read(self.AWS_SHARED_CREDENTIALS_FILE)
+            self.credentials = ConfigParser()
+            self.credentials.read(self.AWS_SHARED_CREDENTIALS_FILE)
             config = ConfigParser()
             config.read(self.AWS_CONFIG_FILE)
             os.environ['AWS_PROFILE'] = profile_name
-            os.environ['AWS_ACCESS_KEY_ID'] = credentials[profile_name]['aws_access_key_id']
-            os.environ['AWS_SECRET_ACCESS_KEY'] = credentials[profile_name]['aws_secret_access_key']
+            os.environ['AWS_ACCESS_KEY_ID'] = self.credentials[profile_name]['aws_access_key_id']
+            os.environ['AWS_SECRET_ACCESS_KEY'] = self.credentials[profile_name]['aws_secret_access_key']
             os.environ['AWS_DEFAULT_REGION'] = config['profile ' + profile_name]['region']
         else:
-            os.environ['AWS_PROFILE'] = profile_name
-            os.environ['AWS_ACCESS_KEY_ID'] = os.getenv('AWS_ACCESS_KEY_ID')
-            os.environ['AWS_SECRET_ACCESS_KEY'] = os.getenv('AWS_SECRET_ACCESS_KEY')
-            os.environ['AWS_DEFAULT_REGION'] = os.getenv('AWS_DEFAULT_REGION')         
+            os.environ['AWS_PROFILE'] = os.getenv(
+                profile_name.upper() + '_AWS_PROFILE')
+            os.environ['AWS_ACCESS_KEY_ID'] = os.getenv(profile_name.upper() + '_AWS_ACCESS_KEY_ID')
+            os.environ['AWS_SECRET_ACCESS_KEY'] = os.getenv(
+                profile_name.upper() + '_AWS_SECRET_ACCESS_KEY')
+            os.environ['AWS_DEFAULT_REGION'] = os.getenv(
+                profile_name.upper() + '_AWS_DEFAULT_REGION')
 
 
 class establishSession(credentialsFile):
@@ -66,3 +69,14 @@ class establishS3(establishSession):
                         service_name=service_name)
         self.resource = self.session.resource(service_name)
         self.client = self.resource.meta.client
+
+
+class establishQuilt(credentialsFile):
+
+    def __init__(self, credential_path=None, config_path=None, profile_name=None):
+        super().__init__(credential_path=credential_path, config_path=config_path, 
+                        profile_name=profile_name)
+        if profile_name is None:
+            profile_name = 'quilt-s3'
+        if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
+            os.environ['EXPIRY_TIME'] = self.credentials[profile_name]['expiry_time']

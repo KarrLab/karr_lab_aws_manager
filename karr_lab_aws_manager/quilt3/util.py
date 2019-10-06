@@ -2,16 +2,17 @@ import quilt3
 from karr_lab_aws_manager.config import config
 from karr_lab_aws_manager.s3 import util as s3_util
 import json
+import os
 from configparser import ConfigParser
 from pathlib import Path, PurePath
 import tempfile
 from boto3.s3.transfer import TransferConfig
 
 
-class QuiltUtil:
+class QuiltUtil(config.establishQuilt):
 
     def __init__(self, base_path=None, profile_name=None, default_remote_registry=None,
-                aws_path=None, cache_dir=None):
+                aws_path=None, cache_dir=None, config_path=None):
         ''' Handle Quilt authentication file creation without having to use quilt3.login()
             Args:
                 aws_path (:obj: `str`): directory in which aws credentials file resides
@@ -19,24 +20,25 @@ class QuiltUtil:
                 profile_name (:obj: `str`): AWS credentials profile name for quilt
                 default_remote_registry (:obj: `str`): default remote registry to store quilt package
                 cache_dir (:obj: `str`): default directory to store data
+                config_path (:obj: `str`): directory in which aws config file resides
         '''
+        super().__init__(credential_path=aws_path, config_path=config_path, profile_name=profile_name)
         self.cache_dir = cache_dir
         self.profile_name = profile_name
-        base_path_obj = Path(base_path)
-        aws_path_obj = Path(aws_path)
+        base_path_obj = Path(self.cache_dir)
+        aws_path_obj = Path(aws_path).parent
         quilt3.session.AUTH_PATH = base_path_obj / 'auth.json'
         quilt3.session.CREDENTIALS_PATH = base_path_obj / 'credentials.json'
         quilt3.session.AUTH_PATH.touch()
-        self.auth_path = quilt3.session.AUTH_PATH
         self.quilt_credentials_path = quilt3.session.CREDENTIALS_PATH
 
-        self.aws_credentials_path = aws_path_obj / 'aws_credentials'
-        config = ConfigParser()
-        config.read(self.aws_credentials_path.expanduser())
-        dic = {'access_key': config[profile_name]['aws_access_key_id'],
-               'secret_key': config[profile_name]['aws_secret_access_key'],
+        self.aws_credentials_path = Path(aws_path) 
+
+        dic = {'access_key': os.getenv('AWS_ACCESS_KEY_ID'),
+               'secret_key': os.getenv('AWS_SECRET_ACCESS_KEY'),
                'token': None,
-               'expiry_time': config[profile_name]['expiry_time']}
+               'expiry_time': os.getenv('EXPIRY_TIME')}
+        print(dic)
         with open(str(self.quilt_credentials_path), 'w') as f:
             json.dump(dic, f)
         quilt3.config(default_remote_registry=default_remote_registry)
