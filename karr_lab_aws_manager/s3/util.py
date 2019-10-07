@@ -12,10 +12,11 @@ class S3Util(config.establishS3):
 
     def download_dir(self, dist, bucket, local='/tmp'):
         ''' Download all contents in a directory in s3 bucket iteratively
+        
             Args:
-                dist (:obj: `str`): s3 directory key representation
-                bucket (:obj: `str`): name of bucket
-                local (:obj: `str`): local directory to store downloaded content
+                dist (:obj:`str`): s3 directory key representation
+                bucket (:obj:`str`): name of bucket
+                local (:obj:`str`): local directory to store downloaded content
         '''
         paginator = self.client.get_paginator('list_objects')
         for result in paginator.paginate(Bucket=bucket, Delimiter='/', Prefix=dist):

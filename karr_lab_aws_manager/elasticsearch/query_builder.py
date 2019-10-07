@@ -9,14 +9,14 @@ class QueryBuilder(util.EsUtil):
                 cache_dir=None, service_name='es', max_entries=float('inf'), verbose=False):
         ''' 
             Args:
-                profile_name (:obj: `str`): AWS profile to use for authentication
-                credential_path (:obj: `str`): directory for aws credentials file
-                config_path (:obj: `str`): directory for aws config file
-                elastic_path (:obj: `str`): directory for file containing aws elasticsearch service variables
-                cache_dir (:obj: `str`): temp directory to store json for bulk upload
-                service_name (:obj: `str`): aws service to be used
-                max_entries (:obj: `int`): maximum number of operations
-                verbose (:obj: `bool`): verbose messages
+                profile_name (:obj:`str`): AWS profile to use for authentication
+                credential_path (:obj:`str`): directory for aws credentials file
+                config_path (:obj:`str`): directory for aws config file
+                elastic_path (:obj:`str`): directory for file containing aws elasticsearch service variables
+                cache_dir (:obj:`str`): temp directory to store json for bulk upload
+                service_name (:obj:`str`): aws service to be used
+                max_entries (:obj:`int`): maximum number of operations
+                verbose (:obj:`bool`): verbose messages
         '''
         super().__init__(profile_name=profile_name, credential_path=credential_path,
                 config_path=config_path, elastic_path=elastic_path,
@@ -26,12 +26,14 @@ class QueryBuilder(util.EsUtil):
     def _set_options(self, query, option_key, option_value):
         ''' Builds query options for elasticsearch
             (https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/full-text/#options)
+
             Args:
-                query_operation (:obj: `dict`): query body
-                option_key (:obj: `str`): option name
-                option_value (:obj: `str`) option value
+                query_operation (:obj:`dict`): query body
+                option_key (:obj:`str`): option name
+                option_value (:obj:`str`) option value
+
             Returns:
-                query (:obj: `dict`): new query body
+                query (:obj:`dict`): new query body
         '''
         query_operation = list(query['query'].keys())[0]
         query['query'][query_operation][option_key] = option_value
@@ -40,10 +42,12 @@ class QueryBuilder(util.EsUtil):
     def build_simple_query_string_body(self, query_message, **kwargs):
         ''' Builds query portion of the body in request body search
             (https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/full-text/#simple-query-string)
+
             Args:
-                query_message (:obj: `str`): string to be queried for.
+                query_message (:obj:`str`): string to be queried for.
+                
             Returns:
-                query (:obj: `dict`): request body
+                query (:obj:`dict`): request body
         '''
         query_operation = 'simple_query_string'
         query = {'query': {query_operation: {'query': query_message }}}

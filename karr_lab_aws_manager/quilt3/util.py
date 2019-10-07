@@ -14,13 +14,14 @@ class QuiltUtil(config.establishQuilt):
     def __init__(self, base_path=None, profile_name=None, default_remote_registry=None,
                 aws_path=None, cache_dir=None, config_path=None):
         ''' Handle Quilt authentication file creation without having to use quilt3.login()
+
             Args:
-                aws_path (:obj: `str`): directory in which aws credentials file resides
-                base_path (:obj: `str`): directory to store quilt3 credentials generated from aws credentials
-                profile_name (:obj: `str`): AWS credentials profile name for quilt
-                default_remote_registry (:obj: `str`): default remote registry to store quilt package
-                cache_dir (:obj: `str`): default directory to store data
-                config_path (:obj: `str`): directory in which aws config file resides
+                aws_path (:obj:`str`): directory in which aws credentials file resides
+                base_path (:obj:`str`): directory to store quilt3 credentials generated from aws credentials
+                profile_name (:obj:`str`): AWS credentials profile name for quilt
+                default_remote_registry (:obj:`str`): default remote registry to store quilt package
+                cache_dir (:obj:`str`): default directory to store data
+                config_path (:obj:`str`): directory in which aws config file resides
         '''
         super().__init__(credential_path=aws_path, config_path=config_path, profile_name=profile_name)
         self.cache_dir = cache_dir
@@ -46,23 +47,25 @@ class QuiltUtil(config.establishQuilt):
 
     def bucket_obj(self, bucket_uri):
         ''' Create quilt3 bucket object
+
             Args:
-                bucket_uri (:obj: `str`): quilt s3 bucket address
+                bucket_uri (:obj:`str`): quilt s3 bucket address
             Return:
-                (:obj: `quilt3.Bucket`): quilt3 bucket object
+                (:obj:`quilt3.Bucket`): quilt3 bucket object
         '''
         return quilt3.Bucket(bucket_uri)
 
     def add_to_package(self, destination=None, source=None, meta=None):
-        ''' Specifically used for uploading datanator package to
-            quilt3
+        ''' Specifically used for uploading datanator package to quilt3
+        
             Args:
-                source (:obj: `list` of :obj: `str`): sources to be added to package,
+                source (:obj:`list` of :obj:`str`): sources to be added to package,
                                                       directories must end with '/'
-                destination (:obj: `list` of :obj: `str` ): package(s) to be manipulated,
+                destination (:obj:`list` of :obj:`str` ): package(s) to be manipulated,
                                                             directories must end with '/'
-                meta (:obj: `list` of :obj: `dict`): package meta
-            Return:
+                meta (:obj:`list` of :obj:`dict`): package meta
+
+            Returns:
 
         '''
         length = len(destination)
@@ -82,11 +85,12 @@ class QuiltUtil(config.establishQuilt):
 
     def push_to_remote(self, package, package_name, destination=None, message=None) -> str:
         ''' Push local package to remote registry
+
             Args:
-                package (:obj: `quilt3.Package()`): quilt pacakge
-                package_name (:obj: `str`): name of package in "username/packagename" format
-                destination (:obj: `str`): file landing destination in remote registry
-                message (:obj: `str`): commit message
+                package (:obj:`quilt3.Package()`): quilt pacakge
+                package_name (:obj:`str`): name of package in "username/packagename" format
+                destination (:obj:`str`): file landing destination in remote registry
+                message (:obj:`str`): commit message
         '''
         try:
             package.push(package_name, dest=destination, message=message)
@@ -96,18 +100,18 @@ class QuiltUtil(config.establishQuilt):
     def build_from_external_bucket(self, package_dest, bucket_name, key, file_dir,
                                   bucket_credential=None, profile_name=None, meta=None,
                                   bucket_config=None, max_concurrency=10):
-        ''' Build package with source from external (non-quilt)
-            s3 buckets
+        ''' Build package with source from external (non-quilt) s3 buckets
+        
             Args:
-                package_dest (:obj: `str`): package(s) to be manipulated
-                bucket_name (:obj: `str`): s3 bucket name
-                key (:obj: `str`): the name of the key to download from
-                file_dir (:obj: `str`): the path to the file to download to
-                bucket_credential (:obj: `str`): directory in which credential for s3 bucket is stored
-                profile_name (:obj: `str`): profile to be used for authentication
-                meta (:obj: `dict`): meta information for package file
-                bucket_credential (:obj: `str`): directory in which config for s3 bucket is stored
-                max_concurrency (:obj: `int`): threads used for downloading
+                package_dest (:obj:`str`): package(s) to be manipulated
+                bucket_name (:obj:`str`): s3 bucket name
+                key (:obj:`str`): the name of the key to download from
+                file_dir (:obj:`str`): the path to the file to download to
+                bucket_credential (:obj:`str`): directory in which credential for s3 bucket is stored
+                profile_name (:obj:`str`): profile to be used for authentication
+                meta (:obj:`dict`): meta information for package file
+                bucket_credential (:obj:`str`): directory in which config for s3 bucket is stored
+                max_concurrency (:obj:`int`): threads used for downloading
         '''
         settings = TransferConfig(max_concurrency=max_concurrency)
         if bucket_credential is None:

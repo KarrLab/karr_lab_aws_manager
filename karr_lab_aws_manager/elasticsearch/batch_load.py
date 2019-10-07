@@ -12,12 +12,12 @@ class MongoToES(util.EsUtil):
         ''' Migrate data from mongodb to elasticsearch service on AWS
 
             Args:
-                profile_name (:obj: `str`): AWS profile to use for authentication
-                credential_path (:obj: `str`): directory for aws credentials file
-                config_path (:obj: `str`): directory for aws config file
-                elastic_path (:obj: `str`): directory for file containing aws elasticsearch service variables
-                cache_dir (:obj: `str`): temp directory to store json for bulk upload
-                service_name (:obj: `str`): aws service to be used
+                profile_name (:obj:`str`): AWS profile to use for authentication
+                credential_path (:obj:`str`): directory for aws credentials file
+                config_path (:obj:`str`): directory for aws config file
+                elastic_path (:obj:`str`): directory for file containing aws elasticsearch service variables
+                cache_dir (:obj:`str`): temp directory to store json for bulk upload
+                service_name (:obj:`str`): aws service to be used
         '''
         super().__init__(profile_name=profile_name, credential_path=credential_path,
                 config_path=config_path, elastic_path=elastic_path,
@@ -31,18 +31,19 @@ class MongoToES(util.EsUtil):
         ''' Acquire documents from protein collection in datanator
 
             Args:
-                server (:obj: `str`): mongodb ip address
-                db (:obj: `str`): database name
-                username (:obj: `str`): username for mongodb login
-                password (:obj: `str`): password for mongodb login
-                verbose (:obj: `bool`): display verbose messages
-                readPreference (:obj: `str`): mongodb readpreference
-                authSource (:obj: `str`): database login info is authenticating against
-                projection (:obj: `str`): mongodb query projection
-                query (:obj: `str`): mongodb query filter
-            Return:
-                docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
-                count (:obj: `int`): number of documents returned
+                server (:obj:`str`): mongodb ip address
+                db (:obj:`str`): database name
+                username (:obj:`str`): username for mongodb login
+                password (:obj:`str`): password for mongodb login
+                verbose (:obj:`bool`): display verbose messages
+                readPreference (:obj:`str`): mongodb readpreference
+                authSource (:obj:`str`): database login info is authenticating against
+                projection (:obj:`str`): mongodb query projection
+                query (:obj:`str`): mongodb query filter
+
+            Returns:
+                docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                count (:obj:`int`): number of documents returned
         '''
         protein_manager = query_protein.QueryProtein(server=server, database=db,
                  verbose=verbose, username=username, authSource=authSource,
@@ -57,20 +58,21 @@ class MongoToES(util.EsUtil):
         ''' Acquire documents from metabolite (ecmdb/ymdb) collection in datanator
 
             Args:
-                server (:obj: `str`): mongodb ip address
-                db (:obj: `str`): database name
-                username (:obj: `str`): username for mongodb login
-                password (:obj: `str`): password for mongodb login
-                verbose (:obj: `bool`): display verbose messages
-                readPreference (:obj: `str`): mongodb readpreference
-                authSource (:obj: `str`): database login info is authenticating against
-                projection (:obj: `str`): mongodb query projection
-                query (:obj: `str`): mongodb query filter
-            Return:
-                ecmdb_docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection
-                ecmdb_count (:obj: `int`): number of documents returned in ecmdb
-                ymdb_docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection
-                ymdb_count (:obj: `int`): number of documents returned in ymdb
+                server (:obj:`str`): mongodb ip address
+                db (:obj:`str`): database name
+                username (:obj:`str`): username for mongodb login
+                password (:obj:`str`): password for mongodb login
+                verbose (:obj:`bool`): display verbose messages
+                readPreference (:obj:`str`): mongodb readpreference
+                authSource (:obj:`str`): database login info is authenticating against
+                projection (:obj:`str`): mongodb query projection
+                query (:obj:`str`): mongodb query filter
+
+            Returns:
+                ecmdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection
+                ecmdb_count (:obj:`int`): number of documents returned in ecmdb
+                ymdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection
+                ymdb_count (:obj:`int`): number of documents returned in ymdb
         '''
         metabolite_manager = query_metabolites.QueryMetabolites( 
                  MongoDB=server, db=db,
@@ -90,18 +92,19 @@ class MongoToES(util.EsUtil):
         ''' Acquire documents from metabolites_meta collection in datanator
 
             Args:
-                server (:obj: `str`): mongodb ip address
-                db (:obj: `str`): database name
-                username (:obj: `str`): username for mongodb login
-                password (:obj: `str`): password for mongodb login
-                verbose (:obj: `bool`): display verbose messages
-                readPreference (:obj: `str`): mongodb readpreference
-                authSource (:obj: `str`): database login info is authenticating against
-                projection (:obj: `str`): mongodb query projection
-                query (:obj: `str`): mongodb query filter
-            Return:
-                docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
-                count (:obj: `int`): number of documents returned
+                server (:obj:`str`): mongodb ip address
+                db (:obj:`str`): database name
+                username (:obj:`str`): username for mongodb login
+                password (:obj:`str`): password for mongodb login
+                verbose (:obj:`bool`): display verbose messages
+                readPreference (:obj:`str`): mongodb readpreference
+                authSource (:obj:`str`): database login info is authenticating against
+                projection (:obj:`str`): mongodb query projection
+                query (:obj:`str`): mongodb query filter
+
+            Returns:
+                docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                count (:obj:`int`): number of documents returned
         '''
         manager = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=server, db=db,
                  collection_str='metabolites_meta', verbose=verbose, username=username,

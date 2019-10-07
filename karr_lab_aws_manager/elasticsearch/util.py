@@ -13,12 +13,12 @@ class EsUtil(config.establishES):
                 cache_dir=None, service_name='es', max_entries=float('inf'), verbose=False):
         ''' 
             Args:
-                profile_name (:obj: `str`): AWS profile to use for authentication
-                credential_path (:obj: `str`): directory for aws credentials file
-                config_path (:obj: `str`): directory for aws config file
-                elastic_path (:obj: `str`): directory for file containing aws elasticsearch service variables
-                cache_dir (:obj: `str`): temp directory to store json for bulk upload
-                service_name (:obj: `str`): aws service to be used
+                profile_name (:obj:`str`): AWS profile to use for authentication
+                credential_path (:obj:`str`): directory for aws credentials file
+                config_path (:obj:`str`): directory for aws config file
+                elastic_path (:obj:`str`): directory for file containing aws elasticsearch service variables
+                cache_dir (:obj:`str`): temp directory to store json for bulk upload
+                service_name (:obj:`str`): aws service to be used
         '''
         super().__init__(config_path=config_path, profile_name=profile_name, credential_path=credential_path,
                         elastic_path=elastic_path, service_name=service_name)
@@ -28,10 +28,12 @@ class EsUtil(config.establishES):
 
     def _build_es(self, suffix=None):
         ''' build es query object
+
             Args:
-                suffix (:obj: `str`): string trailing es endpoint
+                suffix (:obj:`str`): string trailing es endpoint
+
             Returns:
-                es (:obj: `Elasticsearch`): Elasticsearch object
+                es (:obj:`Elasticsearch`): Elasticsearch object
         '''
         if suffix is None:
             uri = self.es_endpoint.split('https://')[1]
@@ -50,20 +52,23 @@ class EsUtil(config.establishES):
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading
             e.g. { "index": { "_index" : "index", "_id" : "id" } }
+
             Args:
-                index (:obj: `str`): name of index on ES
-                _id (:obj: `str`):  unique id for document
+                index (:obj:`str`): name of index on ES
+                _id (:obj:`str`):  unique id for document
+
             Returns:
-                action_and_metadata (:obj: `dict`): metadata that conforms to ES bulk load requirement
+                action_and_metadata (:obj:`dict`): metadata that conforms to ES bulk load requirement
         '''
         action_and_metadata = {'index': { "_index" : index, "_id" : _id }}
         return action_and_metadata
 
     def delete_index(self, index, _id=None):
         ''' Delete elasticsearch index
+
             Args:
-                index (:obj: `str`): name of index in es
-                _id (:obj: `int`): id of the doc in index (optional)
+                index (:obj:`str`): name of index in es
+                _id (:obj:`int`): id of the doc in index (optional)
         '''
         if _id is None:
             url = self.es_endpoint + '/' + index
@@ -75,14 +80,16 @@ class EsUtil(config.establishES):
     def data_to_es_bulk(self, count, cursor, index, bulk_size=100, _id='uniprot_id',
                         headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
+
             Args:
-                count (:obj: `int`): cursor size
-                cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
-                bulk_size (:obj: `int`): number of documents in one PUT
-                headers (:obj: `dict`): http header
-                _id (:obj: `str`): unique id for identification
+                count (:obj:`int`): cursor size
+                cursor (:obj:`pymongo.Cursor` or :obj:`iter`): documents to be PUT to es
+                bulk_size (:obj:`int`): number of documents in one PUT
+                headers (:obj:`dict`): http header
+                _id (:obj:`str`): unique id for identification
+
             Return:
-                status_code (:obj: `set`): set of status codes
+                status_code (:obj:`set`): set of status codes
         '''
         url = self.es_endpoint + '/_bulk'
         status_code = {201}
@@ -121,13 +128,15 @@ class EsUtil(config.establishES):
     def data_to_es_single(self, count, cursor, index, _id='uniprot_id',
                           headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
+
             Args:
-                count (:obj: `int`): cursor size
-                cursor (:obj: `pymongo.Cursor` or :obj: `iter`): documents to be PUT to es
-                es_endpoint (:obj: `str`): elasticsearch endpoint
-                headers (:obj: `dict`): http header information
+                count (:obj:`int`): cursor size
+                cursor (:obj:`pymongo.Cursor` or :obj:`iter`): documents to be PUT to es
+                es_endpoint (:obj:`str`): elasticsearch endpoint
+                headers (:obj:`dict`): http header information
+                
             Return:
-                status_code (:obj: `set`): set of status codes
+                status_code (:obj:`set`): set of status codes
         '''
         url_root = self.es_endpoint + '/' + index + '/_doc/'
         status_code = {201}
