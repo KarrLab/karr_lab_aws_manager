@@ -36,6 +36,10 @@ class TestMongoToES(unittest.TestCase):
         _id = '1'
         result = self.src.make_action_and_metadata(self.index, _id)
         self.assertEqual(result, {'index': { "_index" : self.index, "_id" : _id }})
+
+    def test_unassigned_reason(self):
+        result = self.src.unassigned_reason()
+        self.assertEqual(result.status_code, 200)
     
     def test_data_to_es_bulk(self):
         cursor = [{'number': 0, 'mock_key_bulk': 'mock_value_0', 'uniprot_id': 'P0'},
@@ -44,6 +48,8 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
         result = self.src.data_to_es_bulk(len(cursor), cursor, self.index, bulk_size=1)
         self.assertTrue(result <= {201, 200})
+        result = self.src.index_settings(self.index, 0)
+        self.assertEqual(result.text, '{"acknowledged":true}')
 
     def test_data_to_es_single(self):
         cursor = [{'mock_key': 'mock_value_0', 'another_mock_key': 'another_value_0', 'uniprot_id': 'P0'},

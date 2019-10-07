@@ -26,6 +26,38 @@ class EsUtil(config.establishES):
         self.max_entries = max_entries
         self.cache_dir = cache_dir
 
+    def unassigned_reason(self):
+        """sends http request to get why a shard is unassigned
+
+        Returns:
+            (HTTPResponse): http response    
+        """
+        uri = self.es_endpoint + '/' + '_cat/shards?h=index,shard,prirep,state,unassigned.reason'
+        r = requests.get(uri, auth=self.awsauth)
+        return r
+    
+    def index_settings(self, index, number_of_replicas, number_of_shards=1, 
+                      headers={ "Content-Type": "application/json" }):
+        """Setting index's shard and replica number in es cluster
+        
+        Args:
+            index (str): name of index to be set
+            number_of_replicas (int): number of replica shards to be used for the index
+            number_of_shards (int): number of primary shards contained in the es cluster
+            headers (dict): http request content header description
+
+        Returns:
+            (HTTPResponse): http response
+        """
+        url = self.es_endpoint + '/' + index + '/_settings'
+        if number_of_shards == 1:
+            body = {"index": {"number_of_replicas": number_of_replicas}}
+        else:
+            body = {"index": {"number_of_replicas": number_of_replicas,
+                            "number_of_shards": number_of_shards}}
+        r = requests.put(url, auth=self.awsauth, data=json.dumps(body), headers=headers)
+        return r
+
     def _build_es(self, suffix=None):
         ''' build es query object
 
@@ -83,10 +115,11 @@ class EsUtil(config.establishES):
 
             Args:
                 count (:obj:`int`): cursor size
-                cursor (:obj:`pymongo.Cursor` or :obj:`iter`): documents to be PUT to es
+                cursor (:obj:`pymongo.Cursor` or :obj:`iter`): documents to be PUT/POST to es
+                index (:obj:`str`): name of unique key to be used as index for es
                 bulk_size (:obj:`int`): number of documents in one PUT
                 headers (:obj:`dict`): http header
-                _id (:obj:`str`): unique id for identification
+                _id (:obj:`str`): key in mogno collection for identification
 
             Returns:
                 (:obj:`set`): set of status codes
@@ -95,8 +128,8 @@ class EsUtil(config.establishES):
         status_code = {201}
         bulk_file = ''
         tot_rounds = math.ceil(count/bulk_size)
-        def gen_bulk_file(_id, bulk_file):
-            action_and_metadata = self.make_action_and_metadata(index, _id)
+        def gen_bulk_file(_iid, bulk_file):
+            action_and_metadata = self.make_action_and_metadata(index, _iid)
             bulk_file += json.dumps(action_and_metadata) + '\n'
             bulk_file += json.dumps(doc) + '\n'  
             return bulk_file          
@@ -109,18 +142,12 @@ class EsUtil(config.establishES):
                
             if i == count - 1:  # last entry
                 bulk_file = gen_bulk_file(doc[_id], bulk_file)
-                # print('commit last entry')
-                # print(bulk_file)
                 r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
                 status_code.add(r.status_code)
                 return status_code
             elif i % bulk_size != 0 or i == 0: #  bulk_size*(n-1) + 1 --> bulk_size*n - 1
                 bulk_file = gen_bulk_file(doc[_id], bulk_file)
-                # print('building in between')
-                # print(bulk_file)
             else:               # bulk_size * n
-                # print('commit endpoint')
-                # print(bulk_file)
                 r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
                 status_code.add(r.status_code)
                 bulk_file = gen_bulk_file(doc[_id], '') # reset bulk_file
@@ -132,8 +159,10 @@ class EsUtil(config.establishES):
             Args:
                 count (:obj:`int`): cursor size
                 cursor (:obj:`pymongo.Cursor` or :obj:`iter`): documents to be PUT to es
+                index (:obj:`str`): name of unique key to be used as index for es
                 es_endpoint (:obj:`str`): elasticsearch endpoint
                 headers (:obj:`dict`): http header information
+                _id (:obj:`str`): key in mongo collection for identification
                 
             Returns:
                 (:obj:`set`): set of status codes

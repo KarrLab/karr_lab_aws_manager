@@ -44,7 +44,7 @@ class MongoToES(util.EsUtil):
             Returns:
                 (:obj:`tuple`): tuple containing:
 
-                    docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                    docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection;
                     count (:obj:`int`): number of documents returned
         '''
         protein_manager = query_protein.QueryProtein(server=server, database=db,
@@ -73,9 +73,9 @@ class MongoToES(util.EsUtil):
             Returns:
                 (:obj:`tuple`): tuple containing:
 
-                    ecmdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection
-                    ecmdb_count (:obj:`int`): number of documents returned in ecmdb
-                    ymdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection
+                    ecmdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection;
+                    ecmdb_count (:obj:`int`): number of documents returned in ecmdb;
+                    ymdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection;
                     ymdb_count (:obj:`int`): number of documents returned in ymdb
         '''
         metabolite_manager = query_metabolites.QueryMetabolites( 
@@ -109,7 +109,7 @@ class MongoToES(util.EsUtil):
             Returns:
                 (:obj:`tuple`): tuple containing:
 
-                    docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                    docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection;
                     count (:obj:`int`): number of documents returned
         '''
         manager = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=server, db=db,
@@ -121,31 +121,35 @@ class MongoToES(util.EsUtil):
         return docs, count
 
 
-# def main():
-#     conf = config_mongo.Config()
-#     username = conf.USERNAME
-#     password = conf.PASSWORD
-#     server = conf.SERVER
-#     authDB = conf.AUTHDB
-#     db = 'datanator'
-#     manager = MongoToES(verbose=True, profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
-#                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini')
+def main():
+    conf = config_mongo.Config()
+    username = conf.USERNAME
+    password = conf.PASSWORD
+    server = conf.SERVER
+    authDB = conf.AUTHDB
+    db = 'datanator'
+    manager = MongoToES(verbose=True, profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
+                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini')
     
-#     # data from "protein" collection
-#     count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
-#     status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id') 
+    # # data from "protein" collection
+    # count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+    # status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id')
+    manager.index_settings('protein', 0) 
     
-#     # data from "ecmdb" and "ymdb" collection
-#     ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count = manager.data_from_mongo_metabolite(server, 
-#                                                     db, username, password, authSource=authDB)
-#     status_code_0 = manager.data_to_es_bulk(ecmdb_count, ecmdb_docs, 'ecmdb', _id='m2m_id')
-#     status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')
+    # # data from "ecmdb" and "ymdb" collection
+    # ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count = manager.data_from_mongo_metabolite(server, 
+    #                                                 db, username, password, authSource=authDB)
+    # status_code_0 = manager.data_to_es_bulk(ecmdb_count, ecmdb_docs, 'ecmdb', _id='m2m_id')
+    # status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')
+    manager.index_settings('ecmdb', 0) 
+    manager.index_settings('ymdb', 0) 
 
-#     # data from "metabolites_meta" collection
-#     docs, count = manager.data_from_mongo_metabolites_meta(server, db, username, password, authSource=authDB)
-#     status_code = manager.data_to_es_bulk(count, docs, 'metabolites_meta', _id='InChI_Key')
+    # data from "metabolites_meta" collection
+    docs, count = manager.data_from_mongo_metabolites_meta(server, db, username, password, authSource=authDB)
+    status_code = manager.data_to_es_bulk(count, docs, 'metabolites_meta', _id='InChI_Key')
+    manager.index_settings('metabolites_meta', 0)
 
-#     print(status_code)   
+    print(status_code)   
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
