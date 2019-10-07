@@ -33,7 +33,7 @@ class QueryBuilder(util.EsUtil):
                 option_value (:obj:`str`) option value
 
             Returns:
-                query (:obj:`dict`): new query body
+                (:obj:`dict`): new query body
         '''
         query_operation = list(query['query'].keys())[0]
         query['query'][query_operation][option_key] = option_value
@@ -47,7 +47,7 @@ class QueryBuilder(util.EsUtil):
                 query_message (:obj:`str`): string to be queried for.
                 
             Returns:
-                query (:obj:`dict`): request body
+                (:obj:`dict`): query request body
         '''
         query_operation = 'simple_query_string'
         query = {'query': {query_operation: {'query': query_message }}}

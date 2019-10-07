@@ -50,7 +50,8 @@ class QuiltUtil(config.establishQuilt):
 
             Args:
                 bucket_uri (:obj:`str`): quilt s3 bucket address
-            Return:
+
+            Returns:
                 (:obj:`quilt3.Bucket`): quilt3 bucket object
         '''
         return quilt3.Bucket(bucket_uri)
@@ -101,7 +102,7 @@ class QuiltUtil(config.establishQuilt):
                                   bucket_credential=None, profile_name=None, meta=None,
                                   bucket_config=None, max_concurrency=10):
         ''' Build package with source from external (non-quilt) s3 buckets
-        
+
             Args:
                 package_dest (:obj:`str`): package(s) to be manipulated
                 bucket_name (:obj:`str`): s3 bucket name

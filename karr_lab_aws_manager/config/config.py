@@ -8,8 +8,7 @@ from requests_aws4auth import AWS4Auth
 class credentialsFile:
     
     def __init__(self, credential_path=None, config_path=None, profile_name=None):
-        ''' Establish environment variables for boto3 authentication
-        '''
+        ''' Establish environment variables for boto3 authentication '''
         if profile_name is None:
             profile_name = 'test'
         if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
@@ -36,6 +35,7 @@ class credentialsFile:
 
 
 class establishSession(credentialsFile):
+    ''' Establish AWS service sessions '''
     
     def __init__(self, credential_path=None, config_path=None, profile_name=None,
                 service_name=None):
@@ -50,6 +50,7 @@ class establishSession(credentialsFile):
 
 
 class establishES(establishSession):
+    ''' Establish AWS elasticsearch session '''
 
     def __init__(self, credential_path=None, config_path=None, profile_name=None,
                 elastic_path=None, service_name='es'):
@@ -63,6 +64,7 @@ class establishES(establishSession):
 
 
 class establishS3(establishSession):
+    ''' Establish connection with AWS S3 '''
 
     def __init__(self, credential_path=None, config_path=None, profile_name=None, service_name='s3'):
         super().__init__(credential_path=credential_path, config_path=config_path, profile_name=profile_name,
@@ -72,6 +74,7 @@ class establishS3(establishSession):
 
 
 class establishQuilt(credentialsFile):
+    ''' Create authentication files for quilt3 based on aws_credentials '''
 
     def __init__(self, credential_path=None, config_path=None, profile_name=None):
         super().__init__(credential_path=credential_path, config_path=config_path, 

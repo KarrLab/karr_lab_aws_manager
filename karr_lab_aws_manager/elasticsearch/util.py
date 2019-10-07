@@ -33,7 +33,7 @@ class EsUtil(config.establishES):
                 suffix (:obj:`str`): string trailing es endpoint
 
             Returns:
-                es (:obj:`Elasticsearch`): Elasticsearch object
+                (:obj:`Elasticsearch`): Elasticsearch object
         '''
         if suffix is None:
             uri = self.es_endpoint.split('https://')[1]
@@ -58,7 +58,7 @@ class EsUtil(config.establishES):
                 _id (:obj:`str`):  unique id for document
 
             Returns:
-                action_and_metadata (:obj:`dict`): metadata that conforms to ES bulk load requirement
+                (:obj:`dict`): metadata that conforms to ES bulk load requirement
         '''
         action_and_metadata = {'index': { "_index" : index, "_id" : _id }}
         return action_and_metadata
@@ -88,8 +88,8 @@ class EsUtil(config.establishES):
                 headers (:obj:`dict`): http header
                 _id (:obj:`str`): unique id for identification
 
-            Return:
-                status_code (:obj:`set`): set of status codes
+            Returns:
+                (:obj:`set`): set of status codes
         '''
         url = self.es_endpoint + '/_bulk'
         status_code = {201}
@@ -135,8 +135,8 @@ class EsUtil(config.establishES):
                 es_endpoint (:obj:`str`): elasticsearch endpoint
                 headers (:obj:`dict`): http header information
                 
-            Return:
-                status_code (:obj:`set`): set of status codes
+            Returns:
+                (:obj:`set`): set of status codes
         '''
         url_root = self.es_endpoint + '/' + index + '/_doc/'
         status_code = {201}

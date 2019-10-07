@@ -42,8 +42,10 @@ class MongoToES(util.EsUtil):
                 query (:obj:`str`): mongodb query filter
 
             Returns:
-                docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
-                count (:obj:`int`): number of documents returned
+                (:obj:`tuple`): tuple containing:
+
+                    docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                    count (:obj:`int`): number of documents returned
         '''
         protein_manager = query_protein.QueryProtein(server=server, database=db,
                  verbose=verbose, username=username, authSource=authSource,
@@ -69,10 +71,12 @@ class MongoToES(util.EsUtil):
                 query (:obj:`str`): mongodb query filter
 
             Returns:
-                ecmdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection
-                ecmdb_count (:obj:`int`): number of documents returned in ecmdb
-                ymdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection
-                ymdb_count (:obj:`int`): number of documents returned in ymdb
+                (:obj:`tuple`): tuple containing:
+
+                    ecmdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection
+                    ecmdb_count (:obj:`int`): number of documents returned in ecmdb
+                    ymdb_docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection
+                    ymdb_count (:obj:`int`): number of documents returned in ymdb
         '''
         metabolite_manager = query_metabolites.QueryMetabolites( 
                  MongoDB=server, db=db,
@@ -103,8 +107,10 @@ class MongoToES(util.EsUtil):
                 query (:obj:`str`): mongodb query filter
 
             Returns:
-                docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
-                count (:obj:`int`): number of documents returned
+                (:obj:`tuple`): tuple containing:
+
+                    docs (:obj:`pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                    count (:obj:`int`): number of documents returned
         '''
         manager = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=server, db=db,
                  collection_str='metabolites_meta', verbose=verbose, username=username,
