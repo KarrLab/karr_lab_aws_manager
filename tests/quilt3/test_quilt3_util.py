@@ -15,7 +15,7 @@ class TestQuiltUtil(unittest.TestCase):
         cls.cache_dir_source = tempfile.mkdtemp()
         cls.credentials_cache = tempfile.mkdtemp()
         cls.destination = cls.cache_dir_source.split('/')[2]
-        cls.src = util.QuiltUtil(aws_path='~/.wc/third_party',
+        cls.src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config',
                                  base_path=cls.credentials_cache, profile_name='quilt-s3',
                                  default_remote_registry='s3://karrlab', cache_dir=cls.credentials_cache)
         cls.file = 'test_util.txt'

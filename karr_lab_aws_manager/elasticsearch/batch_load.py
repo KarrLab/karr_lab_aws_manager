@@ -1,4 +1,4 @@
-from datanator_query_python.query import query_protein
+from datanator_query_python.query import query_protein, query_metabolites
 from datanator_query_python.config import config as config_mongo
 from karr_lab_aws_manager.elasticsearch import util
 
@@ -48,21 +48,60 @@ class MongoToES(util.EsUtil):
         count = protein_manager.collection.count_documents(query)
         return (count, docs)
 
+    def data_from_mongo_metabolite(self, server, db, username, password, verbose=False,
+                                readPreference='nearest', authSource='admin', projection={'_id': 0},
+                                query={}):
+        ''' Acquire documents from metabolite (ecmdb/ymdb) collection in datanator
+            Args:
+                server (:obj: `str`): mongodb ip address
+                db (:obj: `str`): database name
+                username (:obj: `str`): username for mongodb login
+                password (:obj: `str`): password for mongodb login
+                verbose (:obj: `bool`): display verbose messages
+                readPreference (:obj: `str`): mongodb readpreference
+                authSource (:obj: `str`): database login info is authenticating against
+                projection (:obj: `str`): mongodb query projection
+                query (:obj: `str`): mongodb query filter
+            Return:
+                ecmdb_docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in ecmdb collection
+                ecmdb_count (:obj: `int`): number of documents returned in ecmdb
+                ymdb_docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in ymdb collection
+                ymdb_count (:obj: `int`): number of documents returned in ymdb
+        '''
+        metabolite_manager = query_metabolites.QueryMetabolites( 
+                 MongoDB=server, db=db,
+                 verbose=verbose, username=username,
+                 password=password, readPreference=readPreference,
+                 authSource=authSource)
+        ecmdb_docs = metabolite_manager.collection_ecmdb.find(filter=query,projection=projection)
+        ecmdb_count = metabolite_manager.collection_ecmdb.count_documents(query)
+        ymdb_docs = metabolite_manager.collection_ymdb.find(filter=query, projection=projection)
+        ymdb_count = metabolite_manager.collection_ymdb.count_documents(query)
 
-def main():
-    conf = config_mongo.Config()
-    username = conf.USERNAME
-    password = conf.PASSWORD
-    server = conf.SERVER
-    authDB = conf.AUTHDB
-    db = 'datanator'
-    manager = MongoToES(verbose=True)
-    
-    # data from "protein" collection
-    count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
-    status_code = manager.data_to_es_bulk(count, docs) 
-    
-    print(status_code)   
+        return ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count
 
-if __name__ == "__main__":
-    main()
+
+# def main():
+#     conf = config_mongo.Config()
+#     username = conf.USERNAME
+#     password = conf.PASSWORD
+#     server = conf.SERVER
+#     authDB = conf.AUTHDB
+#     db = 'datanator'
+#     manager = MongoToES(verbose=True, profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
+#                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini')
+    
+#     # data from "protein" collection
+#     # count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+#     # status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id') 
+    
+#     # data from "ecmdb" and "ymdb" collection
+#     ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count = manager.data_from_mongo_metabolite(server, 
+#                                                     db, username, password, authSource=authDB)
+#     status_code_0 = manager.data_to_es_bulk(ecmdb_count, ecmdb_docs, 'ecmdb', _id='m2m_id')
+#     status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')  
+
+#     print(status_code_0, status_code_1)   
+
+# if __name__ == "__main__":
+#     main()

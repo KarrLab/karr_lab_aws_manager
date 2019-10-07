@@ -15,6 +15,12 @@ class TestMongoToES(unittest.TestCase):
                 cache_dir=cls.cache_dir, service_name='es', index='test', max_entries=float('inf'), verbose=True)
         cls.url = cls.src.es_endpoint + '/' + cls.src.index
         requests.delete(cls.url, auth=cls.src.awsauth)
+        conf = config.Config()
+        cls.username = conf.USERNAME
+        cls.password = conf.PASSWORD
+        cls.server = conf.SERVER
+        cls.authDB = conf.AUTHDB
+        cls.db = 'datanator'
 
     @classmethod
     def tearDownClass(cls):
@@ -27,11 +33,12 @@ class TestMongoToES(unittest.TestCase):
         self.assertTrue('datanator-elasticsearch' in self.src.es_endpoint)
 
     def test_data_from_mongo(self):
-        conf = config.Config()
-        username = conf.USERNAME
-        password = conf.PASSWORD
-        server = conf.SERVER
-        authDB = conf.AUTHDB
-        db = 'datanator'
-        count, _ = self.src.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+        count, _ = self.src.data_from_mongo_protein(self.server, self.db, self.username, 
+                                                    self.password, authSource=self.authDB)
         self.assertTrue(count >= 1000)
+
+    def test_data_from_metabolite(self):
+        _, count_0, _, count_1 = self.src.data_from_mongo_metabolite(self.server, self.db, self.username, 
+                                            self.password, authSource=self.authDB)
+        self.assertTrue(count_0 >= 1000)
+        self.assertTrue(count_1 >= 1000)
