@@ -1,4 +1,5 @@
-from datanator_query_python.query import query_protein, query_metabolites
+from datanator_query_python.query import (query_protein, query_metabolites, 
+                                         query_metabolites_meta)
 from datanator_query_python.config import config as config_mongo
 from karr_lab_aws_manager.elasticsearch import util
 
@@ -8,7 +9,8 @@ class MongoToES(util.EsUtil):
     def __init__(self, profile_name=None, credential_path=None,
                 config_path=None, elastic_path=None,
                 cache_dir=None, service_name='es', index=None, max_entries=float('inf'), verbose=False):
-        ''' 
+        ''' Migrate data from mongodb to elasticsearch service on AWS
+
             Args:
                 profile_name (:obj: `str`): AWS profile to use for authentication
                 credential_path (:obj: `str`): directory for aws credentials file
@@ -27,6 +29,7 @@ class MongoToES(util.EsUtil):
                                 readPreference='nearest', authSource='admin', projection={'_id': 0},
                                 query={}):
         ''' Acquire documents from protein collection in datanator
+
             Args:
                 server (:obj: `str`): mongodb ip address
                 db (:obj: `str`): database name
@@ -52,6 +55,7 @@ class MongoToES(util.EsUtil):
                                 readPreference='nearest', authSource='admin', projection={'_id': 0},
                                 query={}):
         ''' Acquire documents from metabolite (ecmdb/ymdb) collection in datanator
+
             Args:
                 server (:obj: `str`): mongodb ip address
                 db (:obj: `str`): database name
@@ -80,6 +84,33 @@ class MongoToES(util.EsUtil):
 
         return ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count
 
+    def data_from_mongo_metabolites_meta(self, server, db, username, password, verbose=False,
+                                readPreference='nearest', authSource='admin', projection={'_id': 0},
+                                query={}):
+        ''' Acquire documents from metabolites_meta collection in datanator
+
+            Args:
+                server (:obj: `str`): mongodb ip address
+                db (:obj: `str`): database name
+                username (:obj: `str`): username for mongodb login
+                password (:obj: `str`): password for mongodb login
+                verbose (:obj: `bool`): display verbose messages
+                readPreference (:obj: `str`): mongodb readpreference
+                authSource (:obj: `str`): database login info is authenticating against
+                projection (:obj: `str`): mongodb query projection
+                query (:obj: `str`): mongodb query filter
+            Return:
+                docs (:obj: `pymongo.Cursor`): pymongo cursor object that points to all documents in protein collection
+                count (:obj: `int`): number of documents returned
+        '''
+        manager = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=server, db=db,
+                 collection_str='metabolites_meta', verbose=verbose, username=username,
+                 password=password, authSource=authSource, readPreference=readPreference)
+        docs = manager.collection.find(filter=query, projection=projection)
+        count = manager.collection.count_documents(query)
+
+        return docs, count
+
 
 # def main():
 #     conf = config_mongo.Config()
@@ -92,16 +123,20 @@ class MongoToES(util.EsUtil):
 #                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini')
     
 #     # data from "protein" collection
-#     # count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
-#     # status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id') 
+#     count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+#     status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id') 
     
 #     # data from "ecmdb" and "ymdb" collection
 #     ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count = manager.data_from_mongo_metabolite(server, 
 #                                                     db, username, password, authSource=authDB)
 #     status_code_0 = manager.data_to_es_bulk(ecmdb_count, ecmdb_docs, 'ecmdb', _id='m2m_id')
-#     status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')  
+#     status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')
 
-#     print(status_code_0, status_code_1)   
+#     # data from "metabolites_meta" collection
+#     docs, count = manager.data_from_mongo_metabolites_meta(server, db, username, password, authSource=authDB)
+#     status_code = manager.data_to_es_bulk(count, docs, 'metabolites_meta', _id='InChI_Key')
+
+#     print(status_code)   
 
 # if __name__ == "__main__":
 #     main()

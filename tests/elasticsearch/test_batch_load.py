@@ -42,3 +42,8 @@ class TestMongoToES(unittest.TestCase):
                                             self.password, authSource=self.authDB)
         self.assertTrue(count_0 >= 1000)
         self.assertTrue(count_1 >= 1000)
+
+    def test_data_from_metabolites_meta(self):
+        _, count = self.src.data_from_mongo_metabolites_meta(self.server, self.db, self.username,
+                                                            self.password, authSource=self.authDB)
+        self.assertTrue(count >= 5000)
