@@ -116,40 +116,49 @@ class MongoToES(util.EsUtil):
                  collection_str='metabolites_meta', verbose=verbose, username=username,
                  password=password, authSource=authSource, readPreference=readPreference)
         docs = manager.collection.find(filter=query, projection=projection)
-        count = manager.collection.count_documents(query)
+        for doc in docs:
+            if doc['InChI_Key'] is None:
+                continue    
+            sim_com = doc['similar_compounds']
+            tmp = []
+            for compound in sim_com:
+                inchi_key = list(compound.keys())[0]
+                score = list(compound.values())[0]
+                new_dic = {'inchikey': inchi_key, 'similarity_score': score}
+                tmp.append(new_dic)
+            doc['similar_compounds'] = tmp
+            yield doc     
 
-        return docs, count
 
-
-def main():
-    conf = config_mongo.Config()
-    username = conf.USERNAME
-    password = conf.PASSWORD
-    server = conf.SERVER
-    authDB = conf.AUTHDB
-    db = 'datanator'
-    manager = MongoToES(verbose=True, profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
-                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini')
+# def main():
+#     conf = config_mongo.Config()
+#     username = conf.USERNAME
+#     password = conf.PASSWORD
+#     server = conf.SERVER
+#     authDB = conf.AUTHDB
+#     db = 'datanator'
+#     manager = MongoToES(verbose=True, profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
+#                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini')
     
-    # # data from "protein" collection
-    # count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
-    # status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id')
-    manager.index_settings('protein', 0) 
+#     # # data from "protein" collection
+#     # count, docs = manager.data_from_mongo_protein(server, db, username, password, authSource=authDB)
+#     # status_code = manager.data_to_es_bulk(count, docs, 'protein', _id='uniprot_id')
+#     # manager.index_settings('protein', 0) 
     
-    # # data from "ecmdb" and "ymdb" collection
-    # ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count = manager.data_from_mongo_metabolite(server, 
-    #                                                 db, username, password, authSource=authDB)
-    # status_code_0 = manager.data_to_es_bulk(ecmdb_count, ecmdb_docs, 'ecmdb', _id='m2m_id')
-    # status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')
-    manager.index_settings('ecmdb', 0) 
-    manager.index_settings('ymdb', 0) 
+#     # # data from "ecmdb" and "ymdb" collection
+#     # ecmdb_docs, ecmdb_count, ymdb_docs, ymdb_count = manager.data_from_mongo_metabolite(server, 
+#     #                                                 db, username, password, authSource=authDB)
+#     # status_code_0 = manager.data_to_es_bulk(ecmdb_count, ecmdb_docs, 'ecmdb', _id='m2m_id')
+#     # status_code_1 = manager.data_to_es_bulk(ymdb_count, ymdb_docs, 'ymdb', _id='ymdb_id')
+#     # manager.index_settings('ecmdb', 0) 
+#     # manager.index_settings('ymdb', 0) 
 
-    # data from "metabolites_meta" collection
-    docs, count = manager.data_from_mongo_metabolites_meta(server, db, username, password, authSource=authDB)
-    status_code = manager.data_to_es_bulk(count, docs, 'metabolites_meta', _id='InChI_Key')
-    manager.index_settings('metabolites_meta', 0)
+#     # data from "metabolites_meta" collection
+#     docs = manager.data_from_mongo_metabolites_meta(server, db, username, password, authSource=authDB)
+#     status_code = manager.data_to_es_single(5225, docs, 'metabolites_meta', _id='InChI_Key')
+#     manager.index_settings('metabolites_meta', 0)
 
-    print(status_code)   
+#     print(status_code)   
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
