@@ -82,4 +82,4 @@ class establishQuilt(credentialsFile):
         if profile_name is None:
             profile_name = 'quilt-karrlab'
         if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
-            os.environ['EXPIRY_TIME'] = self.credentials[profile_name]['expiry_time']
+            os.environ['EXPIRY_TIME'] = '2029-09-30T20:32:07+00:00'

@@ -64,6 +64,16 @@ class TestQuiltUtil(unittest.TestCase):
 
         quilt3.delete_package(package_name, registry=remote_registry_1)
 
+    def test_push_to_remote_custom_s3(self):
+        src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config',
+                            base_path=self.credentials_cache, profile_name='s3-admin',
+                            default_remote_registry='s3://karr-lab-aws-manager-test', cache_dir=self.credentials_cache)
+        remote_registry_1 = 's3://karr-lab-aws-manager-test'
+        package = self.src.package
+        package_name = 'karrlab/__test_quilt_util'
+        message = 'test package upload to custom s3'
+        r = src.push_to_remote(package, package_name, destination=remote_registry_1, message=message)
+
     def test_build_from_external_bucket(self):
         key_0 = 'LICENSE'
         key_1 = 'quilt/docs/'

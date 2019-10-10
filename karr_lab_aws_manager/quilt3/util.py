@@ -27,7 +27,6 @@ class QuiltUtil(config.establishQuilt):
         self.cache_dir = cache_dir
         self.profile_name = profile_name
         base_path_obj = Path(self.cache_dir)
-        aws_path_obj = Path(aws_path).parent
         quilt3.session.AUTH_PATH = base_path_obj / 'auth.json'
         quilt3.session.CREDENTIALS_PATH = base_path_obj / 'credentials.json'
         quilt3.session.AUTH_PATH.touch()
@@ -39,7 +38,6 @@ class QuiltUtil(config.establishQuilt):
                'secret_key': os.getenv('AWS_SECRET_ACCESS_KEY'),
                'token': None,
                'expiry_time': os.getenv('EXPIRY_TIME')}
-        print(dic)
         with open(str(self.quilt_credentials_path), 'w') as f:
             json.dump(dic, f)
         quilt3.config(default_remote_registry=default_remote_registry)
