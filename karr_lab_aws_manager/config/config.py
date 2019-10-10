@@ -80,6 +80,6 @@ class establishQuilt(credentialsFile):
         super().__init__(credential_path=credential_path, config_path=config_path, 
                         profile_name=profile_name)
         if profile_name is None:
-            profile_name = 'quilt-s3'
+            profile_name = 'quilt-karrlab'
         if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
             os.environ['EXPIRY_TIME'] = self.credentials[profile_name]['expiry_time']

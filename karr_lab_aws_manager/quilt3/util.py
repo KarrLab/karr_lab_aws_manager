@@ -150,7 +150,7 @@ class QuiltUtil(config.establishQuilt):
 
 # def main():
 #     manager = QuiltUtil(aws_path='.wc/third_party',
-#                         base_path=tempfile.mkdtemp(), profile_name='quilt-s3',
+#                         base_path=tempfile.mkdtemp(), profile_name='quilt-karrlab',
 #                         default_remote_registry='s3://karrlab')
 #     p = manager.package
 #     p = p.set_dir('/', 's3://karrlab/datanator/')
