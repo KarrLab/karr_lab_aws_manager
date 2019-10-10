@@ -84,17 +84,18 @@ class QuiltUtil(config.establishQuilt):
             else:
                 self.package.set(d, s, meta=m)
 
-    def push_to_remote(self, package, package_name, destination=None, message=None) -> str:
+    def push_to_remote(self, package, package_name, registry=None, destination=None, message=None) -> str:
         ''' Push local package to remote registry
 
             Args:
                 package (:obj:`quilt3.Package()`): quilt pacakge
                 package_name (:obj:`str`): name of package in "username/packagename" format
+                registry (:obj:`str`): S3 URI where package should be pushed
                 destination (:obj:`str`): file landing destination in remote registry
                 message (:obj:`str`): commit message
         '''
         try:
-            package.push(package_name, dest=destination, message=message)
+            package.push(package_name, registry=registry, dest=destination, message=message)
         except quilt3.util.QuiltException as e:
             return str(e)
 

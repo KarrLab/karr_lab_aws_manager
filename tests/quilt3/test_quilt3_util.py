@@ -52,14 +52,17 @@ class TestQuiltUtil(unittest.TestCase):
     @unittest.skip('reduce upload frequency')
     def test_push_to_remote(self):
         package = self.src.package
-        package_name = 'karrlab/quiltutil'
+        package_name = 'karrlab/__test_quilt_util'
         remote_registry_0 = 's3://somenonsense'
-        remote_registry_1 = 's3://karrlab/test'
+        remote_registry_1 = 's3://karrlab'
         message = 'test package upload'
         r_0 = self.src.push_to_remote(package, package_name, destination=remote_registry_0, message=message)
         s_0 = "Invalid package destination path 's3://somenonsense'. 'dest', if set, must be a path in the 's3://karrlab' package registry specified by 'registry'."
         self.assertEqual(r_0, s_0)
-        self.src.push_to_remote(package, package_name, destination=remote_registry_1, message=message)
+        self.src.push_to_remote(package, package_name, registry=remote_registry_1, 
+            destination=None, message=message)
+
+        quilt3.delete_package(package_name, registry=remote_registry_1)
 
     def test_build_from_external_bucket(self):
         key_0 = 'LICENSE'
