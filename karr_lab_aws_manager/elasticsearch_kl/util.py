@@ -111,7 +111,7 @@ class EsUtil(config.establishES):
         r = requests.delete(url, auth=self.awsauth)
         return r.status_code
 
-    def data_to_es_bulk(self, count, cursor, index, bulk_size=100, _id='uniprot_id',
+    def data_to_es_bulk(self, cursor, index='test', count=None, bulk_size=100, _id='uniprot_id',
                         headers={ "Content-Type": "application/json" }):
         ''' Load data into elasticsearch service
 
@@ -126,11 +126,6 @@ class EsUtil(config.establishES):
             Returns:
                 (:obj:`set`): set of status codes
         '''
-        url = self.es_endpoint + '/_bulk'
-        status_code = {201}
-        bulk_file = ''
-        tot_rounds = math.ceil(count/bulk_size)
-
         def gen_bulk_file(_iid, bulk_file):
             action_and_metadata = self.make_action_and_metadata(index, _iid)
             bulk_file += json.dumps(action_and_metadata) + '\n'
@@ -138,15 +133,23 @@ class EsUtil(config.establishES):
             return bulk_file
 
         def mod_cursor(cursor):
-            pathlist = Path(cursor).glob('**/*.json')
+            pathlist = Path(cursor).expanduser().glob('**/*.json')
             for path in pathlist:
                 with path.open() as f:
                     yield json.load(f)     
 
+        if count is None:
+            count = len(list(Path(cursor).expanduser().glob('**/*.json')))
+
         if isinstance(cursor, str):
             cursor = mod_cursor(cursor)
         else:
-            cursor = cursor                 
+            cursor = cursor         
+
+        url = self.es_endpoint + '/_bulk'
+        status_code = {201}
+        bulk_file = ''
+        tot_rounds = math.ceil(count/bulk_size)        
 
         for i, doc in enumerate(cursor):
             if i == self.max_entries:

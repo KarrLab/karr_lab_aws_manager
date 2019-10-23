@@ -49,7 +49,7 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 1, 'mock_key_bulk': 'mock_value_1', 'uniprot_id': 'P1'},
                   {'number': 2, 'mock_key_bulk': 'mock_value_2', 'uniprot_id': 'P2'},
                   {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
-        result = self.src.data_to_es_bulk(len(cursor), cursor, self.index, bulk_size=1)
+        result = self.src.data_to_es_bulk(cursor, index=self.index, bulk_size=1)
         self.assertTrue(result <= {201, 200})
         result = self.src.index_settings(self.index, 0)
         self.assertEqual(result.text, '{"acknowledged":true}')
@@ -57,7 +57,7 @@ class TestMongoToES(unittest.TestCase):
             p = Path(self.cache_dir).joinpath(dic['uniprot_id'] + '.json')
             with p.open(mode='w+') as f:
                 json.dump(dic, f)
-        result = self.src.data_to_es_bulk(len(cursor), self.cache_dir, self.index, bulk_size=1)
+        result = self.src.data_to_es_bulk(self.cache_dir, index=self.index, count=4, bulk_size=1)
         self.assertTrue(result <= {201, 200})
 
     # @unittest.skip('reduce debugging confusion')
@@ -73,7 +73,7 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 1, 'mock_key_bulk': 'mock_value_1', 'uniprot_id': 'P1'},
                   {'number': 2, 'mock_key_bulk': 'mock_value_2', 'uniprot_id': 'P2'},
                   {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
-        _ = self.src.data_to_es_bulk(len(cursor), cursor, self.index, bulk_size=1)
+        _ = self.src.data_to_es_bulk(cursor, index=self.index, bulk_size=1)
         _id_0 = None
         _id_1 = 'P1'
         status_0 = self.src.delete_index(self.index, _id_1)

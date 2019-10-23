@@ -66,6 +66,47 @@ class Command3WithArgumentsController(cement.Controller):
         args.opt_arg_4
 
 
+class EsDeleteIdx(cement.Controller):
+    """Karrlab elasticsearch delete index. """
+
+    class Meta:
+        label = 'es-del-idx'
+        description = 'Delete index in ES'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['index'], dict(
+                type=str, help='Name of index in es')),
+            (['--id'], dict(
+                type=str, help='ID of the doc in index')),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='es-poweruser',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            ),
+            (['--elastic_path', '-ep'], dict(
+                type=str, default='~/.wc/third_party/elasticsearch.ini',
+                help='Directory for file containing aws elasticsearch service variables'))
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Delete elasticsearch index
+
+            Args:
+                index (:obj:`str`): name of index in es
+                _id (:obj:`int`): id of the doc in index (optional)
+        '''
+        args = self.app.pargs
+        es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
+                       config_path=args.config_path, elastic_path=args.elastic_path).delete_index(args.index, _id=args.id)  
+
+
 class EsBulkUpload(cement.Controller):
     """ Karrlab elasticsearch bulk upload cli """
 
@@ -75,14 +116,14 @@ class EsBulkUpload(cement.Controller):
         stacked_on = 'base'
         stacked_type = 'nested'
         arguments = [
-            (['count'], dict(
-                type=int, help='Cursor/file size')),
             (['cursor'], dict(
                 type=str, help='Pymongo.Cursor/directory to files to be loaded')),
-            (['index'], dict(
-                type=str, help='Name of unique key to be used as index for es')),
             (['id'], dict(
-                type=str, help='Key in mogno collection for identification')),
+                type=str, help='Key in mongo collection for identification')),
+            (['--count'], dict(
+                type=int, default=None, help='Cursor/file size')),
+            (['--index'], dict(
+                type=str, default='test', help='Name of index in es')),
             (['--bulk_size', '-bz'], dict(
                 type=int, default=100, help='Name of unique key to be used as index for es')),
             (['--profile_name', '-pn'], dict(
@@ -119,9 +160,9 @@ class EsBulkUpload(cement.Controller):
                 (:obj:`set`): set of status codes
         '''
         args = self.app.pargs
-        es_util.EsUtil(profile_name=args.pn, credential_path=args.cr,
-                       config_path=args.cp, elastic_path=args.ep).data_to_es_bulk(
-                       args.count, args.cursor, args.index, bulk_size=args.bulk_size,
+        es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
+                       config_path=args.config_path, elastic_path=args.elastic_path).data_to_es_bulk(
+                       args.cursor, index=args.index, count=args.count, bulk_size=args.bulk_size,
                        _id=args.id, headers=args.headers)
 
 
@@ -133,7 +174,8 @@ class App(cement.App):
         handlers = [
             BaseController,
             Command3WithArgumentsController,
-            EsBulkUpload
+            EsBulkUpload,
+            EsDeleteIdx
         ]
 
 def main():
