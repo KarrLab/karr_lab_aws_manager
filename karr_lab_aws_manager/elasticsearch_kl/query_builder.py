@@ -1,4 +1,4 @@
-from karr_lab_aws_manager.elasticsearch import util
+from karr_lab_aws_manager.elasticsearch_kl import util
 import requests
 
 

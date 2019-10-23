@@ -1,10 +1,10 @@
 from datanator_query_python.query import (query_protein, query_metabolites, 
                                          query_metabolites_meta)
 from datanator_query_python.config import config as config_mongo
-from karr_lab_aws_manager.elasticsearch import util
+from karr_lab_aws_manager.elasticsearch_kl import util as es_util
 
 
-class MongoToES(util.EsUtil):
+class MongoToES(es_util.EsUtil):
 
     def __init__(self, profile_name=None, credential_path=None,
                 config_path=None, elastic_path=None,

@@ -3,7 +3,9 @@ from karr_lab_aws_manager.config import config
 import requests
 import json
 import math
+from pathlib import Path
 from requests_aws4auth import AWS4Auth
+import re
 
 
 class EsUtil(config.establishES):
@@ -128,11 +130,23 @@ class EsUtil(config.establishES):
         status_code = {201}
         bulk_file = ''
         tot_rounds = math.ceil(count/bulk_size)
+
         def gen_bulk_file(_iid, bulk_file):
             action_and_metadata = self.make_action_and_metadata(index, _iid)
             bulk_file += json.dumps(action_and_metadata) + '\n'
             bulk_file += json.dumps(doc) + '\n'  
-            return bulk_file          
+            return bulk_file
+
+        def mod_cursor(cursor):
+            pathlist = Path(cursor).glob('**/*.json')
+            for path in pathlist:
+                with path.open() as f:
+                    yield json.load(f)     
+
+        if isinstance(cursor, str):
+            cursor = mod_cursor(cursor)
+        else:
+            cursor = cursor                 
 
         for i, doc in enumerate(cursor):
             if i == self.max_entries:

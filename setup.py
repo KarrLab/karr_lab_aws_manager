@@ -6,6 +6,7 @@ except ImportError:
     pip._internal.main(['install', 'pkg_utils'])
     import pkg_utils
 import os
+import sys
 
 name = 'karr_lab_aws_manager'
 dirname = os.path.dirname(__file__)
@@ -43,6 +44,10 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
+            '{} = {}.__main__:main'.format(name, name),
+            '{} = {}.__main__:main'.format(name.replace('_', '-'), name),
+            '{}{:d} = {}.__main__:main'.format(name, sys.version_info[0], name),
+            '{}{:d} = {}.__main__:main'.format(name.replace('_', '-'), sys.version_info[0], name),
         ],
     },
 )

@@ -1,8 +1,8 @@
 import unittest
 import tempfile
 import shutil
-from karr_lab_aws_manager.elasticsearch import query_builder
-from karr_lab_aws_manager.elasticsearch import util as es_util
+from karr_lab_aws_manager.elasticsearch_kl import query_builder
+from karr_lab_aws_manager.elasticsearch_kl import util as es_util
 import requests
 import time
 

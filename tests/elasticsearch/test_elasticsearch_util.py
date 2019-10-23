@@ -1,10 +1,13 @@
 import unittest
-from karr_lab_aws_manager.elasticsearch import util
+from karr_lab_aws_manager.elasticsearch_kl import util
 from datanator_query_python.config import config
+from pathlib import Path
 import json
 import tempfile
 import shutil
 import requests
+import json
+
 
 class TestMongoToES(unittest.TestCase):
 
@@ -50,13 +53,21 @@ class TestMongoToES(unittest.TestCase):
         self.assertTrue(result <= {201, 200})
         result = self.src.index_settings(self.index, 0)
         self.assertEqual(result.text, '{"acknowledged":true}')
+        for dic in cursor:
+            p = Path(self.cache_dir).joinpath(dic['uniprot_id'] + '.json')
+            with p.open(mode='w+') as f:
+                json.dump(dic, f)
+        result = self.src.data_to_es_bulk(len(cursor), self.cache_dir, self.index, bulk_size=1)
+        self.assertTrue(result <= {201, 200})
 
+    # @unittest.skip('reduce debugging confusion')
     def test_data_to_es_single(self):
         cursor = [{'mock_key': 'mock_value_0', 'another_mock_key': 'another_value_0', 'uniprot_id': 'P0'},
                   {'mock_key': 'mock_value_1', 'another_mock_key': 'another_value_0', 'uniprot_id': 'P1'}]
         result = self.src.data_to_es_single(len(cursor), cursor, self.index)
         self.assertTrue(result <= {201, 200})
 
+    # @unittest.skip('reduce debugging confusion')
     def test_delete_index(self):
         cursor = [{'number': 0, 'mock_key_bulk': 'mock_value_0', 'uniprot_id': 'P0'},
                   {'number': 1, 'mock_key_bulk': 'mock_value_1', 'uniprot_id': 'P1'},
