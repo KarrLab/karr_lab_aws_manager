@@ -31,3 +31,13 @@ class S3Util(config.establishS3):
                     Path(dest_pathname.parent).mkdir(parents=True, exist_ok=True)
                     dest_pathname.touch()
                 self.resource.meta.client.download_file(bucket, file.get('Key'), str(dest_pathname))
+
+    def del_dir(self, bucket_name, prefix):
+        """delete 'directory' in s3 bucket
+        
+        Args:
+            bucket_name (:obj:`str`): name of bucket
+            prefix (:obj:`str`): name of 'directory'
+        """
+        bucket = self.resource.Bucket(bucket_name)
+        bucket.objects.filter(Prefix=prefix).delete()

@@ -40,6 +40,7 @@ class QuiltUtil(config.establishQuilt):
                'expiry_time': os.getenv('EXPIRY_TIME')}
         with open(str(self.quilt_credentials_path), 'w') as f:
             json.dump(dic, f)
+        self.default_remote_registry = default_remote_registry
         quilt3.config(default_remote_registry=default_remote_registry)
         self.package = quilt3.Package()
 
@@ -96,6 +97,19 @@ class QuiltUtil(config.establishQuilt):
             package.push(package_name, registry=registry, dest=destination, message=message)
         except quilt3.util.QuiltException as e:
             return str(e)
+
+    def delete_package(self, package_name, registry=None, delete_from_s3=True):
+        """delete a package from Quilt3
+        
+        Args:
+            package_name (:obj:`str`): name of the package.
+            registry (:obj:`str`, optional): the registry from which the package will be removed. Defaults to None.
+            delete_from_s3 (:obj:`bool`): whether to delete the underlying files in s3 bucket
+        """
+        if registry is None:
+            registry = self.default_remote_registry
+        quilt3.delete_package(package_name, registry=registry)
+
 
     def build_from_external_bucket(self, package_dest, bucket_name, key, file_dir,
                                   bucket_credential=None, profile_name=None, meta=None,

@@ -22,3 +22,10 @@ class TestQuiltUtil(unittest.TestCase):
         bucket = 'karr-lab-aws-manager-test'
         self.src.download_dir(dist_0, bucket, local=self.cache_dir_source)
         self.assertTrue(Path(self.cache_dir_source, dist_0, 'Installation.md').exists())
+
+    @unittest.skip('need to write copy function to repeat testing')
+    def test_del_dir(self):
+        bucket = 'karr-lab-aws-manager-test'
+        directory = 'test/imgs'
+        copy_source = {'Bucket': bucket, 'Key': directory}
+        self.src.del_dir(bucket, directory)

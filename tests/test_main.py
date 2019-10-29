@@ -51,7 +51,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(captured.stdout.get_text(), 'command_1 output')
                 self.assertEqual(captured.stderr.get_text(), '')
 
-    def test_command_1(self):
+    def test_command_2(self):
         with capturer.CaptureOutput(merged=False, relay=False) as captured:
             with __main__.App(argv=['cmd2']) as app:
                 # run app
@@ -129,7 +129,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(captured.stdout.get_text(), '')
                 self.assertEqual(captured.stderr.get_text(), '')
 
-    def test_es_del_idx(self):
+    def test_quilt_add2_package(self):
         with capturer.CaptureOutput(merged=False, relay=False) as captured:
             with __main__.App(argv=['quilt-add2-package',
                                     ['test_destination'],
