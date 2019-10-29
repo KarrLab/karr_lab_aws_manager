@@ -1,5 +1,5 @@
 import unittest
-from karr_lab_aws_manager.quilt3 import util
+from karr_lab_aws_manager.quilt3_kl import util
 import tempfile
 import shutil
 import quilt3
@@ -16,7 +16,7 @@ class TestQuiltUtil(unittest.TestCase):
         cls.credentials_cache = tempfile.mkdtemp()
         cls.destination = cls.cache_dir_source.split('/')[2]
         cls.src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config',
-                                 base_path=cls.credentials_cache, profile_name='quilt-karrlab',
+                                 profile_name='quilt-karrlab',
                                  default_remote_registry='s3://karrlab', cache_dir=cls.credentials_cache)
         cls.file = 'test_util.txt'
         cls.test_file = cls.cache_dir_source + cls.file

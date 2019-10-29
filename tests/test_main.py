@@ -80,3 +80,69 @@ class CliTestCase(unittest.TestCase):
                 # test that the CLI produced the correct output
                 self.assertEqual(captured.stdout.get_text(), '')
                 self.assertEqual(captured.stderr.get_text(), '')
+
+    def test_es_bulk_upload(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['es-bulk-upload',
+                                    'cursor_value',
+                                    'id_value']) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertTrue(app.pargs.cursor)
+                self.assertTrue(app.pargs.id)
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
+
+    def test_es_set_idx(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['es-set-idx',
+                                    'test',
+                                    '1']) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.index, 'test')
+                self.assertTrue(app.pargs.replica_count)
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
+
+    def test_es_del_idx(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['es-del-idx',
+                                    'test',
+                                    '--id', 'test_id']) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.index, 'test')
+                self.assertEqual(app.pargs.id, 'test_id')
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
+
+    def test_es_del_idx(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['quilt-add2-package',
+                                    ['test_destination'],
+                                    ['requirements.txt'],
+                                    '--meta', ['{test: test_meta}']]) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.destination, ['test_destination'])
+                self.assertEqual(app.pargs.source, ['requirements.txt'])
+                self.assertEqual(app.pargs.default_remote_registry, 's3://karrlab')
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')

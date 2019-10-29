@@ -11,7 +11,7 @@ from boto3.s3.transfer import TransferConfig
 
 class QuiltUtil(config.establishQuilt):
 
-    def __init__(self, base_path=None, profile_name=None, default_remote_registry=None,
+    def __init__(self, profile_name=None, default_remote_registry=None,
                 aws_path=None, cache_dir=None, config_path=None):
         ''' Handle Quilt authentication file creation without having to use quilt3.login()
 
@@ -105,7 +105,7 @@ class QuiltUtil(config.establishQuilt):
             Args:
                 package_dest (:obj:`str`): package(s) to be manipulated
                 bucket_name (:obj:`str`): s3 bucket name
-                key (:obj:`str`): the name of the key to download from
+                key (:obj:`str`): the name of the key in s3 bucket to download from
                 file_dir (:obj:`str`): the path to the file to download to
                 bucket_credential (:obj:`str`): directory in which credential for s3 bucket is stored
                 profile_name (:obj:`str`): profile to be used for authentication

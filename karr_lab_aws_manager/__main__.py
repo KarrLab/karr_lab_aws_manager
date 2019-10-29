@@ -7,10 +7,11 @@
 """
 
 import cement
+import tempfile
 import karr_lab_aws_manager
 import karr_lab_aws_manager.core
-from karr_lab_aws_manager.config.config import establishES
 from karr_lab_aws_manager.elasticsearch_kl import util as es_util
+from karr_lab_aws_manager.quilt3_kl import util as quilt_util
 
 
 class BaseController(cement.Controller):
@@ -166,6 +167,113 @@ class EsBulkUpload(cement.Controller):
                        _id=args.id, headers=args.headers)
 
 
+class EsSetIdx(cement.Controller):
+    """Karrlab elasticsearch settings for index. """
+
+    class Meta:
+        label = 'es-set-idx'
+        description = 'Index settings in ES'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['index'], dict(
+                type=str, help='Name of index in es')),
+            (['replica_count'], dict(
+                type=int, help='Number of replicas')),
+            (['--shard_count', '-sc'], dict(
+                type=int, default=1,
+                help='Number of primary shards contained in the es cluster')
+            ),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='es-poweruser',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            ),
+            (['--elastic_path', '-ep'], dict(
+                type=str, default='~/.wc/third_party/elasticsearch.ini',
+                help='Directory for file containing aws elasticsearch service variables')),
+            (['--headers'], dict(
+                type=dict, default={ "Content-Type": "application/json" },
+                help='Http header'))
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        """Setting index's shard and replica number in es cluster
+        
+        Args:
+            index (str): name of index to be set
+            number_of_replicas (int): number of replica shards to be used for the index
+            number_of_shards (int): number of primary shards contained in the es cluster
+            headers (dict): http request content header description
+
+        Returns:
+            (HTTPResponse): http response
+        """
+        args = self.app.pargs
+        es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
+                       config_path=args.config_path, elastic_path=args.elastic_path).index_settings(
+                           args.index, args.replica_count, number_of_shards=args.shard_count, headers=args.headers
+                       )
+
+
+class QuiltAddToPackage(cement.Controller):
+    """Karrlab elasticsearch settings for index. """
+
+    class Meta:
+        label = 'quilt-add2-package'
+        description = 'Used for uploading datanator package to quilt3'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['destination'], dict(
+                type=list, help='Sources to be added to package')),
+            (['source'], dict(
+                type=list, help='Package(s) to be manipulated')),
+            (['--meta', '-m'], dict(
+                type=list, default=[],
+                help='Number of primary shards contained in the es cluster')
+            ),
+            (['--default_remote_registry', '-drr'], dict(
+                type=str, default='s3://karrlab',
+                help='AWS profile to use for authentication')),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='quilt-karrlab',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            )
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Specifically used for uploading datanator package to quilt3
+        
+            Args:
+                source (:obj:`list` of :obj:`str`): sources to be added to package,
+                                                      directories must end with '/'
+                destination (:obj:`list` of :obj:`str` ): package(s) to be manipulated,
+                                                            directories must end with '/'
+                meta (:obj:`list` of :obj:`dict`): package meta
+
+            Returns:
+        '''
+        args = self.app.pargs
+        base = tempfile.mkdtemp()
+        quilt_util.QuiltUtil(profile_name=args.profile_name, default_remote_registry=args.default_remote_registry,
+                            aws_path=args.credential_path, cache_dir=base, config_path=args.config_path).add_to_package(
+                            destination=args.destination, source=args.source, meta=args.meta)
+
+
 class App(cement.App):
     """ Command line application """
     class Meta:
@@ -175,7 +283,9 @@ class App(cement.App):
             BaseController,
             Command3WithArgumentsController,
             EsBulkUpload,
-            EsDeleteIdx
+            EsDeleteIdx,
+            EsSetIdx,
+            QuiltAddToPackage
         ]
 
 def main():
