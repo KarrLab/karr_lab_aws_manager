@@ -138,13 +138,13 @@ class EsUtil(config.establishES):
                 with path.open() as f:
                     yield json.load(f)     
 
-        if count is None:
-            count = len(list(Path(cursor).expanduser().glob('**/*.json')))
-
         if isinstance(cursor, str):
-            cursor = mod_cursor(cursor)
+            count = len(list(Path(cursor).expanduser().glob('**/*.json'))) 
+            cursor = mod_cursor(cursor)            
+        elif isinstance(cursor, list):
+            count = len(cursor) 
         else:
-            cursor = cursor         
+            cursor = cursor       
 
         url = self.es_endpoint + '/_bulk'
         status_code = {201}

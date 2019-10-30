@@ -146,7 +146,7 @@ class QuiltUtil(config.establishQuilt):
                 package_dest (:obj:`str`): package(s) to be manipulated
                 bucket_name (:obj:`str`): s3 bucket name
                 key (:obj:`str`): the name of the key in s3 bucket to download from
-                file_dir (:obj:`str`): the path to the file to download to
+                file_dir (:obj:`str`): the local path to which the file will be downloaded
                 bucket_credential (:obj:`str`): directory in which credential for s3 bucket is stored
                 profile_name (:obj:`str`): profile to be used for authentication
                 meta (:obj:`dict`): meta information for package file
@@ -185,17 +185,3 @@ class QuiltUtil(config.establishQuilt):
         else:
             self.package.set(package_dest, file_name, meta=meta)
         return self.package.build(package_name)
-
-
-
-# def main():
-#     manager = QuiltUtil(aws_path='.wc/third_party',
-#                         base_path=tempfile.mkdtemp(), profile_name='quilt-karrlab',
-#                         default_remote_registry='s3://karrlab')
-#     p = manager.package
-#     p = p.set_dir('/', 's3://karrlab/datanator/')
-#     p.set_meta({"package-type": 'mongodb data dump'})
-#     p.push('karrlab/datanator')
-
-# if __name__ == '__main__':
-#     main()

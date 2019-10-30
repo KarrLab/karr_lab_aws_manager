@@ -49,7 +49,7 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 1, 'mock_key_bulk': 'mock_value_1', 'uniprot_id': 'P1'},
                   {'number': 2, 'mock_key_bulk': 'mock_value_2', 'uniprot_id': 'P2'},
                   {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
-        result = self.src.data_to_es_bulk(cursor, index=self.index, bulk_size=1)
+        result = self.src.data_to_es_bulk(cursor, count=4, index=self.index, bulk_size=1)
         self.assertTrue(result <= {201, 200})
         result = self.src.index_settings(self.index, 0)
         self.assertEqual(result.text, '{"acknowledged":true}')
