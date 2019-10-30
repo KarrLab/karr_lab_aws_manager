@@ -132,16 +132,49 @@ class CliTestCase(unittest.TestCase):
     def test_quilt_add2_package(self):
         with capturer.CaptureOutput(merged=False, relay=False) as captured:
             with __main__.App(argv=['quilt-add2-package',
-                                    ['test_destination'],
-                                    ['requirements.txt'],
-                                    '--meta', ['{test: test_meta}']]) as app:
+                                    'test/quilt_cl',
+                                    'test_destination',
+                                    'requirements.txt',
+                                    '--meta', "{'test': 'test_meta'}"]) as app:
                 # run app
                 app.run()
 
                 # test that the arguments to the CLI were correctly parsed
-                self.assertEqual(app.pargs.destination, ['test_destination'])
-                self.assertEqual(app.pargs.source, ['requirements.txt'])
+                self.assertEqual(app.pargs.destination, 'test_destination')
+                self.assertEqual(app.pargs.source, 'requirements.txt')
                 self.assertEqual(app.pargs.default_remote_registry, 's3://karrlab')
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertTrue('Hashing:' in captured.stderr.get_text())
+
+    def test_quilt_push2_s3(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['quilt-push2-s3',
+                                    'test_name',
+                                    '--message', 'some message']) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.package_name, 'test_name')
+                self.assertEqual(app.pargs.destination, 's3://karrlab')
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
+
+    def test_quilt_rm_pkg(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['quilt-rm-pkg',
+                                    'test_user/test_name',
+                                    '--delete_from_s3', False]) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.package_name, 'test_user/test_name')
+                self.assertEqual(app.pargs.delete_from_s3, False)
 
                 # test that the CLI produced the correct output
                 self.assertEqual(captured.stdout.get_text(), '')

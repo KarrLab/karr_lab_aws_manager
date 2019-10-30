@@ -12,6 +12,7 @@ import karr_lab_aws_manager
 import karr_lab_aws_manager.core
 from karr_lab_aws_manager.elasticsearch_kl import util as es_util
 from karr_lab_aws_manager.quilt3_kl import util as quilt_util
+import json
 
 
 class BaseController(cement.Controller):
@@ -223,7 +224,7 @@ class EsSetIdx(cement.Controller):
 
 
 class QuiltAddToPackage(cement.Controller):
-    """Karrlab elasticsearch settings for index. """
+    """Karrlab add files to quilt3 package"""
 
     class Meta:
         label = 'quilt-add2-package'
@@ -231,12 +232,14 @@ class QuiltAddToPackage(cement.Controller):
         stacked_on = 'base'
         stacked_type = 'nested'
         arguments = [
+            (['package_name'], dict(
+                type=str, help='Package to be manipulated')),
             (['destination'], dict(
-                type=list, help='Sources to be added to package')),
+                type=str, help='destination in package')),
             (['source'], dict(
-                type=list, help='Package(s) to be manipulated')),
+                type=str, help='Sources to be added to package')),
             (['--meta', '-m'], dict(
-                type=list, default=[],
+                type=str, default="{'test': 'test_meta'}",
                 help='Number of primary shards contained in the es cluster')
             ),
             (['--default_remote_registry', '-drr'], dict(
@@ -271,7 +274,111 @@ class QuiltAddToPackage(cement.Controller):
         base = tempfile.mkdtemp()
         quilt_util.QuiltUtil(profile_name=args.profile_name, default_remote_registry=args.default_remote_registry,
                             aws_path=args.credential_path, cache_dir=base, config_path=args.config_path).add_to_package(
-                            destination=args.destination, source=args.source, meta=args.meta)
+                            args.package_name, destination=args.destination, source=args.source, meta=args.meta)
+
+
+class QuiltPushToS3(cement.Controller):
+    """Karrlab push local quilt package to remote registry"""
+
+    class Meta:
+        label = 'quilt-push2-s3'
+        description = 'Used for uploading datanator package to quilt3 s3 bucket'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['package_name'], dict(
+                type=str, help='name of package in "username/packagename" format')),
+            (['--registry', '-r'], dict(
+                type=str, default='s3://karrlab',
+                help='S3 URI where package should be pushed')),
+            (['--destination', '-d'], dict(
+                type=str, default='s3://karrlab',
+                help='file landing destination in remote registry')
+            ),
+            (['--message', '-m'], dict(
+                type=str, default='package upload',
+                help='commit message')
+            ),
+            (['--default_remote_registry', '-drr'], dict(
+                type=str, default='s3://karrlab',
+                help='AWS profile to use for authentication')),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='quilt-karrlab',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            )
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Push local package to remote registry
+
+            Args:
+                package_name (:obj:`str`): name of package in "username/packagename" format
+                registry (:obj:`str`): S3 URI where package should be pushed
+                destination (:obj:`str`): file landing destination in remote registry
+                message (:obj:`str`): commit message
+        '''
+        args = self.app.pargs
+        base = tempfile.mkdtemp()
+        quilt_util.QuiltUtil(profile_name=args.profile_name, default_remote_registry=args.default_remote_registry,
+                            aws_path=args.credential_path, cache_dir=base, config_path=args.config_path).push_to_remote(
+                            args.package_name, registry=args.registry, destination=args.destination, message=args.message)
+
+
+class QuiltRmPkg(cement.Controller):
+    """Karrlab remove exsting quilt3 package. """
+
+    class Meta:
+        label = 'quilt-rm-pkg'
+        description = 'Used for deleting package'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['package_name'], dict(
+                type=str, help='name of package in "username/packagename" format')),
+            (['--registry', '-r'], dict(
+                type=str, default='s3://karrlab',
+                help='S3 URI where package should be pushed')),
+            (['--delete_from_s3', '-d'], dict(
+                type=bool, default=True,
+                help='Whether to delete data in the registry')
+            ),
+            (['--default_remote_registry', '-drr'], dict(
+                type=str, default='s3://karrlab',
+                help='AWS profile to use for authentication')),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='quilt-karrlab',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            )
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Push local package to remote registry
+
+            Args:
+                package_name (:obj:`str`): name of package in "username/packagename" format
+                registry (:obj:`str`): S3 URI where package should be pushed
+                destination (:obj:`str`): file landing destination in remote registry
+                message (:obj:`str`): commit message
+        '''
+        args = self.app.pargs
+        base = tempfile.mkdtemp()
+        quilt_util.QuiltUtil(profile_name=args.profile_name, default_remote_registry=args.default_remote_registry,
+                            aws_path=args.credential_path, cache_dir=base, config_path=args.config_path).delete_package(
+                            args.package_name, registry=args.registry, delete_from_s3=args.delete_from_s3)
 
 
 class App(cement.App):
@@ -285,7 +392,9 @@ class App(cement.App):
             EsBulkUpload,
             EsDeleteIdx,
             EsSetIdx,
-            QuiltAddToPackage
+            QuiltAddToPackage,
+            QuiltPushToS3,
+            QuiltRmPkg
         ]
 
 def main():

@@ -7,6 +7,7 @@ from configparser import ConfigParser
 from pathlib import Path, PurePath
 import tempfile
 from boto3.s3.transfer import TransferConfig
+import botocore
 
 
 class QuiltUtil(config.establishQuilt):
@@ -55,68 +56,93 @@ class QuiltUtil(config.establishQuilt):
         '''
         return quilt3.Bucket(bucket_uri)
 
-    def add_to_package(self, destination=None, source=None, meta=None):
-        ''' Specifically used for uploading datanator package to quilt3
+    def add_to_package(self, package_name, destination=None, source=None, meta=None):
+        ''' Add file/directory to an existing package on S3 or build new package
+            with name package_name
         
             Args:
-                source (:obj:`list` of :obj:`str`): sources to be added to package,
-                                                      directories must end with '/'
-                destination (:obj:`list` of :obj:`str` ): package(s) to be manipulated,
-                                                            directories must end with '/'
-                meta (:obj:`list` of :obj:`dict`): package meta
+                package_name (:obj:`str`): name of package to be modified
+                source (:obj:`str`): source to be added to package,
+                                    directories must end with '/'
+                destination (:obj:`str` ): package to be manipulated,
+                                        directories must end with '/'
+                meta (:obj:`dict`): package meta
 
             Returns:
 
         '''
-        length = len(destination)
-        if not (all(len(lst)) == length for lst in [source, meta]):
-            return 'All three entries must be lists of the same length.'
         suffix = '/'
-        for i, d in enumerate(destination):
-            s = source[i]
-            m = meta[i]
-            if s.endswith(suffix) != d.endswith(suffix): # when s and d do not share the same suffix
-                return '{} and {} must have the same suffix. Operation stopped at {}th element.'.format(d, s, i)
+        s = source
+        m = meta
+        d = destination
+        try:
+            p = quilt3.Package.install(package_name)
+        except botocore.errorfactory.ClientError:
+            p = self.package
 
-            if s.endswith(suffix):
-                self.package.set_dir(d, s, meta=m)
-            else:
-                self.package.set(d, s, meta=m)
+        if s.endswith(suffix) != d.endswith(suffix): # when s and d do not share the same suffix
+            return '{} and {} must have the same suffix. Operation stopped.'.format(d, s)
 
-    def push_to_remote(self, package, package_name, registry=None, destination=None, message=None) -> str:
+        if s.endswith(suffix):
+            p.set_dir(d, s, meta=m)
+        else:
+            p.set(d, s, meta=m)
+        p.build(name=package_name)
+
+    def push_to_remote(self, package_name, registry=None, destination=None, message=None) -> str:
         ''' Push local package to remote registry
 
             Args:
-                package (:obj:`quilt3.Package()`): quilt pacakge
                 package_name (:obj:`str`): name of package in "username/packagename" format
                 registry (:obj:`str`): S3 URI where package should be pushed
                 destination (:obj:`str`): file landing destination in remote registry
                 message (:obj:`str`): commit message
         '''
         try:
-            package.push(package_name, registry=registry, dest=destination, message=message)
+            p = quilt3.Package.browse(package_name)
+        except botocore.errorfactory.ClientError:
+            return 'No such package {} on s3'.format(package_name)
+        except FileNotFoundError:
+            self.package.build(name=package_name)
         except quilt3.util.QuiltException as e:
             return str(e)
+        p.push(package_name, registry=registry, dest=destination, message=message)
 
     def delete_package(self, package_name, registry=None, delete_from_s3=True):
-        """delete a package from Quilt3
+        """delete a local/remote package from local/remote registry
         
         Args:
-            package_name (:obj:`str`): name of the package.
+            package_name (:obj:`str`): name of the package or name of file
             registry (:obj:`str`, optional): the registry from which the package will be removed. Defaults to None.
-            delete_from_s3 (:obj:`bool`): whether to delete the underlying files in s3 bucket
+            delete_from_s3 (:obj:`bool`): whether to delete the underlying files in s3 bucket.
         """
-        if registry is None:
-            registry = self.default_remote_registry
-        quilt3.delete_package(package_name, registry=registry)
+        try:
+            bucket = quilt3.Bucket(registry)
+            bucket.delete_dir('.quilt/named_packages/' + package_name + '/')
+        except quilt3.util.QuiltException as e:
+            return str(e)
+        if delete_from_s3:
+            bucket.delete_dir(package_name + '/')
 
+    def delete_obj(self, key):
+        """delete an object from s3 bucket
+        
+        Args:
+            key (:obj:`str`): key of the object in s3 bucket
+        """
+        try:
+            bucket = quilt3.Bucket(self.default_remote_registry)
+            bucket.delete(key)
+        except botocore.errorfactory.ClientError:
+            return 'No such object {} on s3'.format(key)        
 
-    def build_from_external_bucket(self, package_dest, bucket_name, key, file_dir,
+    def build_from_external_bucket(self, package_name, package_dest, bucket_name, key, file_dir,
                                   bucket_credential=None, profile_name=None, meta=None,
                                   bucket_config=None, max_concurrency=10):
         ''' Build package with source from external (non-quilt) s3 buckets
 
             Args:
+                package_name (:obj:`str`): local package name after being built
                 package_dest (:obj:`str`): package(s) to be manipulated
                 bucket_name (:obj:`str`): s3 bucket name
                 key (:obj:`str`): the name of the key in s3 bucket to download from
@@ -155,9 +181,10 @@ class QuiltUtil(config.establishQuilt):
             s3.client.download_file(bucket_name, key, file_name, Config=settings)
         
         if package_dest.endswith('/'):
-            return self.package.set_dir(package_dest, file_name, meta=meta)
+            self.package.set_dir(package_dest, file_name, meta=meta)
         else:
-            return self.package.set(package_dest, file_name, meta=meta)
+            self.package.set(package_dest, file_name, meta=meta)
+        return self.package.build(package_name)
 
 
 
