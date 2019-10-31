@@ -1,6 +1,5 @@
 import unittest
 from karr_lab_aws_manager.elasticsearch_kl import util
-from datanator_query_python.config import config
 from pathlib import Path
 import json
 import tempfile

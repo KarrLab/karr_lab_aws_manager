@@ -25,13 +25,11 @@ class credentialsFile:
             os.environ['AWS_SECRET_ACCESS_KEY'] = self.credentials[profile_name]['aws_secret_access_key']
             os.environ['AWS_DEFAULT_REGION'] = config['profile ' + profile_name]['region']
         else:
-            os.environ['AWS_PROFILE'] = os.getenv(
-                profile_name.upper() + '_AWS_PROFILE')
-            os.environ['AWS_ACCESS_KEY_ID'] = os.getenv(profile_name.upper() + '_AWS_ACCESS_KEY_ID')
+            os.environ['AWS_ACCESS_KEY_ID'] = os.getenv(profile_name.upper() + '_AWS_ACCESS_KEY_ID', 'test')
             os.environ['AWS_SECRET_ACCESS_KEY'] = os.getenv(
-                profile_name.upper() + '_AWS_SECRET_ACCESS_KEY')
+                profile_name.upper() + '_AWS_SECRET_ACCESS_KEY', 'test')
             os.environ['AWS_DEFAULT_REGION'] = os.getenv(
-                profile_name.upper() + '_AWS_DEFAULT_REGION')
+                profile_name.upper() + '_AWS_DEFAULT_REGION', 'test')
 
 
 class establishSession(credentialsFile):
@@ -41,12 +39,13 @@ class establishSession(credentialsFile):
                 service_name=None):
         super().__init__(credential_path=credential_path, config_path=config_path,
                         profile_name=profile_name)
-        self.session = boto3.Session(profile_name=profile_name)
+        self.session = boto3.Session(aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                                    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
         self.access_key = self.session.get_credentials().access_key
         self.secret_key = self.session.get_credentials().secret_key
         self.region = self.session.region_name
         self.awsauth = AWS4Auth(self.access_key, self.secret_key,
-                           self.region, service_name)
+                                self.region, service_name)
 
 
 class establishES(establishSession):
@@ -57,10 +56,14 @@ class establishES(establishSession):
         super().__init__(credential_path=credential_path, config_path=config_path,
                         profile_name=profile_name, service_name=service_name)
         self.client = self.session.client(service_name)
-        self.es_config = str(Path(elastic_path).expanduser())
-        config = ConfigParser()
-        config.read(self.es_config)
-        self.es_endpoint = config['elasticsearch-endpoint']['address']
+        self._test = 'test'
+        if elastic_path is not None:
+            self.es_config = str(Path(elastic_path).expanduser())
+            config = ConfigParser()
+            config.read(self.es_config)
+            self.es_endpoint = config['elasticsearch-endpoint']['address']
+        else:
+            self.es_endpoint = os.getenv("FTX_ENDPOINT")
 
 
 class establishS3(establishSession):
