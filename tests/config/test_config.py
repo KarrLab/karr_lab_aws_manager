@@ -15,7 +15,10 @@ class TestConfig(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.cache_dir)
         del os.environ['AWS_ACCESS_KEY_ID']
-        del os.environ['AWS_PROFILE']
+        try:
+            del os.environ['AWS_PROFILE']
+        except KeyError:
+            print('No such key AWS_PROFILE')
         del os.environ['AWS_SECRET_ACCESS_KEY']
         del os.environ['AWS_DEFAULT_REGION']
 
