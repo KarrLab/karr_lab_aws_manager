@@ -28,7 +28,7 @@ class TestQuery(unittest.TestCase):
         result_0 = self.src._set_options(query_0, option_key_0, option_value_0)
         self.assertEqual(comp_0, result_0)
     
-    def  test_build_simple_query_string_body(self):
+    def test_build_simple_query_string_body(self):
         fields = ['field_0', 'field_1']
         analyze_wildcard = True
         result = self.src.build_simple_query_string_body('some query message',
