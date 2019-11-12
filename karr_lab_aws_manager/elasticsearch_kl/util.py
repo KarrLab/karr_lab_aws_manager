@@ -129,7 +129,7 @@ class EsUtil(config.establishES):
         def gen_bulk_file(_iid, bulk_file):
             action_and_metadata = self.make_action_and_metadata(index, _iid)
             bulk_file += json.dumps(action_and_metadata) + '\n'
-            bulk_file += json.dumps(doc) + '\n'  
+            bulk_file += json.dumps(doc, indent=4, sort_keys=True, default=str) + '\n'  
             return bulk_file
 
         def mod_cursor(cursor):
