@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 from requests_aws4auth import AWS4Auth
 import re
+import datetime
 
 
 class EsUtil(config.establishES):
@@ -58,6 +59,20 @@ class EsUtil(config.establishES):
             body = {"index": {"number_of_replicas": number_of_replicas,
                             "number_of_shards": number_of_shards}}
         r = requests.put(url, auth=self.awsauth, data=json.dumps(body), headers=headers)
+        return r
+
+    def create_index(self, index, setting={"settings": {"number_of_shards": 1}},
+                    headers={ "Content-Type": "application/json" }):
+        """Create index
+            (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
+
+        Args:
+            index (:obj:`str`): name of index
+            setting (:obj:`dict`, optional): index settings. Defaults to {"settings": {"number_of_shards": 1}}.
+            headers (:obj:`dict`): http request content header description. Defaults to { "Content-Type": "application/json" }.
+        """
+        url = self.es_endpoint + '/' + index
+        r = requests.put(url, auth=self.awsauth, data=json.dumps(setting), headers=headers)
         return r
 
     def _build_es(self, suffix=None):
@@ -126,10 +141,14 @@ class EsUtil(config.establishES):
             Returns:
                 (:obj:`set`): set of status codes
         '''
+        def date_converter(d):
+            if isinstance(d, datetime.datetime):
+                return d.__str__()
+
         def gen_bulk_file(_iid, bulk_file):
             action_and_metadata = self.make_action_and_metadata(index, _iid)
             bulk_file += json.dumps(action_and_metadata) + '\n'
-            bulk_file += json.dumps(doc, indent=4, sort_keys=True, default=str) + '\n'  
+            bulk_file += json.dumps(doc, default=date_converter) + '\n'  
             return bulk_file
 
         def mod_cursor(cursor):

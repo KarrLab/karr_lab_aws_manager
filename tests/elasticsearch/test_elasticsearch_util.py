@@ -17,17 +17,24 @@ class TestMongoToES(unittest.TestCase):
                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 cache_dir=cls.cache_dir, service_name='es', max_entries=float('inf'), verbose=True)
         cls.index = 'test'
+        cls.index_0 = 'test_0'
         cls.url = cls.src.es_endpoint + '/' + cls.index
+        cls.url_0 = cls.src.es_endpoint + '/' + cls.index_0
         requests.delete(cls.url, auth=cls.src.awsauth)
 
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dir)
         requests.delete(cls.url, auth=cls.src.awsauth)
+        requests.delete(cls.url_0, auth=cls.src.awsauth)
 
     def test_build_es(self):
         result_0 = self.src._build_es()
         self.assertTrue(hasattr(result_0, 'msearch_template'))
+
+    def test_build_index(self):
+        result_0 = self.src.create_index(self.index_0)
+        self.assertEqual(result_0.status_code, 200)
     
     def test_connection(self):
         result = self.src.client.list_domain_names()

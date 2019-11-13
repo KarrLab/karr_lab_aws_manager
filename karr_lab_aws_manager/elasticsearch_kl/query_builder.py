@@ -87,6 +87,6 @@ class QueryBuilder(util.EsUtil):
 
         analyzer = kwargs.get('analyzer', 'standard')
         query = self._set_options(query, 'analyzer', analyzer)
-        
+
         return query
 
