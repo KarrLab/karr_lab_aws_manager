@@ -70,10 +70,10 @@ class QueryBuilder(util.EsUtil):
         minimum_should_match = kwargs.get('minimum_should_match', 1)
         query = self._set_options(query, 'minimum_should_match', minimum_should_match)
 
-        analyze_wildcard = kwargs.get('analyze_wildcard', False)
+        analyze_wildcard = kwargs.get('analyze_wildcard', True)
         query = self._set_options(query, 'analyze_wildcard', analyze_wildcard)
 
-        lenient = kwargs.get('lenient', False)
+        lenient = kwargs.get('lenient', True)
         query = self._set_options(query, 'lenient', lenient)
 
         quote_field_suffix = kwargs.get('quote_field_suffix', "")
@@ -82,7 +82,7 @@ class QueryBuilder(util.EsUtil):
         auto_generate_synonyms_phrase_query = kwargs.get('auto_generate_synonyms_phrase_query', True)
         query = self._set_options(query, 'auto_generate_synonyms_phrase_query', auto_generate_synonyms_phrase_query)
 
-        default_operator = kwargs.get('default_operator', 'and')
+        default_operator = kwargs.get('default_operator', 'OR')
         query = self._set_options(query, 'default_operator', default_operator)
 
         analyzer = kwargs.get('analyzer', 'standard')

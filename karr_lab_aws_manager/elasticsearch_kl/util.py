@@ -39,7 +39,8 @@ class EsUtil(config.establishES):
         r = requests.get(uri, auth=self.awsauth)
         return r
     
-    def index_settings(self, index, number_of_replicas, number_of_shards=1, 
+    def index_settings(self, index, number_of_replicas, number_of_shards=1,
+                      other_settings = {}, 
                       headers={ "Content-Type": "application/json" }):
         """Setting index's shard and replica number in es cluster
         
@@ -47,6 +48,7 @@ class EsUtil(config.establishES):
             index (str): name of index to be set
             number_of_replicas (int): number of replica shards to be used for the index
             number_of_shards (int): number of primary shards contained in the es cluster
+            other_settings (:obj:`dict`): other index settings.
             headers (dict): http request content header description
 
         Returns:
@@ -58,7 +60,8 @@ class EsUtil(config.establishES):
         else:
             body = {"index": {"number_of_replicas": number_of_replicas,
                             "number_of_shards": number_of_shards}}
-        r = requests.put(url, auth=self.awsauth, data=json.dumps(body), headers=headers)
+        settings = {**body, **other_settings}
+        r = requests.put(url, auth=self.awsauth, data=json.dumps(settings), headers=headers)
         return r
 
     def create_index(self, index, setting={"settings": {"number_of_shards": 1}}):
@@ -240,12 +243,12 @@ class EsUtil(config.establishES):
             status_code.add(r.status_code)
         return status_code
 
-def main():
-    manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
-                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
-                service_name='es', max_entries=float('inf'), verbose=True)
-    r = manager.add_field_to_index('ecmdb', 'species', 'Escherichia coli')
-    print(r.text)
+# def main():
+#     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
+#                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
+#                 service_name='es', max_entries=float('inf'), verbose=True)
+#     r = manager.add_field_to_index('ecmdb', 'species', 'Escherichia coli')
+#     print(r.text)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
