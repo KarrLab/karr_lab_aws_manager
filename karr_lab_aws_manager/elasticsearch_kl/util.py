@@ -61,8 +61,7 @@ class EsUtil(config.establishES):
         r = requests.put(url, auth=self.awsauth, data=json.dumps(body), headers=headers)
         return r
 
-    def create_index(self, index, setting={"settings": {"number_of_shards": 1}},
-                    headers={ "Content-Type": "application/json" }):
+    def create_index(self, index, setting={"settings": {"number_of_shards": 1}}):
         """Create index
             (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 
@@ -72,7 +71,7 @@ class EsUtil(config.establishES):
             headers (:obj:`dict`): http request content header description. Defaults to { "Content-Type": "application/json" }.
         """
         url = self.es_endpoint + '/' + index
-        r = requests.put(url, auth=self.awsauth, data=json.dumps(setting), headers=headers)
+        r = requests.put(url, auth=self.awsauth, json=setting)
         return r
 
     def _build_es(self, suffix=None):
@@ -97,6 +96,28 @@ class EsUtil(config.establishES):
             connection_class = RequestsHttpConnection
         )
         return es
+
+    def add_field_to_index(self, index, field, value):
+        """Add a field of value to all documents in index
+        
+        Args:
+            index (:obj:`str`): name of index.
+            field (:obj:`str`): name of field.
+            value (:obj:`Obj`): value of field.
+
+        Return:
+            (:obj:`HTTPResponse`): elasticsearch update status description.
+        """
+        url = self.es_endpoint + '/' + index + '/' + '_update_by_query'
+        script = "ctx._source.{} = {}".format(field, value)
+        body = {
+                "query": {
+                    "match_all": {}
+                },
+                "script": { "source": script, "lang": "painless" }
+                }
+        r = requests.post(url, auth=self.awsauth, json=body)
+        return r
     
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading
