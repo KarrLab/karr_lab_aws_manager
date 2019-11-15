@@ -50,7 +50,7 @@ class QueryBuilder(util.EsUtil):
                 (:obj:`dict`): query request body
         '''
         query_operation = 'simple_query_string'
-        query = {'query': {query_operation: {'query': query_message }}}
+        query = {'query': {query_operation: {'query': query_message}}}
 
         fields = kwargs.get('fields')
         query = self._set_options(query, 'fields', fields)
@@ -58,7 +58,7 @@ class QueryBuilder(util.EsUtil):
         flags = kwargs.get('flags', 'ALL')
         query = self._set_options(query, 'flags', flags)
 
-        fuzzy_transpositions = kwargs.get('fuzzy_transpositions', True)
+        fuzzy_transpositions = kwargs.get('fuzzy_transpositions', 'true')
         query = self._set_options(query, 'fuzzy_transpositions', fuzzy_transpositions)
 
         fuzzy_max_expansions = kwargs.get('fuzzy_max_expansions', 50)
@@ -70,19 +70,19 @@ class QueryBuilder(util.EsUtil):
         minimum_should_match = kwargs.get('minimum_should_match', 1)
         query = self._set_options(query, 'minimum_should_match', minimum_should_match)
 
-        analyze_wildcard = kwargs.get('analyze_wildcard', True)
+        analyze_wildcard = kwargs.get('analyze_wildcard', 'true')
         query = self._set_options(query, 'analyze_wildcard', analyze_wildcard)
 
-        lenient = kwargs.get('lenient', True)
+        lenient = kwargs.get('lenient', 'true')
         query = self._set_options(query, 'lenient', lenient)
 
         quote_field_suffix = kwargs.get('quote_field_suffix', "")
         query = self._set_options(query, 'quote_field_suffix', quote_field_suffix)
 
-        auto_generate_synonyms_phrase_query = kwargs.get('auto_generate_synonyms_phrase_query', True)
+        auto_generate_synonyms_phrase_query = kwargs.get('auto_generate_synonyms_phrase_query', 'true')
         query = self._set_options(query, 'auto_generate_synonyms_phrase_query', auto_generate_synonyms_phrase_query)
 
-        default_operator = kwargs.get('default_operator', 'OR')
+        default_operator = kwargs.get('default_operator', 'AND')
         query = self._set_options(query, 'default_operator', default_operator)
 
         analyzer = kwargs.get('analyzer', 'standard')

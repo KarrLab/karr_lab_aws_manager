@@ -60,7 +60,8 @@ class EsUtil(config.establishES):
         else:
             body = {"index": {"number_of_replicas": number_of_replicas,
                             "number_of_shards": number_of_shards}}
-        settings = {**body, **other_settings}
+        tmp = {**body['index'], **other_settings['index']}
+        settings = {'index': tmp}
         r = requests.put(url, auth=self.awsauth, data=json.dumps(settings), headers=headers)
         return r
 
@@ -77,7 +78,7 @@ class EsUtil(config.establishES):
         r = requests.put(url, auth=self.awsauth, json=setting)
         return r
 
-    def _build_es(self, suffix=None):
+    def build_es(self, suffix=None):
         ''' build es query object
 
             Args:
@@ -243,12 +244,12 @@ class EsUtil(config.establishES):
             status_code.add(r.status_code)
         return status_code
 
-# def main():
-#     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
-#                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
-#                 service_name='es', max_entries=float('inf'), verbose=True)
-#     r = manager.add_field_to_index('ecmdb', 'species', 'Escherichia coli')
-#     print(r.text)
+def main():
+    manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
+                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
+                service_name='es', max_entries=float('inf'), verbose=True)
+    r = manager.index_settings('ecmdb', 1, other_settings={'index': {"highlight.max_analyzed_offset" : 60000000}})
+    print(r.text)
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
