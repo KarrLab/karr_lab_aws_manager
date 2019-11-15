@@ -82,7 +82,7 @@ class QueryBuilder(util.EsUtil):
         auto_generate_synonyms_phrase_query = kwargs.get('auto_generate_synonyms_phrase_query', True)
         query = self._set_options(query, 'auto_generate_synonyms_phrase_query', auto_generate_synonyms_phrase_query)
 
-        default_operator = kwargs.get('default_operator', 'or')
+        default_operator = kwargs.get('default_operator', 'and')
         query = self._set_options(query, 'default_operator', default_operator)
 
         analyzer = kwargs.get('analyzer', 'standard')

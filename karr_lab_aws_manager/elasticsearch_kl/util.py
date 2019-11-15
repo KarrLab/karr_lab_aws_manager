@@ -109,12 +109,16 @@ class EsUtil(config.establishES):
             (:obj:`HTTPResponse`): elasticsearch update status description.
         """
         url = self.es_endpoint + '/' + index + '/' + '_update_by_query'
-        script = "ctx._source.{} = {}".format(field, value)
+        if isinstance(value, (int, float, complex)) and not isinstance(value, bool):
+            val = str(value)
+        else:
+            val = "\""+value+"\""
+        script = "ctx._source.{} = {}".format(field, val)
         body = {
-                "query": {
-                    "match_all": {}
-                },
-                "script": { "source": script, "lang": "painless" }
+                    "query": {
+                        "match_all": {}
+                    },
+                    "script": {"inline": script}
                 }
         r = requests.post(url, auth=self.awsauth, json=body)
         return r
@@ -236,9 +240,12 @@ class EsUtil(config.establishES):
             status_code.add(r.status_code)
         return status_code
 
-# def main():
-#     manager = EsUtil()
-#     manager.delete_index('protein')
+def main():
+    manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
+                config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
+                service_name='es', max_entries=float('inf'), verbose=True)
+    r = manager.add_field_to_index('ecmdb', 'species', 'Escherichia coli')
+    print(r.text)
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()

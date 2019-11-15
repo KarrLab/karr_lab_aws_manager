@@ -111,6 +111,7 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
         _ = self.src.data_to_es_bulk(cursor, count=4, index=self.index, bulk_size=1)
         field = 'some_field'
-        value = 0
+        value = 'value'
         result = self.src.add_field_to_index(self.index, field, value)
+        print(result.text)
         self.assertEqual(result.status_code, 200)
