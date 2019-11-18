@@ -60,7 +60,11 @@ class EsUtil(config.establishES):
         else:
             body = {"index": {"number_of_replicas": number_of_replicas,
                             "number_of_shards": number_of_shards}}
-        tmp = {**body['index'], **other_settings['index']}
+        
+        if other_settings == {}:
+            tmp = body['index']
+        else:
+            tmp = {**body['index'], **other_settings.get('index')}
         settings = {'index': tmp}
         r = requests.put(url, auth=self.awsauth, data=json.dumps(settings), headers=headers)
         return r
