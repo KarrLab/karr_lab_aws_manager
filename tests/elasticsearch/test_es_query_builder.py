@@ -30,13 +30,13 @@ class TestQuery(unittest.TestCase):
     
     def test_build_simple_query_string_body(self):
         fields = ['field_0', 'field_1']
-        analyze_wildcard = 'true'
+        analyze_wildcard = True
         result = self.src.build_simple_query_string_body('some query message',
                                             fields=fields, analyze_wildcard=analyze_wildcard)
         comp ={'query': {'simple_query_string': {'query': 'some query message', 
         'fields': ['field_0', 'field_1'], 
-        'flags': 'ALL', 'fuzzy_transpositions': 'true', 
+        'flags': 'ALL', 'fuzzy_transpositions': True, 
         'fuzzy_max_expansions': 50, 'fuzzy_prefix_length': 0, 'minimum_should_match': 1, 
-        'analyze_wildcard': 'true', 'lenient': 'true', 'quote_field_suffix': '', 
-        'auto_generate_synonyms_phrase_query': 'true', 'default_operator': 'AND', 'analyzer': 'standard'}}}
+        'analyze_wildcard': True, 'lenient': True, 'quote_field_suffix': '', 
+        'auto_generate_synonyms_phrase_query': True, 'default_operator': 'OR', 'analyzer': 'standard'}}}
         self.assertEqual(result, comp)
