@@ -58,7 +58,7 @@ class QueryBuilder(util.EsUtil):
         flags = kwargs.get('flags', 'ALL')
         query = self._set_options(query, 'flags', flags)
 
-        fuzzy_transpositions = kwargs.get('fuzzy_transpositions', 'true')
+        fuzzy_transpositions = kwargs.get('fuzzy_transpositions', True)
         query = self._set_options(query, 'fuzzy_transpositions', fuzzy_transpositions)
 
         fuzzy_max_expansions = kwargs.get('fuzzy_max_expansions', 50)
@@ -70,19 +70,19 @@ class QueryBuilder(util.EsUtil):
         minimum_should_match = kwargs.get('minimum_should_match', 1)
         query = self._set_options(query, 'minimum_should_match', minimum_should_match)
 
-        analyze_wildcard = kwargs.get('analyze_wildcard', 'true')
+        analyze_wildcard = kwargs.get('analyze_wildcard', True)
         query = self._set_options(query, 'analyze_wildcard', analyze_wildcard)
 
-        lenient = kwargs.get('lenient', 'true')
+        lenient = kwargs.get('lenient', True)
         query = self._set_options(query, 'lenient', lenient)
 
         quote_field_suffix = kwargs.get('quote_field_suffix', "")
         query = self._set_options(query, 'quote_field_suffix', quote_field_suffix)
 
-        auto_generate_synonyms_phrase_query = kwargs.get('auto_generate_synonyms_phrase_query', 'true')
+        auto_generate_synonyms_phrase_query = kwargs.get('auto_generate_synonyms_phrase_query', True)
         query = self._set_options(query, 'auto_generate_synonyms_phrase_query', auto_generate_synonyms_phrase_query)
 
-        default_operator = kwargs.get('default_operator', 'AND')
+        default_operator = kwargs.get('default_operator', 'OR')
         query = self._set_options(query, 'default_operator', default_operator)
 
         analyzer = kwargs.get('analyzer', 'standard')
