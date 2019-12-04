@@ -52,7 +52,7 @@ class QueryBuilder(util.EsUtil):
         query_operation = 'simple_query_string'
         query = {'query': {query_operation: {'query': query_message}}}
 
-        fields = kwargs.get('fields')
+        fields = kwargs.get('fields', ['*'])
         query = self._set_options(query, 'fields', fields)
 
         flags = kwargs.get('flags', 'ALL')
