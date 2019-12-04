@@ -40,3 +40,12 @@ class TestQuery(unittest.TestCase):
         'analyze_wildcard': True, 'lenient': True, 'quote_field_suffix': '', 
         'auto_generate_synonyms_phrase_query': True, 'default_operator': 'OR', 'analyzer': 'standard'}}}
         self.assertEqual(result, comp)
+
+    def test_build_bool_query_body(self):
+        must = {'a': 0}
+        _filter = [{'b': 1}, {'c': 2}]
+        should = {'d': 3}
+        must_not = {'e': 4}
+        exp = {'query': {'bool': {'must': must, 'should': should, 'filter': _filter, 'must_not': must_not}}}
+        result = self.src.build_bool_query_body(must=must, _filter=_filter, should=should, must_not=must_not)
+        self.assertEqual(result, exp)

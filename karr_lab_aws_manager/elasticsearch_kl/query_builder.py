@@ -90,3 +90,28 @@ class QueryBuilder(util.EsUtil):
 
         return query
 
+    def build_bool_query_body(self, must=None, _filter=None, should=None, must_not=None):
+        """Building boolean query body
+        (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html)
+        
+        Args:
+            must (:obj:`list` or :obj:`dict`, optional): Body for must. Defaults to None.
+            _filter (:obj:`list` or :obj:`dict`, optional): Body for filter. Defaults to None.
+            should (:obj:`list` or :obj:`dict`, optional): Body for should. Defaults to None.
+            must_not (:obj:`list` or :obj:`dict`, optional): Body for must_not. Defaults to None.
+
+        Return:
+            (:obj:`dict`): boolean query body
+        """
+        query = {'query': {'bool': {}}}
+
+        if must is not None:
+            query['query']['bool']['must'] = must
+        if _filter is not None:
+            query['query']['bool']['filter'] = _filter
+        if should is not None:
+            query['query']['bool']['should'] = should
+        if must_not is not None:
+            query['query']['bool']['must_not'] = must_not
+
+        return query
