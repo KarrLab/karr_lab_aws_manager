@@ -82,6 +82,25 @@ class EsUtil(config.establishES):
         r = requests.put(url, auth=self.awsauth, json=setting)
         return r
 
+    def enable_fielddata(self, index, _type, field):
+        """Enable fielddata for type fields
+        
+        Args:
+            index (:obj:`str`): Index in which the operation will be done
+            _type (:obj:`str`): Existing mapping for field.
+            field (:obj:`str`): name of the field.
+        """
+        url = self.es_endpoint + '/' + index + '/_mapping'
+        body = {
+                "properties": {
+                    field: { 
+                    "type": _type,
+                    "fielddata": True
+                    }
+                }}
+        r = requests.put(url, auth=self.awsauth, json=body)
+        return r
+
     def build_es(self, suffix=None):
         ''' build es query object
 
@@ -252,7 +271,7 @@ def main():
     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 service_name='es', max_entries=float('inf'), verbose=True)
-    r = manager.index_settings('ecmdb', 1, other_settings={'index': {"highlight.max_analyzed_offset" : 60000000}})
+    r = manager.enable_fielddata('protein', 'text', 'ko_number')
     print(r.text)
 
 if __name__ == "__main__":
