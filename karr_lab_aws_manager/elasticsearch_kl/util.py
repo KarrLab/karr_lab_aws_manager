@@ -48,6 +48,26 @@ class EsUtil(config.establishES):
         uri = self.es_endpoint + '/' + '_cat/shards?h=index,shard,prirep,state,unassigned.reason'
         r = requests.get(uri, auth=self.awsauth)
         return r
+
+    def allocation_explain(self):
+        """chooses the first unassigned shard that it finds and explains why it cannot be allocated to a node
+
+        Returns:
+            (HTTPResponse): http response    
+        """
+        uri = self.es_endpoint + '/_cluster/allocation/explain'
+        r = requests.get(uri, auth=self.awsauth)
+        return r
+
+    def index_health_status(self):
+        """shows the health status, number of documents, and disk usage for each index
+
+        Returns:
+            (HTTPResponse): http response    
+        """
+        uri = self.es_endpoint + '/_cat/indices?v'
+        r = requests.get(uri, auth=self.awsauth)
+        return r
     
     def index_settings(self, index, number_of_replicas, number_of_shards=1,
                       other_settings = {}, 
@@ -79,23 +99,25 @@ class EsUtil(config.establishES):
         r = requests.put(url, auth=self.awsauth, data=json.dumps(settings), headers=headers)
         return r
 
-    def create_index(self, index, mappings={}, setting={"settings": {"number_of_shards": 1}}):
+    def create_index(self, index, mappings=None, setting={"settings": {"number_of_shards": 1,
+                                                                       "number_of_replicas": 0}}):
         """Create index
             (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 
         Args:
             index (:obj:`str`): name of index
             setting (:obj:`dict`, optional): index settings. Defaults to {"settings": {"number_of_shards": 1}}.
-            mappsing (:obj:`dict`, optional): index mappings. Deafults to {}.
+            mappsing (:obj:`dict`, optional): index mappings. Deafults to None.
             headers (:obj:`dict`): http request content header description. Defaults to { "Content-Type": "application/json" }.
         """
         url = self.es_endpoint + '/' + index
-        setting['mappings'] = mappings
+        if mappings is not None:
+            setting['mappings'] = mappings
         r = requests.put(url, auth=self.awsauth, json=setting)
         return r
 
     def migrate_index(self, old_index, new_index, headers={ "Content-Type": "application/json" },
-                    number_of_shards=1, number_of_replicas=1):
+                    number_of_shards=1, number_of_replicas=0):
         """Migrate old index to new index whilst changing shard and replica setting
         
         Args:
