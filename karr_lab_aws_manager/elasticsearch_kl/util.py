@@ -2,11 +2,19 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from karr_lab_aws_manager.config import config
 import requests
 import json
+from bson import ObjectId
 import math
 from pathlib import Path
 from requests_aws4auth import AWS4Auth
 import re
 import datetime
+
+
+class ComplexEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
 
 
 class EsUtil(config.establishES):
@@ -199,8 +207,8 @@ class EsUtil(config.establishES):
 
         def gen_bulk_file(_iid, bulk_file):
             action_and_metadata = self.make_action_and_metadata(index, _iid)
-            bulk_file += json.dumps(action_and_metadata) + '\n'
-            bulk_file += json.dumps(doc, default=date_converter) + '\n'  
+            bulk_file += json.dumps(action_and_metadata, cls=ComplexEncoder) + '\n'
+            bulk_file += json.dumps(doc, default=date_converter, cls=ComplexEncoder) + '\n'  
             return bulk_file
 
         def mod_cursor(cursor):
