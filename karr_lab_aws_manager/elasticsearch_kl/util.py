@@ -77,18 +77,36 @@ class EsUtil(config.establishES):
         r = requests.put(url, auth=self.awsauth, data=json.dumps(settings), headers=headers)
         return r
 
-    def create_index(self, index, setting={"settings": {"number_of_shards": 1}}):
+    def create_index(self, index, mappings={}, setting={"settings": {"number_of_shards": 1}}):
         """Create index
             (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 
         Args:
             index (:obj:`str`): name of index
             setting (:obj:`dict`, optional): index settings. Defaults to {"settings": {"number_of_shards": 1}}.
+            mappsing (:obj:`dict`, optional): index mappings. Deafults to {}.
             headers (:obj:`dict`): http request content header description. Defaults to { "Content-Type": "application/json" }.
         """
         url = self.es_endpoint + '/' + index
+        setting['mappings'] = mappings
         r = requests.put(url, auth=self.awsauth, json=setting)
         return r
+
+    def put_mapping(self, index, body):
+        """Put index mapping to exisiting index.
+        (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html)
+        
+        Args:
+            index (:obj:`str`): mapping for the index.
+            body (:obj:`dict`): mapping description.
+
+        Return:
+            (:obj:`requests.Response`)
+        """
+        url = self.es_endpoint + '/' + index + '/' + '_mapping'
+        r = requests.put(url, auth=self.awsauth, json=body)
+        return r
+
 
     def enable_fielddata(self, index, _type, field):
         """Enable fielddata for type fields
@@ -270,6 +288,8 @@ class EsUtil(config.establishES):
                 break
             if i % 20 == 0 and self.verbose:
                 print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
+            doc = json.dumps(doc, cls=ComplexEncoder)
+            print(doc)
             url = url_root + doc[_id]
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
             status_code.add(r.status_code)
