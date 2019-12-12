@@ -14,6 +14,8 @@ class ComplexEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
+        elif isinstance(o, datetime.date):
+            return o.isoformat()
         return json.JSONEncoder.default(self, o)
 
 
@@ -91,6 +93,37 @@ class EsUtil(config.establishES):
         setting['mappings'] = mappings
         r = requests.put(url, auth=self.awsauth, json=setting)
         return r
+
+    def migrate_index(self, old_index, new_index, headers={ "Content-Type": "application/json" },
+                    number_of_shards=1, number_of_replicas=1):
+        """Migrate old index to new index whilst changing shard and replica setting
+        
+        Args:
+            old_index (:obj:`str`): name of the old index.
+            new_index (:obj:`str`): name of the new index
+            headers (:obj:`HTTP.header`, optional): header. Defaults to { "Content-Type": "application/json" }.
+            number_of_shards (:obj:`int`, optional): number of shards for the index. Defaults to 1.
+            number_of_replicas (:obj:`int`, optional): number of replicas for the index. Defaults to 1.
+
+        Return:
+            (:obj:`list` of :obj:`requests.Response`)
+        """
+        template = {"index_patterns": [new_index], "settings": {"number_of_shards": number_of_shards,
+                                                                "number_of_replicas": number_of_replicas}}
+        template_url = self.es_endpoint + '/_template/template_1'
+        reindex = {"source": {"index": old_index}, "dest": {"index": new_index}}
+        reindex_url = self.es_endpoint + '/_reindex'
+        count_url = self.es_endpoint + '/_cat/count/'
+        old_index_url = self.es_endpoint + '/' + old_index
+        r_template = requests.put(template_url, auth=self.awsauth, json=template)
+        r_reindex = requests.post(reindex_url, auth=self.awsauth, json=reindex)
+        count_old = requests.get(count_url+old_index, auth=self.awsauth).content.decode('utf-8')
+        count_new = requests.get(count_url+new_index, auth=self.awsauth).content.decode('utf-8')
+        if count_old.split(' ')[:-1] == count_new.split(' ')[:-1]:
+            r = requests.delete(old_index_url, auth=self.awsauth)
+        else:
+            r = [count_old, count_new]
+        return [r_template, r_reindex, r]     
 
     def put_mapping(self, index, body):
         """Put index mapping to exisiting index.
@@ -287,8 +320,7 @@ class EsUtil(config.establishES):
                 break
             if i % 20 == 0 and self.verbose:
                 print("Processing doc {} out of {}...".format(i, min(count, self.max_entries)))
-            doc = json.dumps(doc, cls=ComplexEncoder)
-            print(doc)
+            doc = json.loads(json.dumps(doc, cls=ComplexEncoder))
             url = url_root + doc[_id]
             r = requests.post(url, auth=self.awsauth, json=doc, headers=headers)
             status_code.add(r.status_code)
