@@ -107,7 +107,6 @@ class EsUtil(config.establishES):
         r = requests.put(url, auth=self.awsauth, json=body)
         return r
 
-
     def enable_fielddata(self, index, _type, field):
         """Enable fielddata for type fields
         
