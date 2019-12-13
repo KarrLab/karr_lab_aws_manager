@@ -13,6 +13,7 @@ import karr_lab_aws_manager.core
 from karr_lab_aws_manager.elasticsearch_kl import util as es_util
 from karr_lab_aws_manager.quilt3_kl import util as quilt_util
 import json
+import pprint
 
 
 class BaseController(cement.Controller):
@@ -144,8 +145,48 @@ class EsCheckSvr(cement.Controller):
         args = self.app.pargs
         r = es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
                        config_path=args.config_path, elastic_path=args.elastic_path).index_health_status()
-        print(r.content.decode('utf-8'))    
+        print(r.content.decode('utf-8'))
 
+
+class EsGetIdxMapping(cement.Controller):
+    """Karrlab elasticsearch delete index. """
+
+    class Meta:
+        label = 'es-get-mapping'
+        description = 'Check ES server health status'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['--index'], dict(
+                type=str, default='.kibana_1', help='Comma separated names of indices in es')),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='es-poweruser',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            ),
+            (['--elastic_path', '-ep'], dict(
+                type=str, default='~/.wc/third_party/elasticsearch.ini',
+                help='Directory for file containing aws elasticsearch service variables'))
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Delete elasticsearch index
+
+            Args:
+                index (:obj:`str`): name of index in es
+                _id (:obj:`int`): id of the doc in index (optional)
+        '''
+        args = self.app.pargs
+        r = es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
+                       config_path=args.config_path, elastic_path=args.elastic_path).get_index_mapping(index=args.index)
+        content = json.loads(r.content.decode('utf-8'))        
+        pprint.pprint(content)
 
 class EsBulkUpload(cement.Controller):
     """ Karrlab elasticsearch bulk upload cli """
@@ -429,6 +470,7 @@ class App(cement.App):
             Command3WithArgumentsController,
             EsBulkUpload,
             EsCheckSvr,
+            EsGetIdxMapping,
             EsDeleteIdx,
             EsSetIdx,
             QuiltAddToPackage,

@@ -139,6 +139,20 @@ class CliTestCase(unittest.TestCase):
                 self.assertNotEqual(captured.stdout.get_text(), '')
                 self.assertEqual(captured.stderr.get_text(), '')
 
+    def test_es_get_mapping(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['es-get-mapping',
+                                    '--index', '.kibana_1']) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.index, '.kibana_1')
+
+                # test that the CLI produced the correct output
+                self.assertNotEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
+
     def test_quilt_add2_package(self):
         with capturer.CaptureOutput(merged=False, relay=False) as captured:
             with __main__.App(argv=['quilt-add2-package',

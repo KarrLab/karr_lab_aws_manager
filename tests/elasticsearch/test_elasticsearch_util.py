@@ -73,7 +73,7 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 2, 'mock_key_bulk': 'mock_value_2', 'uniprot_id': 'P2'},
                   {'number': 3, 'mock_key_bulk': 'mock_value_4', 'uniprot_id': 'P3'}]
         result = self.src.data_to_es_bulk(cursor, count=4, index=self.index, bulk_size=1)
-        self.assertTrue(result <= {201, 200})
+        self.assertTrue(result.status_code == 200)
         result = self.src.index_settings(self.index, 1)
         self.assertEqual(result.text, '{"acknowledged":true}')
         for dic in cursor:
@@ -81,7 +81,7 @@ class TestMongoToES(unittest.TestCase):
             with p.open(mode='w+') as f:
                 json.dump(dic, f)
         result = self.src.data_to_es_bulk(self.cache_dir, index=self.index, count=4, bulk_size=1)
-        self.assertTrue(result <= {201, 200})
+        self.assertTrue(result.status_code == 200)
 
     # @unittest.skip('reduce debugging confusion')
     def test_data_to_es_single(self):
@@ -115,3 +115,11 @@ class TestMongoToES(unittest.TestCase):
         result = self.src.add_field_to_index(self.index, field, value)
         print(result.text)
         self.assertEqual(result.status_code, 200)
+
+    def test_get_index_mapping(self):
+        r = self.src.get_index_mapping()
+        self.assertEqual(r.status_code, 200)
+        r = self.src.get_index_mapping(index='metabolites_meta,rna_halflife')
+        self.assertEqual(r.status_code, 200)
+        r = self.src.get_index_mapping(index='metabolites_meta,nonsense')
+        self.assertEqual(r.status_code, 404)

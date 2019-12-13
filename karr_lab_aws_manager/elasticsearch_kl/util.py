@@ -68,6 +68,19 @@ class EsUtil(config.establishES):
         uri = self.es_endpoint + '/_cat/indices?v'
         r = requests.get(uri, auth=self.awsauth)
         return r
+
+    def get_index_mapping(self, index='.kibana_1'):
+        """Get 
+        
+        Args:
+            index (:obj:`str`, optional): Comma-separated list or wildcard expression of index names. Defaults to '.kibana_1'.
+
+        Returns:
+            (:obj:`requests.Response`)
+        """
+        uri = self.es_endpoint + '/' + index + '/_mapping'
+        r = requests.get(uri, auth=self.awsauth)
+        return r
     
     def index_settings(self, index, number_of_replicas, number_of_shards=1,
                       other_settings = {}, 
