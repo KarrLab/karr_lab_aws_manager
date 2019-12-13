@@ -106,7 +106,45 @@ class EsDeleteIdx(cement.Controller):
         '''
         args = self.app.pargs
         es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
-                       config_path=args.config_path, elastic_path=args.elastic_path).delete_index(args.index, _id=args.id)  
+                       config_path=args.config_path, elastic_path=args.elastic_path).delete_index(args.index, _id=args.id)
+
+
+class EsCheckSvr(cement.Controller):
+    """Karrlab elasticsearch delete index. """
+
+    class Meta:
+        label = 'es-check-server'
+        description = 'Check ES server health status'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['--profile_name', '-pn'], dict(
+                type=str, default='es-poweruser',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            ),
+            (['--elastic_path', '-ep'], dict(
+                type=str, default='~/.wc/third_party/elasticsearch.ini',
+                help='Directory for file containing aws elasticsearch service variables'))
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Delete elasticsearch index
+
+            Args:
+                index (:obj:`str`): name of index in es
+                _id (:obj:`int`): id of the doc in index (optional)
+        '''
+        args = self.app.pargs
+        r = es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
+                       config_path=args.config_path, elastic_path=args.elastic_path).index_health_status()
+        print(r.content.decode('utf-8'))    
 
 
 class EsBulkUpload(cement.Controller):
@@ -390,6 +428,7 @@ class App(cement.App):
             BaseController,
             Command3WithArgumentsController,
             EsBulkUpload,
+            EsCheckSvr,
             EsDeleteIdx,
             EsSetIdx,
             QuiltAddToPackage,

@@ -14,8 +14,8 @@ class ComplexEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
-        elif isinstance(o, datetime.date):
-            return o.isoformat()
+        elif isinstance(o, datetime.datetime):
+            return o.__str__()
         return json.JSONEncoder.default(self, o)
 
 
@@ -273,14 +273,12 @@ class EsUtil(config.establishES):
             Returns:
                 (:obj:`set`): set of status codes
         '''
-        def date_converter(d):
-            if isinstance(d, datetime.datetime):
-                return d.__str__()
-
         def gen_bulk_file(_iid, bulk_file):
             action_and_metadata = self.make_action_and_metadata(index, _iid)
             bulk_file += json.dumps(action_and_metadata, cls=ComplexEncoder) + '\n'
-            bulk_file += json.dumps(doc, default=date_converter, cls=ComplexEncoder) + '\n'  
+            if doc.get('_id') is not None:
+                doc['id'] = doc.pop('_id')
+            bulk_file += json.dumps(doc, cls=ComplexEncoder) + '\n'  
             return bulk_file
 
         def mod_cursor(cursor):
@@ -312,7 +310,7 @@ class EsUtil(config.establishES):
                 bulk_file = gen_bulk_file(doc[_id], bulk_file)
                 r = requests.post(url, auth=self.awsauth, data=bulk_file, headers=headers)
                 status_code.add(r.status_code)
-                return status_code
+                return r
             elif i % bulk_size != 0 or i == 0: #  bulk_size*(n-1) + 1 --> bulk_size*n - 1
                 bulk_file = gen_bulk_file(doc[_id], bulk_file)
             else:               # bulk_size * n

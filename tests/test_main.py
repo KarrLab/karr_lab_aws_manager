@@ -129,6 +129,16 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(captured.stdout.get_text(), '')
                 self.assertEqual(captured.stderr.get_text(), '')
 
+    def test_es_check_svr(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['es-check-server']) as app:
+                # run app
+                app.run()
+
+                # test that the CLI produced the correct output
+                self.assertNotEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
+
     def test_quilt_add2_package(self):
         with capturer.CaptureOutput(merged=False, relay=False) as captured:
             with __main__.App(argv=['quilt-add2-package',
