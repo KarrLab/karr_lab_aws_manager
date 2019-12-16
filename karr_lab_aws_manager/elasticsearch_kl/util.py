@@ -243,6 +243,24 @@ class EsUtil(config.establishES):
         r = requests.post(url, auth=self.awsauth, json=body)
         return r
     
+    def update_index_analysis(self, index, body):
+        """Update index's analyzers
+        
+        Args:
+            index (:obj:`str`): name of the index.
+            body (:obj:`str`): update body.
+
+        Return:
+            (:obj:`tuple` of :obj:`requests.Response`)
+        """
+        close_url = self.es_endpoint + '/' + index + '/_close'
+        open_url = self.es_endpoint + '/' + index + '/_open'
+        settings_url = self.es_endpoint + '/' + index + '/_settings'
+        _ = requests.post(close_url, auth=self.awsauth)
+        r_put = requests.put(settings_url, auth=self.awsauth, json=body)
+        r_open = requests.post(open_url, auth=self.awsauth)
+        return r_put, r_open
+
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading
             e.g. { "index": { "_index" : "index", "_id" : "id" } }

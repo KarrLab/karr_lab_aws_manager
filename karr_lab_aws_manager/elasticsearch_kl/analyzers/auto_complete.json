@@ -1,0 +1,12 @@
+{
+    "analyzer":{
+        "autocomplete": {
+            "type":      "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "autocomplete_filter" 
+            ]
+        }
+    }
+}
