@@ -39,6 +39,8 @@ class EsUtil(config.establishES):
         self.verbose = verbose
         self.max_entries = max_entries
         self.cache_dir = cache_dir
+        self.analyzers_manager = analyzers_util.AnalyzersUtil()
+        self.filters_manager = filters_util.FiltersUtil()
 
     def unassigned_reason(self):
         """sends http request to get why a shard is unassigned
@@ -244,13 +246,14 @@ class EsUtil(config.establishES):
         r = requests.post(url, auth=self.awsauth, json=body)
         return r
     
-    def update_index_analysis(self, index, content):
+    def update_index_analysis(self, index, filter_dir, analyzer_dir):
         """Update index's analyzers
         (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html#update-settings-analysis)
         
         Args:
             index (:obj:`str`): name of the index.
-            content (:obj:`str`): analysis body.
+            filter_dir (:obj:`str`): filter file directory.
+            analyzer_dir (:obj:`str`): analyzer file directory.
 
         Return:
             (:obj:`tuple` of :obj:`requests.Response`)
@@ -259,7 +262,9 @@ class EsUtil(config.establishES):
         open_url = self.es_endpoint + '/' + index + '/_open'
         settings_url = self.es_endpoint + '/' + index + '/_settings'
         _ = requests.post(close_url, auth=self.awsauth)
-        body = {'analysis': content}
+        filter_data = self.filters_manager.read_filter(filter_dir)
+        analyzer_data = self.analyzers_manager.read_analyzer(analyzer_dir)
+        body = {'analysis': {**filter_data, **analyzer_data}}
         r_put = requests.put(settings_url, auth=self.awsauth, json=body)
         r_open = requests.post(open_url, auth=self.awsauth)
         return r_put, r_open

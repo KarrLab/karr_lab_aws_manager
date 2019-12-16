@@ -302,6 +302,59 @@ class EsSetIdx(cement.Controller):
                        )
 
 
+class EsSetAnalysis(cement.Controller):
+    """Karrlab elasticsearch settings for index. """
+
+    class Meta:
+        label = 'es-set-analysis'
+        description = 'Index settings in ES'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['index'], dict(
+                type=str, help='Name of index in es')),
+            (['filter_dir'], dict(
+                type=str, help='Directory of filter file')),
+            (['analyzer_dir'], dict(
+                type=str, help='Directory of analyzer file')
+            ),
+            (['--profile_name', '-pn'], dict(
+                type=str, default='es-poweruser',
+                help='AWS profile to use for authentication')),
+            (['--credential_path', '-cr'], dict(
+                type=str, default='~/.wc/third_party/aws_credentials',
+                help='Directory for aws credentials file')),
+            (['--config_path', '-cp'], dict(
+                type=str, default='~/.wc/third_party/aws_config',
+                help='Directory for aws config file')
+            ),
+            (['--elastic_path', '-ep'], dict(
+                type=str, default='~/.wc/third_party/elasticsearch.ini',
+                help='Directory for file containing aws elasticsearch service variables')),
+            (['--headers'], dict(
+                type=dict, default={ "Content-Type": "application/json" },
+                help='Http header'))
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        """Setting index's shard and replica number in es cluster
+        
+        Args:
+            index (str): name of index to be set
+            number_of_replicas (int): number of replica shards to be used for the index
+            number_of_shards (int): number of primary shards contained in the es cluster
+            headers (dict): http request content header description
+
+        Returns:
+            (HTTPResponse): http response
+        """
+        args = self.app.pargs
+        es_util.EsUtil(profile_name=args.profile_name, credential_path=args.credential_path,
+                       config_path=args.config_path, elastic_path=args.elastic_path).update_index_analysis(
+                           args.index, args.filter_dir, args.analyzer_dir)
+
+
 class QuiltAddToPackage(cement.Controller):
     """Karrlab add files to quilt3 package"""
 
@@ -473,6 +526,7 @@ class App(cement.App):
             EsGetIdxMapping,
             EsDeleteIdx,
             EsSetIdx,
+            EsSetAnalysis,
             QuiltAddToPackage,
             QuiltPushToS3,
             QuiltRmPkg
