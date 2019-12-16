@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from karr_lab_aws_manager.config import config
+from karr_lab_aws_manager.elasticsearch_kl import analyzers_util, filters_util
 import requests
 import json
 from bson import ObjectId
@@ -243,12 +244,13 @@ class EsUtil(config.establishES):
         r = requests.post(url, auth=self.awsauth, json=body)
         return r
     
-    def update_index_analysis(self, index, body):
+    def update_index_analysis(self, index, content):
         """Update index's analyzers
+        (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html#update-settings-analysis)
         
         Args:
             index (:obj:`str`): name of the index.
-            body (:obj:`str`): update body.
+            content (:obj:`str`): analysis body.
 
         Return:
             (:obj:`tuple` of :obj:`requests.Response`)
@@ -257,6 +259,7 @@ class EsUtil(config.establishES):
         open_url = self.es_endpoint + '/' + index + '/_open'
         settings_url = self.es_endpoint + '/' + index + '/_settings'
         _ = requests.post(close_url, auth=self.awsauth)
+        body = {'analysis': content}
         r_put = requests.put(settings_url, auth=self.awsauth, json=body)
         r_open = requests.post(open_url, auth=self.awsauth)
         return r_put, r_open
