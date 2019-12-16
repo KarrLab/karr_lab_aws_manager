@@ -1,5 +1,6 @@
 import unittest
 from karr_lab_aws_manager.elasticsearch_kl import util
+from karr_lab_aws_manager.elasticsearch_kl import analyzers_util
 from pathlib import Path
 import json
 import tempfile
@@ -19,9 +20,11 @@ class TestMongoToES(unittest.TestCase):
         cls.index = 'test'
         cls.index_0 = 'test_0'
         cls.index_1 = 'test_1'
+        cls.index_2 = 'test_analysis'
         cls.url = cls.src.es_endpoint + '/' + cls.index
         cls.url_0 = cls.src.es_endpoint + '/' + cls.index_0
         cls.url_1 = cls.src.es_endpoint + '/' + cls.index_1
+        cls.url_2 = cls.src.es_endpoint + '/' + cls.index_2
         requests.delete(cls.url, auth=cls.src.awsauth)
 
     @classmethod
@@ -30,6 +33,7 @@ class TestMongoToES(unittest.TestCase):
         requests.delete(cls.url, auth=cls.src.awsauth)
         requests.delete(cls.url_0, auth=cls.src.awsauth)
         requests.delete(cls.url_1, auth=cls.src.awsauth)
+        requests.delete(cls.url_2, auth=cls.src.awsauth)
 
     def test_build_es(self):
         result_0 = self.src.build_es()
@@ -113,7 +117,6 @@ class TestMongoToES(unittest.TestCase):
         field = 'some_field'
         value = 'value'
         result = self.src.add_field_to_index(self.index, field, value)
-        print(result.text)
         self.assertEqual(result.status_code, 200)
 
     def test_get_index_mapping(self):
@@ -123,3 +126,74 @@ class TestMongoToES(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         r = self.src.get_index_mapping(index='metabolites_meta,nonsense')
         self.assertEqual(r.status_code, 404)
+
+    @unittest.skip('debugging')
+    def test_analyzer(self):
+        analyzer = 'autocomplete'
+        body = {'analyzer': analyzer, 'text': 'alcohol dehydrogenase'}
+        result = requests.get(self.src.es_endpoint + '/' + 'protein' + '/_analyze', auth=self.src.awsauth, json=body)
+        print(result.content)
+
+    def test_update_index_analysis(self):
+        cursor = [{'number': 0, 'mock_key_bulk': 'mock value 0', 'uniprot_id': 'P0'},
+                  {'number': 1, 'mock_key_bulk': 'mock value 1', 'uniprot_id': 'P1'},
+                  {'number': 2, 'mock_key_bulk': 'mock value 2', 'uniprot_id': 'P2'},
+                  {'number': 3, 'mock_key_bulk': 'mock value 4', 'uniprot_id': 'P3'}]
+        mappings = {'properties': {'number': {'type': 'long'}, 
+                                   'mock_key_bulk': {'type': 'text',
+                                              "analyzer": "autocomplete",
+                                              "search_analyzer": "standard"}, 
+                                    'uniprot_id': {'type': 'text',
+                                              "analyzer": "autocomplete",
+                                              "search_analyzer": "standard"}}}
+        _analyzer = {'analyzer': 'autocomplete', 'text': 'mock value'}        
+        filter_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/filters/edge_ngram.json'
+        analyzer_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/analyzers/auto_complete.json'
+        total = {
+                "settings": {
+                    "number_of_shards": 1,
+                    "number_of_replicas": 0,
+                    "filter": {
+                        "autocomplete_filter": {
+                            "type": "edge_ngram",
+                            "min_gram": 1,
+                            "max_gram": 20
+                        }
+                    },
+                    "analyzer": {
+                        "autocomplete": {
+                            "type": "custom",
+                            "tokenizer": "standard",
+                            "filter": [
+                                "lowercase",
+                                "autocomplete_filter"
+                            ]
+                        }
+                    }
+                },
+                "mappings": {
+                    "properties": {
+                        "number": {
+                            "type": "long"
+                        },
+                        "mock_key_bulk": {
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "uniprot_id": {
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                }
+            }
+        _filter = analyzers_util.AnalyzersUtil().read_analyzer(filter_dir)
+        analysis = analyzers_util.AnalyzersUtil().read_analyzer(analyzer_dir)
+        # r_c = self.src.create_index(self.index_2, mappings=mappings, additional_settings={**_filter, **analysis})
+        r_c = requests.put(self.src.es_endpoint+'/'+self.index_2, auth=self.src.awsauth, json=total)
+        print(r_c.content)
+        _ = self.src.data_to_es_bulk(cursor, count=4, index=self.index_2, bulk_size=1)
+        r = requests.get(self.src.es_endpoint+'/'+self.index_2+'/_analyze', auth=self.src.awsauth, json=_analyzer)
+        print(r.content)

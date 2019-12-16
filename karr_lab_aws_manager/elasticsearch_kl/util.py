@@ -116,20 +116,24 @@ class EsUtil(config.establishES):
         return r
 
     def create_index(self, index, mappings=None, setting={"settings": {"number_of_shards": 1,
-                                                                       "number_of_replicas": 0}}):
+                    "number_of_replicas": 0}}, additional_settings=None, headers={ "Content-Type": "application/json" }):
         """Create index
             (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 
         Args:
             index (:obj:`str`): name of index
             setting (:obj:`dict`, optional): index settings. Defaults to {"settings": {"number_of_shards": 1}}.
-            mappsing (:obj:`dict`, optional): index mappings. Deafults to None.
+            mappings (:obj:`dict`, optional): index mappings. Deafults to None.
             headers (:obj:`dict`): http request content header description. Defaults to { "Content-Type": "application/json" }.
+            additional_settings (:obj:`dict`): additional settings. Defaults to None.
         """
         url = self.es_endpoint + '/' + index
         if mappings is not None:
             setting['mappings'] = mappings
-        r = requests.put(url, auth=self.awsauth, json=setting)
+        if additional_settings is not None:
+            tot_setting = {**setting['settings'], **additional_settings}
+            setting['settings'] = tot_setting
+        r = requests.put(url, auth=self.awsauth, json=setting, headers=headers)
         return r
 
     def migrate_index(self, old_index, new_index, headers={ "Content-Type": "application/json" },
@@ -265,9 +269,10 @@ class EsUtil(config.establishES):
         filter_data = self.filters_manager.read_filter(filter_dir)
         analyzer_data = self.analyzers_manager.read_analyzer(analyzer_dir)
         body = {'analysis': {**filter_data, **analyzer_data}}
+        r_close = requests.put(close_url, auth=self.awsauth)
         r_put = requests.put(settings_url, auth=self.awsauth, json=body)
         r_open = requests.post(open_url, auth=self.awsauth)
-        return r_put, r_open
+        return r_close, r_put, r_open
 
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading
