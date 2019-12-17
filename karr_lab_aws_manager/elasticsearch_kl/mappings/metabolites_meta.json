@@ -37,7 +37,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         },
         "reaction_participants": {
             "properties": {
@@ -48,7 +50,9 @@
                             "type": "keyword"
                         }
                     },
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
                 },
                 "substrates": {
                     "fields": {
@@ -57,7 +61,9 @@
                             "type": "keyword"
                         }
                     },
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
                 }
             }
         },
@@ -84,7 +90,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         },
         "ymdb_id": {
             "fields": {
