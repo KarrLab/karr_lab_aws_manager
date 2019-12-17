@@ -1,105 +1,191 @@
 {
-    "properties": {
-        "abundances": {
+    "protein": {
+        "mappings": {
             "properties": {
-                "abundance": {
+                "abundances": {
+                    "properties": {
+                        "abundance": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "organ": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                },
+                "ancestor_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
                     "type": "text",
                     "analyzer": "autocomplete",
                     "search_analyzer": "standard"
                 },
-                "organ": {
-                    "type": "text"
-                }
-            }
-        },
-        "ancestor_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "ancestor_taxon_id": {
-            "type": "long"
-        },
-        "canonical_sequence": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "ec_number": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "entrez_id": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "entry_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "gene_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "kinetics": {
-            "properties": {
-                "kinlaw_id": {
+                "ancestor_taxon_id": {
                     "type": "long"
+                },
+                "canonical_sequence": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "ec_number": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "entrez_id": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "entry_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "gene_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "kinetics": {
+                    "properties": {
+                        "kinlaw_id": {
+                            "type": "long"
+                        },
+                        "ncbi_taxonomy_id": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "ko_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "ko_number": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "length": {
+                    "type": "long"
+                },
+                "mass": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
                 },
                 "ncbi_taxonomy_id": {
                     "type": "long"
+                },
+                "ordered_locus_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "protein_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "review_status": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "species_name": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "uniprot_id": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
                 }
             }
-        },
-        "ko_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "ko_number": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "length": {
-            "type": "long"
-        },
-        "mass": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "ncbi_taxonomy_id": {
-            "type": "long"
-        },
-        "ordered_locus_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "protein_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "review_status": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "species_name": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
-        },
-        "uniprot_id": {
-            "type": "text",
-            "analyzer": "autocomplete",
-            "search_analyzer": "standard"
         }
     }
 }
