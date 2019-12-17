@@ -115,7 +115,7 @@ class EsUtil(config.establishES):
         return r
 
     def create_index(self, index, mappings=None, setting={"settings": {"number_of_shards": 1,
-                    "number_of_replicas": 0}}, additional_settings=None, headers={ "Content-Type": "application/json" }):
+                    "number_of_replicas": 0}}, additional_settings=None):
         """Create index
             (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 
@@ -123,7 +123,6 @@ class EsUtil(config.establishES):
             index (:obj:`str`): name of index
             setting (:obj:`dict`, optional): index settings. Defaults to {"settings": {"number_of_shards": 1}}.
             mappings (:obj:`dict`, optional): index mappings. Deafults to None.
-            headers (:obj:`dict`): http request content header description. Defaults to { "Content-Type": "application/json" }.
             additional_settings (:obj:`dict`): additional settings. Defaults to None.
         """
         url = self.es_endpoint + '/' + index
@@ -132,7 +131,26 @@ class EsUtil(config.establishES):
         if additional_settings is not None:
             tot_setting = {**setting['settings'], **additional_settings}
             setting['settings'] = tot_setting
-        r = requests.put(url, auth=self.awsauth, json=setting, headers=headers)
+        r = requests.put(url, auth=self.awsauth, json=setting)
+        return r
+
+    def create_index_with_file(self, index, _file, num_shard=1, num_replica=0):
+        """Create index with an index description file
+            (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
+
+        Args:
+            index (:obj:`str`): name of index
+            _file (:obj:`dict`): index setting description.
+            num_shard (:obj:`int`, optional): number of shards. Defaults to 1.
+            num_replica (:obj:`int`, optional): number of replicas. Defaults to 0.
+
+        Return:
+            (:obj:`requests.Response`)
+        """
+        url = self.es_endpoint + '/' + index
+        _file['settings']['number_of_shards'] = num_shard
+        _file['settings']['number_of_replicas'] = num_replica
+        r = requests.put(url, auth=self.awsauth, json=_file)
         return r
 
     def migrate_index(self, old_index, new_index, headers={ "Content-Type": "application/json" },

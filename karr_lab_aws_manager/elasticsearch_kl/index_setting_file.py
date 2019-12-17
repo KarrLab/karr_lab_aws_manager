@@ -6,15 +6,15 @@ class IndexUtil:
     """Make index setting json file.
     """
 
-    def __init__(self, _filter_dir=None, analyzer_dir=None, mapping_properties_dir=None):
+    def __init__(self, filter_dir=None, analyzer_dir=None, mapping_properties_dir=None):
         """Initialize
         
         Args:
-            _filter_dir (:obj:`str`, optional): filter file directory. Defaults to None.
+            filter_dir (:obj:`str`, optional): filter file directory. Defaults to None.
             analyzer_dir (:obj:`str`, optional): analyzer file directory. Defaults to None.
             mapping_properties_dir (:obj:`str`, optional): mapping properties file directory. Defaults to None.
         """
-        self._filter_dir = _filter_dir
+        self.filter_dir = filter_dir
         self.analyzer_dir = analyzer_dir
         self.mapping_properties_dir = mapping_properties_dir
 
@@ -37,7 +37,7 @@ class IndexUtil:
 
         Args:
             _filter (:obj:`bool`): whether to include filter info.
-            _analyzer (:obj:`bool`): whether to include analyzer info.
+            analyzer (:obj:`bool`): whether to include analyzer info.
             mappings (:obj:`bool`): whether to include mappings info.
 
         Return:
@@ -49,11 +49,11 @@ class IndexUtil:
 
         result = {}
 
-        if _filter is not None:
-            _filter_data = self.read_file(self._filter_dir)
-        if analyzer is not None:
+        if _filter:
+            _filter_data = self.read_file(self.filter_dir)
+        if analyzer:
             analyzer_data = self.read_file(self.analyzer_dir)
-        if mappings is not None:
+        if mappings:
             mappings_data = self.read_file(self.mapping_properties_dir)
 
         result['settings'] = {'analysis': {**_filter_data, **analyzer_data}}
