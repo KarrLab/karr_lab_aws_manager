@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from karr_lab_aws_manager.config import config
-from karr_lab_aws_manager.elasticsearch_kl import analyzers_util, filters_util
+from karr_lab_aws_manager.elasticsearch_kl import index_setting_file
 import requests
 import json
 from bson import ObjectId
@@ -39,8 +39,7 @@ class EsUtil(config.establishES):
         self.verbose = verbose
         self.max_entries = max_entries
         self.cache_dir = cache_dir
-        self.analyzers_manager = analyzers_util.AnalyzersUtil()
-        self.filters_manager = filters_util.FiltersUtil()
+        self.index_setting_manager = index_setting_file.IndexUtil()
 
     def unassigned_reason(self):
         """sends http request to get why a shard is unassigned
@@ -249,30 +248,6 @@ class EsUtil(config.establishES):
                 }
         r = requests.post(url, auth=self.awsauth, json=body)
         return r
-    
-    def update_index_analysis(self, index, filter_dir, analyzer_dir):
-        """Update index's analyzers
-        (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html#update-settings-analysis)
-        
-        Args:
-            index (:obj:`str`): name of the index.
-            filter_dir (:obj:`str`): filter file directory.
-            analyzer_dir (:obj:`str`): analyzer file directory.
-
-        Return:
-            (:obj:`tuple` of :obj:`requests.Response`)
-        """
-        close_url = self.es_endpoint + '/' + index + '/_close'
-        open_url = self.es_endpoint + '/' + index + '/_open'
-        settings_url = self.es_endpoint + '/' + index + '/_settings'
-        _ = requests.post(close_url, auth=self.awsauth)
-        filter_data = self.filters_manager.read_filter(filter_dir)
-        analyzer_data = self.analyzers_manager.read_analyzer(analyzer_dir)
-        body = {'analysis': {**filter_data, **analyzer_data}}
-        r_close = requests.put(close_url, auth=self.awsauth)
-        r_put = requests.put(settings_url, auth=self.awsauth, json=body)
-        r_open = requests.post(open_url, auth=self.awsauth)
-        return r_close, r_put, r_open
 
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading

@@ -1,12 +1,12 @@
 import unittest
-from karr_lab_aws_manager.elasticsearch_kl import analyzers_util
+from karr_lab_aws_manager.elasticsearch_kl import index_setting_file
 
 
-class TestAnalyzersUtil(unittest.TestCase):
+class TestIndexUtil(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.src = analyzers_util.AnalyzersUtil()
+        cls.src = index_setting_file.IndexUtil()
 
     def test_init(self):
         self.assertNotEqual(str(self.src.cwd), '/') 

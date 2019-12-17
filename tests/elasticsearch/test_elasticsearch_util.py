@@ -132,7 +132,6 @@ class TestMongoToES(unittest.TestCase):
         analyzer = 'autocomplete'
         body = {'analyzer': analyzer, 'text': 'alcohol dehydrogenase'}
         result = requests.get(self.src.es_endpoint + '/' + 'protein' + '/_analyze', auth=self.src.awsauth, json=body)
-        print(result.content)
 
     def test_update_index_analysis(self):
         cursor = [{'number': 0, 'mock_key_bulk': 'mock value 0', 'uniprot_id': 'P0'},
