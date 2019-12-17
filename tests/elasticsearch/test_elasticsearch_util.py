@@ -1,6 +1,6 @@
 import unittest
 from karr_lab_aws_manager.elasticsearch_kl import util
-from karr_lab_aws_manager.elasticsearch_kl import analyzers_util
+from karr_lab_aws_manager.elasticsearch_kl import index_setting_file
 from pathlib import Path
 import json
 import tempfile

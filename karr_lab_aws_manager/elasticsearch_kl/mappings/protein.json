@@ -117,7 +117,8 @@
                             "type": "keyword"
                         }
                     },
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "length": {
                     "type": "long"
