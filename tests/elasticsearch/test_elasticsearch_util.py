@@ -139,35 +139,28 @@ class TestMongoToES(unittest.TestCase):
                   {'number': 1, 'mock_key_bulk': 'mock value 1', 'uniprot_id': 'P1'},
                   {'number': 2, 'mock_key_bulk': 'mock value 2', 'uniprot_id': 'P2'},
                   {'number': 3, 'mock_key_bulk': 'mock value 4', 'uniprot_id': 'P3'}]
-        mappings = {'properties': {'number': {'type': 'long'}, 
-                                   'mock_key_bulk': {'type': 'text',
-                                              "analyzer": "autocomplete",
-                                              "search_analyzer": "standard"}, 
-                                    'uniprot_id': {'type': 'text',
-                                              "analyzer": "autocomplete",
-                                              "search_analyzer": "standard"}}}
         _analyzer = {'analyzer': 'autocomplete', 'text': 'mock value'}        
-        filter_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/filters/edge_ngram.json'
-        analyzer_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/analyzers/auto_complete.json'
         total = {
                 "settings": {
                     "number_of_shards": 1,
                     "number_of_replicas": 0,
-                    "filter": {
-                        "autocomplete_filter": {
-                            "type": "edge_ngram",
-                            "min_gram": 1,
-                            "max_gram": 20
-                        }
-                    },
-                    "analyzer": {
-                        "autocomplete": {
-                            "type": "custom",
-                            "tokenizer": "standard",
-                            "filter": [
-                                "lowercase",
-                                "autocomplete_filter"
-                            ]
+                    "analysis":{
+                        "filter": {
+                            "autocomplete_filter": {
+                                "type": "edge_ngram",
+                                "min_gram": 1,
+                                "max_gram": 20
+                            }
+                        },
+                        "analyzer": {
+                            "autocomplete": {
+                                "type": "custom",
+                                "tokenizer": "standard",
+                                "filter": [
+                                    "lowercase",
+                                    "autocomplete_filter"
+                                ]
+                            }
                         }
                     }
                 },
@@ -189,11 +182,8 @@ class TestMongoToES(unittest.TestCase):
                     }
                 }
             }
-        _filter = analyzers_util.AnalyzersUtil().read_analyzer(filter_dir)
-        analysis = analyzers_util.AnalyzersUtil().read_analyzer(analyzer_dir)
-        # r_c = self.src.create_index(self.index_2, mappings=mappings, additional_settings={**_filter, **analysis})
         r_c = requests.put(self.src.es_endpoint+'/'+self.index_2, auth=self.src.awsauth, json=total)
-        print(r_c.content)
+        self.assertTrue(json.loads(r_c.text)['acknowledged'])
         _ = self.src.data_to_es_bulk(cursor, count=4, index=self.index_2, bulk_size=1)
         r = requests.get(self.src.es_endpoint+'/'+self.index_2+'/_analyze', auth=self.src.awsauth, json=_analyzer)
-        print(r.content)
+        self.assertEqual(json.loads(r.text)['tokens'][0]['token'], 'm')
