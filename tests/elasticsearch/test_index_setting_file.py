@@ -6,9 +6,9 @@ class TestIndexUtil(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.analyzer_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/analyzers/auto_complete.json'
-        cls.filter_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/filters/autocomplete_filter.json'
-        cls.mappings_dir = '~/karr_lab/karr_lab_aws_manager/karr_lab_aws_manager/elasticsearch_kl/mappings/protein.json'
+        cls.analyzer_dir = './karr_lab_aws_manager/elasticsearch_kl/analyzers/auto_complete.json'
+        cls.filter_dir = './karr_lab_aws_manager/elasticsearch_kl/filters/autocomplete_filter.json'
+        cls.mappings_dir = './karr_lab_aws_manager/elasticsearch_kl/mappings/protein.json'
         cls.src = index_setting_file.IndexUtil(filter_dir=cls.filter_dir, analyzer_dir=cls.analyzer_dir,
         mapping_properties_dir=cls.mappings_dir)
 
