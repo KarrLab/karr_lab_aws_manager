@@ -1,0 +1,99 @@
+{
+    "properties": {
+        "InChI_Key": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "inchi": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kinlaw_id": {
+            "type": "long"
+        },
+        "m2m_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "reaction_participants": {
+            "properties": {
+                "products": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "substrates": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                }
+            }
+        },
+        "similar_compounds": {
+            "properties": {
+                "inchikey": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "similarity_score": {
+                    "type": "float"
+                }
+            }
+        },
+        "synonyms": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "ymdb_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        }
+    }
+}
