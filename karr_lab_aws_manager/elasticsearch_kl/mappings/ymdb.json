@@ -1,0 +1,812 @@
+{
+    "properties": {
+        "average_molecular_weight": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "biocyc_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "cas_registry_number": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "cellular_locations": {
+            "properties": {
+                "cellular_location": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                }
+            }
+        },
+        "chebi_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "chemical_formula": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "chemspider_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "concentrations": {
+            "properties": {
+                "concentration": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "concentration_units": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "error": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "growth_media": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "internal": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "reference": {
+                    "properties": {
+                        "pubmed_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "reference_text": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        }
+                    }
+                },
+                "strain": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                }
+            }
+        },
+        "creation_date": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "description": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
+        },
+        "enzymes": {
+            "properties": {
+                "enzyme": {
+                    "properties": {
+                        "gene_name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "protein_url": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "uniprot_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "uniprot_name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                }
+            }
+        },
+        "experimental_properties": {
+            "properties": {
+                "property": {
+                    "properties": {
+                        "kind": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "value": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        }
+                    }
+                }
+            }
+        },
+        "foodb_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "general_references": {
+            "properties": {
+                "reference": {
+                    "properties": {
+                        "pubmed_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "reference_text": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                }
+            }
+        },
+        "hmdb_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "inchi": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "inchikey": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "iupac_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kegg_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "monisotopic_moleculate_weight": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
+        },
+        "pathways": {
+            "properties": {
+                "pathway": {
+                    "properties": {
+                        "description": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "kegg_map_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "pathwhiz_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "subject": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                }
+            }
+        },
+        "predicted_properties": {
+            "properties": {
+                "property": {
+                    "properties": {
+                        "kind": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "source": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "value": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        }
+                    }
+                }
+            }
+        },
+        "property": {
+            "properties": {
+                "kind": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "source": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "value": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                }
+            }
+        },
+        "pubchem_compound_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "reactions": {
+            "properties": {
+                "pw_reaction_id": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "reaction_text": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                }
+            }
+        },
+        "smiles": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "species": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
+        },
+        "spectra": {
+            "properties": {
+                "spectrum": {
+                    "properties": {
+                        "spectrum_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "type": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        }
+                    }
+                }
+            }
+        },
+        "state": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "synonyms": {
+            "properties": {
+                "synonym": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text",
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                }
+            }
+        },
+        "synthesis_reference": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "taxonomy": {
+            "properties": {
+                "alternate_parents": {
+                    "properties": {
+                        "alternative_parent": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                },
+                "class": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "descriptors": {
+                    "properties": {
+                        "descriptor": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                },
+                "direct_parent": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "kingdom": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "molecular_framework": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "sub_class": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "substituents": {
+                    "properties": {
+                        "substituent": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        }
+                    }
+                },
+                "super_class": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                }
+            }
+        },
+        "traditional_iupac": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "transporters": {
+            "properties": {
+                "enzyme": {
+                    "properties": {
+                        "gene_name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        },
+                        "protein_url": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "uniprot_id": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text"
+                        },
+                        "uniprot_name": {
+                            "fields": {
+                                "keyword": {
+                                    "ignore_above": 256,
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "text",
+                            "analyzer": "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                }
+            }
+        },
+        "update_date": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "version": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "wikipedia": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "ymdb_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        }
+    }
+}
