@@ -150,6 +150,7 @@ class EsUtil(config.establishES):
         url = self.es_endpoint + '/' + index
         _file['settings']['number_of_shards'] = num_shard
         _file['settings']['number_of_replicas'] = num_replica
+        print(_file)
         r = requests.put(url, auth=self.awsauth, json=_file)
         return r
 
