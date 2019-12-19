@@ -19,7 +19,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         },
         "comments": {
             "fields": {
@@ -28,7 +30,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         },
         "division_cde": {
             "fields": {
@@ -133,7 +137,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         },
         "plastid_gene_code": {
             "fields": {
@@ -163,7 +169,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         },
         "unique_variant_name": {
             "fields": {
@@ -172,7 +180,9 @@
                     "type": "keyword"
                 }
             },
-            "type": "text"
+            "type": "text",
+            "analyzer": "autocomplete",
+            "search_analyzer": "standard"
         }
     }
 }
