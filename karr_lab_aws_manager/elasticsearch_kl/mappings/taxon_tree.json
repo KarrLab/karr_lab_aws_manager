@@ -1,0 +1,178 @@
+{
+    "properties": {
+        "abbreviation": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "anc_id": {
+            "type": "long"
+        },
+        "anc_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "comments": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "division_cde": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "division_comments": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "division_id": {
+            "type": "long"
+        },
+        "division_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "gene_code": {
+            "type": "long"
+        },
+        "gene_code_cde": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "gene_code_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "gene_code_starts": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "hydrogenosome_gene_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "locus_name_prefix": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "name_class": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "name_txt": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "plastid_gene_code": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "rank": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "tax_id": {
+            "type": "long"
+        },
+        "tax_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "unique_variant_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        }
+    }
+}
