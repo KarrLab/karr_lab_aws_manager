@@ -9,5 +9,5 @@ configparser
 requests
 requests_aws4auth
 elasticsearch
-quilt3
+quilt3 == 3.1.9
 capturer

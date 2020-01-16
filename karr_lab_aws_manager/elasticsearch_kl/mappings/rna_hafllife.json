@@ -1,0 +1,122 @@
+{
+    "rna_halflife": {
+        "mappings": {
+            "properties": {
+                "function": {
+                    "type": "text"
+                },
+                "gene_name": {
+                    "type": "text"
+                },
+                "halflives": {
+                    "properties": {
+                        "ar_cog": {
+                            "type": "text"
+                        },
+                        "cog": {
+                            "type": "text"
+                        },
+                        "cog_class": {
+                            "type": "text"
+                        },
+                        "doubling_time": {
+                            "properties": {
+                                "unit": {
+                                    "type": "text"
+                                },
+                                "value": {
+                                    "type": "long"
+                                }
+                            }
+                        },
+                        "expression_reads_per_kb_per_mb": {
+                            "type": "long"
+                        },
+                        "gene_end": {
+                            "type": "text"
+                        },
+                        "gene_start": {
+                            "type": "text"
+                        },
+                        "growth_medium": {
+                            "type": "text"
+                        },
+                        "half_life_std": {
+                            "type": "long"
+                        },
+                        "halflife": {
+                            "type": "long"
+                        },
+                        "ncbi_taxonomy_id": {
+                            "type": "integer"
+                        },
+                        "operon": {
+                            "type": "text"
+                        },
+                        "ordered_locus_name": {
+                            "type": "text"
+                        },
+                        "quantification_method": {
+                            "type": "text"
+                        },
+                        "r_sqaured": {
+                            "type": "long"
+                        },
+                        "reference": {
+                            "properties": {
+                                "doi": {
+                                    "type": "text"
+                                },
+                                "pubmed_id": {
+                                    "type": "text"
+                                }
+                            }
+                        },
+                        "species": {
+                            "type": "text"
+                        },
+                        "std": {
+                            "type": "float"
+                        },
+                        "std_over_avg": {
+                            "type": "long"
+                        },
+                        "strand": {
+                            "type": "text"
+                        },
+                        "transcriptional_end_sites": {
+                            "type": "text"
+                        },
+                        "transcriptional_start_sites": {
+                            "type": "text"
+                        },
+                        "unit": {
+                            "type": "text"
+                        },
+                        "variation_coefficient": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "id": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "modified": {
+                    "type": "text"
+                },
+                "protein_name": {
+                    "type": "text"
+                },
+                "protein_synonyms": {
+                    "type": "text"
+                }
+            }
+        }
+    }
+}
