@@ -90,7 +90,8 @@ class QueryBuilder(util.EsUtil):
 
         return query
 
-    def build_bool_query_body(self, must=None, _filter=None, should=None, must_not=None):
+    def build_bool_query_body(self, must=None, _filter=None, should=None, must_not=None,
+                              minimum_should_match=0):
         """Building boolean query body
         (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html)
         
@@ -99,11 +100,12 @@ class QueryBuilder(util.EsUtil):
             _filter (:obj:`list` or :obj:`dict`, optional): Body for filter. Defaults to None.
             should (:obj:`list` or :obj:`dict`, optional): Body for should. Defaults to None.
             must_not (:obj:`list` or :obj:`dict`, optional): Body for must_not. Defaults to None.
+            minimum_should_match (:obj:`int`): The number or percentage of should clauses returned documents must match. Defaults to 0.
 
         Return:
             (:obj:`dict`): boolean query body
         """
-        query = {'query': {'bool': {}}}
+        query = {'query': {'bool': {"minimum_should_match": minimum_should_match}}}
 
         if must is not None:
             query['query']['bool']['must'] = must

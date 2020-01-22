@@ -46,6 +46,6 @@ class TestQuery(unittest.TestCase):
         _filter = [{'b': 1}, {'c': 2}]
         should = {'d': 3}
         must_not = {'e': 4}
-        exp = {'query': {'bool': {'must': must, 'should': should, 'filter': _filter, 'must_not': must_not}}}
+        exp = {'query': {'bool': {'must': must, 'should': should, 'filter': _filter, 'must_not': must_not, 'minimum_should_match': 0}}}
         result = self.src.build_bool_query_body(must=must, _filter=_filter, should=should, must_not=must_not)
         self.assertEqual(result, exp)
