@@ -1,9 +1,6 @@
 # description
 README.rst
 
-# version
-include karr_lab_aws_manager/VERSION
-
 # license
 include LICENSE
 
