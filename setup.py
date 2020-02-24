@@ -15,14 +15,9 @@ import sys
 
 name = 'karr_lab_aws_manager'
 dirname = os.path.dirname(__file__)
-package_data = {
-    name: [
-        'VERSION',
-    ],
-}
 
 # get package metadata
-md = pkg_utils.get_package_metadata(dirname, name, package_data_filename_patterns=package_data)
+md = pkg_utils.get_package_metadata(dirname, name)
 
 # install package
 setuptools.setup(
