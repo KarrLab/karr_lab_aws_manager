@@ -1,11 +1,10 @@
-import unittest
 from karr_lab_aws_manager.quilt3_kl import util
-import tempfile
-import shutil
-import quilt3
-import os
 from pathlib import Path
-
+import os
+import quilt3
+import shutil
+import tempfile
+import unittest
 
 
 class TestQuiltUtil(unittest.TestCase):
@@ -15,9 +14,11 @@ class TestQuiltUtil(unittest.TestCase):
         cls.cache_dir_source = tempfile.mkdtemp()
         cls.credentials_cache = tempfile.mkdtemp()
         cls.destination = cls.cache_dir_source.split('/')[2]
-        cls.src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials', config_path='~/.wc/third_party/aws_config',
+        cls.src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials',
+                                 config_path='~/.wc/third_party/aws_config',
                                  profile_name='quilt-karrlab',
-                                 default_remote_registry='s3://karrlab', cache_dir=cls.credentials_cache)
+                                 default_remote_registry='s3://karrlab',
+                                 cache_dir=cls.credentials_cache)
         cls.file = 'test_util.txt'
         cls.test_file = cls.cache_dir_source + cls.file
         Path(cls.test_file).touch()
@@ -73,6 +74,7 @@ class TestQuiltUtil(unittest.TestCase):
         package_name = 'karrlab/__test_quilt_util'
         message = 'test package upload to custom s3'
         r = src.push_to_remote(package_name, destination=remote_registry_1, message=message)
+        self.assertEqual(r, None)
 
     def test_build_from_external_bucket(self):
         key_0 = 'LICENSE'
@@ -95,3 +97,26 @@ class TestQuiltUtil(unittest.TestCase):
     def test_delete_obj(self):
         p = self.src.delete_obj('requirements.txt')
         self.assertEqual(p, 'No such object requirements.txt on s3')
+
+class TestQuiltUtilPushToRemote(unittest.TestCase):
+    @classmethod 
+    def setUpClass(cls):
+        cls.cache_dir_source = tempfile.mkdtemp()
+        cls.credentials_cache = tempfile.mkdtemp()
+
+    @classmethod 
+    def tearDownClass(cls):
+        shutil.rmtree(cls.cache_dir_source)
+        shutil.rmtree(cls.credentials_cache)
+
+    def test_push_to_remote_custom_s3(self):
+        src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials',
+                             config_path='~/.wc/third_party/aws_config',
+                             profile_name='s3-admin',
+                             default_remote_registry='s3://karr-lab-aws-manager-test',
+                             cache_dir=self.credentials_cache)
+        remote_registry_1 = 's3://karr-lab-aws-manager-test'
+        package_name = 'karrlab/__test_quilt_util'
+        message = 'test package upload to custom s3'
+        r = src.push_to_remote(package_name, destination=remote_registry_1, message=message)
+        self.assertEqual(r, None)

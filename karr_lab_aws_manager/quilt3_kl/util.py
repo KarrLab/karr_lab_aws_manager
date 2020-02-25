@@ -1,13 +1,13 @@
-import quilt3
+from boto3.s3.transfer import TransferConfig
+from configparser import ConfigParser
 from karr_lab_aws_manager.config import config
 from karr_lab_aws_manager.s3 import util as s3_util
+from pathlib import Path, PurePath
+import botocore
 import json
 import os
-from configparser import ConfigParser
-from pathlib import Path, PurePath
+import quilt3
 import tempfile
-from boto3.s3.transfer import TransferConfig
-import botocore
 
 
 class QuiltUtil(config.establishQuilt):
@@ -24,7 +24,9 @@ class QuiltUtil(config.establishQuilt):
                 cache_dir (:obj:`str`): default directory to store data
                 config_path (:obj:`str`): directory in which aws config file resides
         '''
-        super().__init__(credential_path=aws_path, config_path=config_path, profile_name=profile_name)
+        super().__init__(credential_path=aws_path,
+                         config_path=config_path,
+                         profile_name=profile_name)
         self.cache_dir = cache_dir
         self.profile_name = profile_name
         base_path_obj = Path(self.cache_dir)
@@ -104,6 +106,7 @@ class QuiltUtil(config.establishQuilt):
             return 'No such package {} on s3'.format(package_name)
         except FileNotFoundError:
             self.package.build(name=package_name)
+            p = self.package
         except quilt3.util.QuiltException as e:
             return str(e)
         p.push(package_name, registry=registry, dest=destination, message=message)
