@@ -110,6 +110,7 @@ class TestQuiltUtilPushToRemote(unittest.TestCase):
         shutil.rmtree(cls.cache_dir_source)
         shutil.rmtree(cls.credentials_cache)
 
+    @unittest.skip('s3 auto archive')
     def test_push_to_remote_custom_s3(self):
         src = util.QuiltUtil(aws_path='~/.wc/third_party/aws_credentials',
                              config_path='~/.wc/third_party/aws_config',
