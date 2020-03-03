@@ -2,27 +2,19 @@ import setuptools
 try:
     import pkg_utils
 except ImportError:
-    import pip
-    pip_version = tuple(pip.__version__.split('.'))
-    if pip_version >= ('19', '3', '0'):
-        import pip._internal.main as pip_main
-    elif pip_version >= ('19', '0', '0'):
-        import pip._internal as pip_main
-    pip_main.main(['install', 'pkg_utils'])
+    import subprocess
+    import sys
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "pkg_utils"])
     import pkg_utils
 import os
 import sys
 
 name = 'karr_lab_aws_manager'
 dirname = os.path.dirname(__file__)
-package_data = {
-    name: [
-        'VERSION',
-    ],
-}
 
 # get package metadata
-md = pkg_utils.get_package_metadata(dirname, name, package_data_filename_patterns=package_data)
+md = pkg_utils.get_package_metadata(dirname, name)
 
 # install package
 setuptools.setup(
