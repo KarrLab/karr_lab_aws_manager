@@ -1,4 +1,6 @@
 import setuptools
+import karr_lab_aws_manager._version
+
 try:
     import pkg_utils
 except ImportError:
@@ -19,7 +21,7 @@ md = pkg_utils.get_package_metadata(dirname, name)
 # install package
 setuptools.setup(
     name=name,
-    version=md.version,
+    version=karr_lab_aws_manager._version.__version__,
     description='Package to manage aws services run by karr lab',
     long_description=md.long_description,
     url="https://github.com/KarrLab/" + name,
