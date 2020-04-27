@@ -55,9 +55,10 @@ class IndexUtil:
             analyzer_data = self.read_file(self.analyzer_dir)
         if mappings:
             mappings_data = self.read_file(self.mapping_properties_dir)
+            result['mappings'] = mappings_data
 
         result['settings'] = {'analysis': {**_filter_data, **analyzer_data}}
-        result['mappings'] = mappings_data
+        
 
         return result
         
