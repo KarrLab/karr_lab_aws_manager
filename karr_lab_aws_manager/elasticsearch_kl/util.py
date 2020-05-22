@@ -384,6 +384,47 @@ class EsUtil(config.establishES):
             status_code.add(r.status_code)
         return status_code
 
+    def change_field_name(self, pipeline_name, pipeline_description,
+                         src_field, target_field, src_idx, dest_idx):
+        """Change field name.
+        (https://www.elastic.co/guide/en/elasticsearch/reference/current/rename-processor.html)
+
+        Args:
+            pipeline_name(:obj:`str`): Name of pipeline.
+            pipeline_description(:obj:`str`): Description of pipeline.
+            src_field(:obj:`str`): Name of the field before change.
+            target_field(:obj:`str`): Name of the field after change.
+            src_idx(:obj:`str`): Name of index before change.
+            dest_idx(:obj:`str`): Name of index after changes.
+        """
+        pipeline_url = self.es_endpoint + '/_ingest/pipeline/{}'.format(pipeline_name)
+        reindex_url = self.es_endpoint + '/_reindex'
+        pipeline = {
+                    "description": pipeline_description,
+                    "processors":[
+                                    {
+                                     "rename": 
+                                            {
+                                            "field": src_field,
+                                            "target_field": target_field
+                                            }
+                                    }
+                                 ]
+                    }
+        r_pipeline = requests.put(pipeline_url, auth=self.awsauth, json=pipeline)
+        reindex = {
+                    "source": {
+                        "index": src_idx
+                        },
+                    "dest": {
+                        "index": dest_idx,
+                        "pipeline": pipeline_name
+                        }
+                   }
+        r_reindex = requests.post(reindex_url, auth=self.awsauth, json=reindex)
+        return [r_pipeline, r_reindex]    
+
+
 def main():
     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
