@@ -449,15 +449,15 @@ def main():
     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 service_name='es', max_entries=float('inf'), verbose=True)
-    # r = manager.enable_fielddata('protein', 'text', 'ko_number')
-    # print(r.text)
+    r = manager.enable_fielddata('rna_modification_new', 'text', 'ko_number')
+    print(r.text)
 
     # r_pipeline, r_reindex = manager.change_field_name('modify_rna_modification', 'Change kegg_orthology_id in rna_mod to ko_number',
     # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
     # print(r_pipeline.text, r_reindex.text)
 
-    r = manager.add_alias_to_idx(['protein', 'rna_modification_new'], 'genes')
-    print(r)
+    # r = manager.add_alias_to_idx(['protein', 'rna_modification_new'], 'genes')
+    # print(r)
 
 if __name__ == "__main__":
     main()
