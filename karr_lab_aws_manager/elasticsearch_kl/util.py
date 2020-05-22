@@ -424,6 +424,26 @@ class EsUtil(config.establishES):
         r_reindex = requests.post(reindex_url, auth=self.awsauth, json=reindex)
         return r_pipeline, r_reindex
 
+    def add_alias_to_idx(self, idx, alias):
+        """Add aliases to an index.
+        (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html)
+
+        Args:
+            idx(:obj:`str` or :obj:`list` of :obj:`str`): indices official name / names.
+            alias(:obj:`str`): index alias
+        """
+        if isinstance(idx, list):
+            _key = "indices"
+        else:
+            _key = "index"
+        _input = {
+                    "actions" : [
+                        {"add": {_key : idx, "alias" : alias}}
+                    ]
+                 }
+        alias_url = self.es_endpoint + '/_aliases'
+        r = requests.post(alias_url, auth=self.awsauth, json=_input)
+        return r.text
 
 def main():
     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
@@ -431,9 +451,13 @@ def main():
                 service_name='es', max_entries=float('inf'), verbose=True)
     # r = manager.enable_fielddata('protein', 'text', 'ko_number')
     # print(r.text)
-    r_pipeline, r_reindex = manager.change_field_name('modify_rna_modification', 'Change kegg_orthology_id in rna_mod to ko_number',
-    'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
-    print(r_pipeline.text, r_reindex.text)
+
+    # r_pipeline, r_reindex = manager.change_field_name('modify_rna_modification', 'Change kegg_orthology_id in rna_mod to ko_number',
+    # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
+    # print(r_pipeline.text, r_reindex.text)
+
+    r = manager.add_alias_to_idx(['protein', 'rna_modification_new'], 'genes')
+    print(r)
 
 if __name__ == "__main__":
     main()
