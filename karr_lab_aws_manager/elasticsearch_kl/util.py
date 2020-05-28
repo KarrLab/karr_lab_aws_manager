@@ -261,7 +261,7 @@ class EsUtil(config.establishES):
         """
         url = self.es_endpoint + '/' + index + '/' + '_update_by_query'
         if value is None:
-            script = {script_type: script_complete}
+            script = script_complete
         elif isinstance(value, (int, float, complex)) and not isinstance(value, bool):
             val = str(value)
             script = {script_type: "ctx._source.{} = {}".format(field, val)}
@@ -458,8 +458,9 @@ def main():
     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',
                 config_path='~/.wc/third_party/aws_config', elastic_path='~/.wc/third_party/elasticsearch.ini',
                 service_name='es', max_entries=float('inf'), verbose=True)
-    r = manager.enable_fielddata('rna_modification_new', 'text', 'ko_number')
-    print(r.text)
+
+    # r = manager.enable_fielddata('rna_modification_new', 'text', 'ko_number')
+    # print(r.text)
 
     # r_pipeline, r_reindex = manager.change_field_name('modify_rna_modification', 'Change kegg_orthology_id in rna_mod to ko_number',
     # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
@@ -467,6 +468,21 @@ def main():
 
     # r = manager.add_alias_to_idx(['protein', 'rna_modification_new'], 'genes')
     # print(r)
+
+    script = {
+                "source": "ctx._source.frontend_gene_aggregate= ctx._source.kegg_orthology_id",
+                "lang": "painless"
+             }
+    query = {"bool": {
+                "must_not": {
+                    "exists": {
+                        "field": "kegg_orthology_id"
+                    }
+                }
+            }}
+    r = manager.add_field_to_index("rna_modification", query=query,
+                                   script_complete=script)
+    print(r.text)
 
 if __name__ == "__main__":
     main()
