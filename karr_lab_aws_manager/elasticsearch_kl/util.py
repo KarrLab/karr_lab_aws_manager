@@ -242,28 +242,36 @@ class EsUtil(config.establishES):
         )
         return es
 
-    def add_field_to_index(self, index, field, value):
+    def add_field_to_index(self, index, field=None, value=None,
+                          query={"match_all": {}},
+                          script_type="inline",
+                          script_complete=None):
         """Add a field of value to all documents in index
         
         Args:
             index (:obj:`str`): name of index.
             field (:obj:`str`): name of field.
             value (:obj:`Obj`): value of field.
+            query(:obj:`Obj`): query of index.
+            script_type(:obj:`str`): type of script, inline or store.
+            script_complete(:obj:`str`): content of script.
 
         Return:
             (:obj:`HTTPResponse`): elasticsearch update status description.
         """
         url = self.es_endpoint + '/' + index + '/' + '_update_by_query'
-        if isinstance(value, (int, float, complex)) and not isinstance(value, bool):
+        if value is None:
+            script = {script_type: script_complete}
+        elif isinstance(value, (int, float, complex)) and not isinstance(value, bool):
             val = str(value)
-        else:
+            script = {script_type: "ctx._source.{} = {}".format(field, val)}
+        else value is not None:
             val = "\""+value+"\""
-        script = "ctx._source.{} = {}".format(field, val)
+            script = {script_type: "ctx._source.{} = {}".format(field, val)}
+
         body = {
-                    "query": {
-                        "match_all": {}
-                    },
-                    "script": {"inline": script}
+                    "query": query,
+                    "script": script
                 }
         r = requests.post(url, auth=self.awsauth, json=body)
         return r
@@ -444,6 +452,7 @@ class EsUtil(config.establishES):
         alias_url = self.es_endpoint + '/_aliases'
         r = requests.post(alias_url, auth=self.awsauth, json=_input)
         return r.text
+
 
 def main():
     manager = EsUtil(profile_name='es-poweruser', credential_path='~/.wc/third_party/aws_credentials',

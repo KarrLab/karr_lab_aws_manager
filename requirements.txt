@@ -12,3 +12,4 @@ elasticsearch
 quilt3 == 3.1.9
 capturer
 pymongo
+pytest

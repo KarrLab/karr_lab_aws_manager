@@ -116,7 +116,7 @@ class TestMongoToES(unittest.TestCase):
         _ = self.src.data_to_es_bulk(cursor, count=4, index=self.index, bulk_size=1)
         field = 'some_field'
         value = 'value'
-        result = self.src.add_field_to_index(self.index, field, value)
+        result = self.src.add_field_to_index(self.index, field=field, value=value)
         self.assertEqual(result.status_code, 200)
 
     def test_get_index_mapping(self):
