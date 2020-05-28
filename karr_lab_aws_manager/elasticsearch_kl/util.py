@@ -274,7 +274,7 @@ class EsUtil(config.establishES):
                     "script": script
                 }
         r = requests.post(url, auth=self.awsauth, json=body)
-        return r
+        return r 
 
     def make_action_and_metadata(self, index, _id):
         ''' Make action_and_metadata obj for bulk loading
