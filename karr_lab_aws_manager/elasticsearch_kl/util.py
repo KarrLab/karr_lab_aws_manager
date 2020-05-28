@@ -265,7 +265,7 @@ class EsUtil(config.establishES):
         elif isinstance(value, (int, float, complex)) and not isinstance(value, bool):
             val = str(value)
             script = {script_type: "ctx._source.{} = {}".format(field, val)}
-        else value is not None:
+        else:
             val = "\""+value+"\""
             script = {script_type: "ctx._source.{} = {}".format(field, val)}
 
