@@ -466,23 +466,23 @@ def main():
     # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
     # print(r_pipeline.text, r_reindex.text)
 
-    # r = manager.add_alias_to_idx(['protein', 'rna_modification_new'], 'genes')
-    # print(r)
+    r = manager.add_alias_to_idx(['protein', 'rna_modification_new', 'rna_modification'], 'genes')
+    print(r)
 
-    script = {
-                "source": "ctx._source.frontend_gene_aggregate= ctx._source.kegg_orthology_id",
-                "lang": "painless"
-             }
-    query = {"bool": {
-                "must_not": {
-                    "exists": {
-                        "field": "kegg_orthology_id"
-                    }
-                }
-            }}
-    r = manager.add_field_to_index("rna_modification", query=query,
-                                   script_complete=script)
-    print(r.text)
+    # script = {
+    #             "source": "ctx._source.frontend_gene_aggregate= ctx._source.kegg_orthology_id",
+    #             "lang": "painless"
+    #          }
+    # query = {"bool": {
+    #             "must_not": {
+    #                 "exists": {
+    #                     "field": "kegg_orthology_id"
+    #                 }
+    #             }
+    #         }}
+    # r = manager.add_field_to_index("rna_modification", query=query,
+    #                                script_complete=script)
+    # print(r.text)
 
 if __name__ == "__main__":
     main()
