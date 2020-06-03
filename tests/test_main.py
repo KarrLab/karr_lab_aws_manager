@@ -94,7 +94,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertTrue(app.pargs.id)
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stdout.get_text(), 'ES-POWERUSER')
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_es_set_idx(self):
@@ -110,7 +110,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertTrue(app.pargs.replica_count)
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stdout.get_text(), 'ES-POWERUSER')
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_es_del_idx(self):
@@ -126,7 +126,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(app.pargs.id, 'test_id')
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stdout.get_text(), 'ES-POWERUSER')
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_es_check_svr(self):
@@ -169,7 +169,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(app.pargs.default_remote_registry, 's3://karrlab')
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stdout.get_text(), 'QUILT-KARRLAB')
                 self.assertTrue('Hashing:' in captured.stderr.get_text())
 
     def test_quilt_push2_s3(self):
@@ -185,7 +185,7 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(app.pargs.destination, 's3://karrlab')
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stdout.get_text(), 'QUILT-KARRLAB')
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_quilt_rm_pkg(self):
@@ -201,5 +201,5 @@ class CliTestCase(unittest.TestCase):
                 self.assertEqual(app.pargs.delete_from_s3, False)
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stdout.get_text(), 'QUILT-KARRLAB')
                 self.assertEqual(captured.stderr.get_text(), '')
