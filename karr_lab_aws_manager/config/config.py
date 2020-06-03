@@ -64,7 +64,7 @@ class establishES(establishSession):
             config.read(self.es_config)
             self.es_endpoint = config['elasticsearch-endpoint']['address']
         else:
-            self.es_endpoint = os.getenv(profile_name.upper() + "FTX_ENDPOINT")
+            self.es_endpoint = os.getenv(profile_name.upper() + "_FTX_ENDPOINT")
 
 
 class establishS3(establishSession):
