@@ -432,13 +432,14 @@ class EsUtil(config.establishES):
         r_reindex = requests.post(reindex_url, auth=self.awsauth, json=reindex)
         return r_pipeline, r_reindex
 
-    def add_alias_to_idx(self, idx, alias):
+    def update_alias_to_idx(self, idx, alias, action="add"):
         """Add aliases to an index.
         (https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html)
 
         Args:
             idx(:obj:`str` or :obj:`list` of :obj:`str`): indices official name / names.
-            alias(:obj:`str`): index alias
+            alias(:obj:`str`): index alias.
+            action(:obj:`str`): add or remove
         """
         if isinstance(idx, list):
             _key = "indices"
@@ -446,7 +447,7 @@ class EsUtil(config.establishES):
             _key = "index"
         _input = {
                     "actions" : [
-                        {"add": {_key : idx, "alias" : alias}}
+                        {action: {_key : idx, "alias" : alias}}
                     ]
                  }
         alias_url = self.es_endpoint + '/_aliases'
@@ -466,8 +467,8 @@ def main():
     # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
     # print(r_pipeline.text, r_reindex.text)
 
-    # r = manager.add_alias_to_idx(['protein', 'rna_modification_new', 'rna_modification'], 'genes')
-    # print(r)
+    r = manager.update_alias_to_idx(['rna_modification_new'], 'genes', action="remove")
+    print(r)
 
     # script = {
     #             "source": "ctx._source.frontend_gene_aggregate= ctx._source.kegg_orthology_id",

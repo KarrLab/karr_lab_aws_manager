@@ -12,6 +12,7 @@ class credentialsFile:
         if profile_name is None:
             profile_name = 'test'
         if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
+            print(profile_name.upper())
             self.AWS_SHARED_CREDENTIALS_FILE = str(Path(credential_path).expanduser())
             self.AWS_CONFIG_FILE = str(Path(config_path).expanduser())
             os.environ['AWS_SHARED_CREDENTIALS_FILE'] = self.AWS_SHARED_CREDENTIALS_FILE
@@ -63,7 +64,7 @@ class establishES(establishSession):
             config.read(self.es_config)
             self.es_endpoint = config['elasticsearch-endpoint']['address']
         else:
-            self.es_endpoint = os.getenv("FTX_ENDPOINT")
+            self.es_endpoint = os.getenv(profile_name.upper() + "FTX_ENDPOINT")
 
 
 class establishS3(establishSession):
