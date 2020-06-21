@@ -56,8 +56,10 @@ class QueryBuilder(util.EsUtil):
         query_operation = 'simple_query_string'
         query = {'query': {query_operation: {'query': query_message}}}
 
+        _source = kwargs.get('_source', {})
+
         fields = kwargs.get('fields', ['*'])
-        query = self._set_options(query, 'fields', fields)
+        query = self._set_options(query, 'fields', fields, _source=_source)
 
         flags = kwargs.get('flags', 'ALL')
         query = self._set_options(query, 'flags', flags)
