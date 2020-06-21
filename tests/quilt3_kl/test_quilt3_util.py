@@ -30,8 +30,6 @@ class TestQuiltUtil(unittest.TestCase):
         shutil.rmtree(cls.cache_dir_source)
         shutil.rmtree(cls.credentials_cache)
         cls.src.package.delete(cls.file)
-        cls.src.package.delete(cls.package_dest_0)
-        cls.src.package.delete(cls.package_dest_1[:-1])
 
     def test_bucket_obj(self):
         b = self.src.bucket_obj('s3://karrlab')
