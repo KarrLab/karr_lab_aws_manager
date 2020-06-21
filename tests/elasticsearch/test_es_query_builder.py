@@ -25,8 +25,12 @@ class TestQuery(unittest.TestCase):
         option_key_0 = 'fields'
         option_value_0 =  "field_0"
         comp_0 = {'query': {'simple_query_string': {'query': 'something','fields': "field_0" }} }
+        _source = {"includes": ["this", "that"], "excludes": ["them"]}
         result_0 = self.src._set_options(query_0, option_key_0, option_value_0)
         self.assertEqual(comp_0, result_0)
+        result_1 = self.src._set_options(query_0, option_key_0, option_value_0, _source=_source)
+        comp_1 = {'query': {'simple_query_string': {'query': 'something','fields': "field_0" }}, "_source":{"includes": ["this", "that"], "excludes": ["them"]}}
+        self.assertEqual(result_1, comp_1)
     
     def test_build_simple_query_string_body(self):
         fields = ['field_0', 'field_1']
