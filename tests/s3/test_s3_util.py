@@ -17,6 +17,7 @@ class TestQuiltUtil(unittest.TestCase):
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dir_source)
 
+    @unittest.skip('reduce data transfer')
     def test_download_dir(self):
         dist_0 = 'quilt/docs'
         bucket = 'karr-lab-aws-manager-test'
