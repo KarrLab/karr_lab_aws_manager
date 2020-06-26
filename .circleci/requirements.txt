@@ -1,3 +1,5 @@
+urllib3 < 1.25 # for quilt3 compatibility
+
 # Karr Lab packages
 git+https://github.com/KarrLab/pkg_utils.git#egg=pkg_utils
 git+https://github.com/KarrLab/wc_utils.git#egg=wc_utils

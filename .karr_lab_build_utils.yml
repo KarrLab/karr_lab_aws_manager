@@ -1,4 +1,8 @@
 static_analyses:
   ignore_files: []
+  ignore_unused_requirements:
+    - ruamel.yaml
+  ignore_missing_requirements:
+    - configobj
 downstream_dependencies: []
 email_notifications: []
