@@ -25,20 +25,26 @@ class TestQuery(unittest.TestCase):
         option_key_0 = 'fields'
         option_value_0 =  "field_0"
         comp_0 = {'query': {'simple_query_string': {'query': 'something','fields': "field_0" }} }
+        _source = {"includes": ["this", "that"], "excludes": ["them"]}
         result_0 = self.src._set_options(query_0, option_key_0, option_value_0)
         self.assertEqual(comp_0, result_0)
+        result_1 = self.src._set_options(query_0, option_key_0, option_value_0, _source=_source)
+        comp_1 = {'query': {'simple_query_string': {'query': 'something','fields': "field_0" }}, "_source":{"includes": ["this", "that"], "excludes": ["them"]}}
+        self.assertEqual(result_1, comp_1)
     
     def test_build_simple_query_string_body(self):
         fields = ['field_0', 'field_1']
         analyze_wildcard = True
         result = self.src.build_simple_query_string_body('some query message',
-                                            fields=fields, analyze_wildcard=analyze_wildcard)
+                                            fields=fields, analyze_wildcard=analyze_wildcard,
+                                            _source={"includes": ["something"]})
         comp ={'query': {'simple_query_string': {'query': 'some query message', 
         'fields': ['field_0', 'field_1'], 
         'flags': 'ALL', 'fuzzy_transpositions': True, 
         'fuzzy_max_expansions': 50, 'fuzzy_prefix_length': 0, 'minimum_should_match': 1, 
         'analyze_wildcard': True, 'lenient': True, 'quote_field_suffix': '', 
-        'auto_generate_synonyms_phrase_query': True, 'default_operator': 'OR', 'analyzer': 'standard'}}}
+        'auto_generate_synonyms_phrase_query': True, 'default_operator': 'OR', 'analyzer': 'standard'}},
+        "_source": {"includes": ["something"]}}
         self.assertEqual(result, comp)
 
     def test_build_bool_query_body(self):

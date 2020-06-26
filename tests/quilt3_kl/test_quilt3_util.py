@@ -30,8 +30,6 @@ class TestQuiltUtil(unittest.TestCase):
         shutil.rmtree(cls.cache_dir_source)
         shutil.rmtree(cls.credentials_cache)
         cls.src.package.delete(cls.file)
-        cls.src.package.delete(cls.package_dest_0)
-        cls.src.package.delete(cls.package_dest_1[:-1])
 
     def test_bucket_obj(self):
         b = self.src.bucket_obj('s3://karrlab')
@@ -77,6 +75,7 @@ class TestQuiltUtil(unittest.TestCase):
         r = src.push_to_remote(package_name, destination=remote_registry_1, message=message)
         self.assertEqual(r, None)
 
+    @unittest.skip('reduce data transfer')
     def test_build_from_external_bucket(self):
         key_0 = 'LICENSE'
         key_1 = 'quilt/docs/'

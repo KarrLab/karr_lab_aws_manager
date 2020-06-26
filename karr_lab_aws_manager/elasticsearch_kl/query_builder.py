@@ -23,18 +23,22 @@ class QueryBuilder(util.EsUtil):
                 cache_dir=cache_dir, service_name=service_name, max_entries=max_entries, verbose=verbose)
 
 
-    def _set_options(self, query, option_key, option_value):
+    def _set_options(self, query, option_key, option_value, _source={}):
         ''' Builds query options for elasticsearch
-            (https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/full-text/#options)
+            (https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/full-text/#options,
+            https://www.elastic.co/guide/en/elasticsearch/reference/7.0/search-request-source-filtering.html)
 
             Args:
-                query_operation (:obj:`dict`): query body
-                option_key (:obj:`str`): option name
-                option_value (:obj:`str`) option value
+                query_operation(:obj:`dict`): query body
+                option_key(:obj:`str`): option name
+                option_value(:obj:`str`): option value
+                _source(:obj:`Obj`): Source filtering, equivalent of projection in MongoDB
 
             Returns:
                 (:obj:`dict`): new query body
         '''
+        if _source != {}:
+            query['_source'] = _source
         query_operation = list(query['query'].keys())[0]
         query['query'][query_operation][option_key] = option_value
         return query
@@ -52,8 +56,10 @@ class QueryBuilder(util.EsUtil):
         query_operation = 'simple_query_string'
         query = {'query': {query_operation: {'query': query_message}}}
 
+        _source = kwargs.get('_source', {})
+
         fields = kwargs.get('fields', ['*'])
-        query = self._set_options(query, 'fields', fields)
+        query = self._set_options(query, 'fields', fields, _source=_source)
 
         flags = kwargs.get('flags', 'ALL')
         query = self._set_options(query, 'flags', flags)
