@@ -1,14 +1,10 @@
+botocore
 cement >= 3.0.0 # for command line programs
-urllib3 < 1.25 # for quilt3 compatibility
 ruamel.yaml >= 0.16.5 # for quilt3 compatibility
-setuptools # for pkg_resources module
-pkg_utils
-mock
 boto3
 configparser
 requests
 requests_aws4auth
 elasticsearch
 quilt3 == 3.1.9
-capturer
-pytest
+pymongo
