@@ -161,8 +161,7 @@
                         }
                     },
                     "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "standard"
+                    "fielddata": true
                 },
                 "orthodb_name": {
                     "fields": {
@@ -172,7 +171,8 @@
                         }
                     },
                     "type": "text",
-                    "fielddata": true
+                    "analyzer": "autocomplete",
+                    "search_analyzer": "standard"
                 },
                 "length": {
                     "type": "long"
