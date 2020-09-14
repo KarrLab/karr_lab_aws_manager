@@ -172,7 +172,8 @@
                     },
                     "type": "text",
                     "analyzer": "autocomplete",
-                    "search_analyzer": "standard"
+                    "search_analyzer": "standard",
+                    "fielddata": false
                 },
                 "length": {
                     "type": "long"
