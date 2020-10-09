@@ -51,6 +51,27 @@ class EsUtil(config.establishES):
         r = requests.get(uri, auth=self.awsauth)
         return r
 
+    def test_analyzer(self, msg ,tokenizer="standard", index=None):
+        """Test ES analyzer / tokenizer results.
+        https://www.elastic.co/guide/en/elasticsearch/reference/6.8/analysis-standard-tokenizer.html
+
+        Args:
+            msg(:obj:`str`): Message to be analyzed.
+            tokenizer(:obj:`str`, optional): analyzer to be used.
+            index(:obj:`str`, optional): Index in which custom analyzer resides.
+
+        Return:
+            (:obj:`HTTPResponse`): http response  
+        """
+        if index is None:
+            url = self.es_endpoint + "/_analyze"
+        else:
+            url = self.es_endpoint + "/{}/_analyze".format(index)
+        _file = {"tokenizer": tokenizer,
+                 "text": msg}
+        r = requests.post(url, auth=self.awsauth, json=_file)
+        return r
+
     def allocation_explain(self):
         """chooses the first unassigned shard that it finds and explains why it cannot be allocated to a node
 
@@ -467,8 +488,8 @@ def main():
     # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
     # print(r_pipeline.text, r_reindex.text)
 
-    r = manager.update_alias_to_idx(['rna_modification_new'], 'genes', action="remove")
-    print(r)
+    # r = manager.update_alias_to_idx(['rna_modification_new'], 'genes', action="remove")
+    # print(r)
 
     # script = {
     #             "source": "ctx._source.frontend_gene_aggregate= ctx._source.kegg_orthology_id",
@@ -484,6 +505,9 @@ def main():
     # r = manager.add_field_to_index("rna_modification", query=query,
     #                                script_complete=script)
     # print(r.text)
+
+    r = manager.test_analyzer("LSU4.5S")
+    print(r.text)
 
 if __name__ == "__main__":
     main()
