@@ -171,7 +171,7 @@ class EsUtil(config.establishES):
         url = self.es_endpoint + '/' + index
         _file['settings']['number_of_shards'] = num_shard
         _file['settings']['number_of_replicas'] = num_replica
-        print(_file)
+        # print(_file)
         r = requests.put(url, auth=self.awsauth, json=_file)
         return r
 
@@ -488,8 +488,8 @@ def main():
     # 'kegg_orthology_id', 'ko_number', 'rna_modification', 'rna_modification_new')
     # print(r_pipeline.text, r_reindex.text)
 
-    # r = manager.update_alias_to_idx(['rna_modification_new'], 'genes', action="remove")
-    # print(r)
+    r = manager.update_alias_to_idx(['rna_modification'], 'genes', action="add")
+    print(r)
 
     # script = {
     #             "source": "ctx._source.frontend_gene_aggregate= ctx._source.kegg_orthology_id",
@@ -506,8 +506,8 @@ def main():
     #                                script_complete=script)
     # print(r.text)
 
-    r = manager.test_analyzer("LSU4.5S")
-    print(r.text)
+    # r = manager.test_analyzer("LSU4.5S", tokenizer="auto_complete", index="rna_modification")
+    # print(r.text)
 
 if __name__ == "__main__":
     main()

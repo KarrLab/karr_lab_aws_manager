@@ -1,8 +1,116 @@
 {
-    "rna_modification": {
-        "mappings": {
+    "properties": {
+        "aa_code": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "aa_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "amino_acid": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "definition": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kegg_gene_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kegg_orthology_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kegg_orthology_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kegg_pathway_id": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kegg_pathway_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "kingdom": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "mamallian_subunit": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
+        },
+        "modifications": {
             "properties": {
-                "aa_code": {
+                "anticodon": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -11,7 +119,7 @@
                     },
                     "type": "text"
                 },
-                "aa_name": {
+                "bpforms_errors": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -20,7 +128,10 @@
                     },
                     "type": "text"
                 },
-                "amino_acid": {
+                "canonical_charge": {
+                    "type": "float"
+                },
+                "canonical_formula": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -29,7 +140,16 @@
                     },
                     "type": "text"
                 },
-                "definition": {
+                "canonical_molecular_weight": {
+                    "type": "float"
+                },
+                "charge": {
+                    "type": "float"
+                },
+                "extra_charge": {
+                    "type": "float"
+                },
+                "extra_formula": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -38,7 +158,10 @@
                     },
                     "type": "text"
                 },
-                "id": {
+                "extra_molecular_weight": {
+                    "type": "float"
+                },
+                "formula": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -47,16 +170,7 @@
                     },
                     "type": "text"
                 },
-                "kegg_gene_name": {
-                    "fields": {
-                        "keyword": {
-                            "ignore_above": 256,
-                            "type": "keyword"
-                        }
-                    },
-                    "type": "text"
-                },
-                "kegg_orthology_id": {
+                "gen_bank": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -74,7 +188,7 @@
                     },
                     "type": "text"
                 },
-                "kegg_pathway_id": {
+                "last_modified": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -83,7 +197,31 @@
                     },
                     "type": "text"
                 },
-                "kegg_pathway_name": {
+                "length": {
+                    "type": "long"
+                },
+                "molecular_weight": {
+                    "type": "float"
+                },
+                "ncbi_taxonomy_id": {
+                    "type": "long"
+                },
+                "number_of_modifications": {
+                    "type": "long"
+                },
+                "number_of_modified_a": {
+                    "type": "long"
+                },
+                "number_of_modified_c": {
+                    "type": "long"
+                },
+                "number_of_modified_g": {
+                    "type": "long"
+                },
+                "number_of_modified_u": {
+                    "type": "long"
+                },
+                "organellum": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -92,7 +230,7 @@
                     },
                     "type": "text"
                 },
-                "kingdom": {
+                "organism": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -101,187 +239,9 @@
                     },
                     "type": "text"
                 },
-                "mamallian_subunit": {
-                    "fields": {
-                        "keyword": {
-                            "ignore_above": 256,
-                            "type": "keyword"
-                        }
-                    },
-                    "type": "text"
-                },
-                "modifications": {
+                "reference": {
                     "properties": {
-                        "anticodon": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "bpforms_errors": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "canonical_charge": {
-                            "type": "float"
-                        },
-                        "canonical_formula": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "canonical_molecular_weight": {
-                            "type": "float"
-                        },
-                        "charge": {
-                            "type": "float"
-                        },
-                        "extra_charge": {
-                            "type": "float"
-                        },
-                        "extra_formula": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "extra_molecular_weight": {
-                            "type": "float"
-                        },
-                        "formula": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "gen_bank": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "kegg_orthology_name": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "last_modified": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "length": {
-                            "type": "long"
-                        },
-                        "molecular_weight": {
-                            "type": "float"
-                        },
-                        "ncbi_taxonomy_id": {
-                            "type": "long"
-                        },
-                        "number_of_modifications": {
-                            "type": "long"
-                        },
-                        "number_of_modified_a": {
-                            "type": "long"
-                        },
-                        "number_of_modified_c": {
-                            "type": "long"
-                        },
-                        "number_of_modified_g": {
-                            "type": "long"
-                        },
-                        "number_of_modified_u": {
-                            "type": "long"
-                        },
-                        "organellum": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "organism": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "reference": {
-                            "properties": {
-                                "doi": {
-                                    "fields": {
-                                        "keyword": {
-                                            "ignore_above": 256,
-                                            "type": "keyword"
-                                        }
-                                    },
-                                    "type": "text"
-                                }
-                            }
-                        },
-                        "sequence_bpforms": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "sequence_iupac": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "sequence_modomics": {
-                            "fields": {
-                                "keyword": {
-                                    "ignore_above": 256,
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "text"
-                        },
-                        "subunit": {
+                        "doi": {
                             "fields": {
                                 "keyword": {
                                     "ignore_above": 256,
@@ -292,17 +252,34 @@
                         }
                     }
                 },
-                "orthodb_id": {
-                    "fielddata": true,
+                "sequence_bpforms": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
                             "type": "keyword"
                         }
                     },
-                    "type": "keyword"
+                    "type": "text"
                 },
-                "orthodb_name": {
+                "sequence_iupac": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "sequence_modomics": {
+                    "fields": {
+                        "keyword": {
+                            "ignore_above": 256,
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "text"
+                },
+                "subunit": {
                     "fields": {
                         "keyword": {
                             "ignore_above": 256,
@@ -312,6 +289,27 @@
                     "type": "text"
                 }
             }
+        },
+        "orthodb_id": {
+            "fielddata": true,
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text",
+            "search_analyzer": "standard",
+            "analyzer": "autocomplete"
+        },
+        "orthodb_name": {
+            "fields": {
+                "keyword": {
+                    "ignore_above": 256,
+                    "type": "keyword"
+                }
+            },
+            "type": "text"
         }
     }
 }

@@ -51,8 +51,14 @@ class IndexUtil:
 
         if _filter:
             _filter_data = self.read_file(self.filter_dir)
+        else:
+            _filter_data = {}
+
         if analyzer:
             analyzer_data = self.read_file(self.analyzer_dir)
+        else:
+            analyzer_data = {}
+
         if mappings:
             mappings_data = self.read_file(self.mapping_properties_dir)
             result['mappings'] = mappings_data
