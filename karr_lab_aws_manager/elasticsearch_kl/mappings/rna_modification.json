@@ -300,7 +300,7 @@
                             "type": "keyword"
                         }
                     },
-                    "type": "text"
+                    "type": "keyword"
                 },
                 "orthodb_name": {
                     "fields": {
