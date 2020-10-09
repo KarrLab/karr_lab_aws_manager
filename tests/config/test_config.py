@@ -2,7 +2,6 @@ import unittest
 from pathlib import Path
 from karr_lab_aws_manager.config import config
 import os
-import quilt3
 import tempfile
 import shutil
 
