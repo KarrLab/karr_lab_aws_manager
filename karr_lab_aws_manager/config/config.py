@@ -76,14 +76,3 @@ class establishS3(establishSession):
         self.resource = self.session.resource(service_name)
         self.client = self.resource.meta.client
 
-
-class establishQuilt(credentialsFile):
-    ''' Create authentication files for quilt3 based on aws_credentials '''
-
-    def __init__(self, credential_path=None, config_path=None, profile_name=None):
-        super().__init__(credential_path=credential_path, config_path=config_path, 
-                        profile_name=profile_name)
-        if profile_name is None:
-            profile_name = 'quilt-karrlab'
-        if os.getenv(profile_name.upper() + '_AWS_PROFILE') is None:
-            os.environ['EXPIRY_TIME'] = '2029-09-30T20:32:07+00:00'

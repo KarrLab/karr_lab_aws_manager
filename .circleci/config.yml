@@ -54,9 +54,6 @@ jobs:
               done < .circleci/requirements.txt
             fi
       - run:
-          name: Install requirements (quilt3 specific)
-          command: python3 -m pip install -r requirements.txt
-      - run:
           name: Install package (Python 3)
           command: python3 -m pip install -U -e .[all]
 
